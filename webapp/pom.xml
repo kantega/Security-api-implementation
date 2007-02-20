@@ -14,9 +14,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>no.kantega.security.api.impl</groupId>
             <artifactId>fedagidentity</artifactId>
-            <version>${pom.version}</version>
+            <version>0.8-SNAPSHOT</version>
         </dependency>
 
         <dependency>
