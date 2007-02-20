@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>no.kantega.security.api.impl</groupId>
+    <artifactId>securityapi-impl</artifactId>
+    <packaging>pom</packaging>
+    <version>0.8-SNAPSHOT</version>
+    <name>Implementation of security-api</name>
+    <url>http://kantega.no</url>
+
+<dependencies>
+
+        <dependency>
+            <groupId>no.kantega.security-api</groupId>
+            <artifactId>security-api</artifactId>
+            <version>${securityapi.version}</version>
+        </dependency>
+             
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.12</version>
+        </dependency>
+     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>sunsite.dk</id>
+            <url>http://mirrors.sunsite.dk/maven2</url>
+        </repository>
+        <repository>
+            <id>subversion</id>
+            <name>Kantega Maven Repository</name>
+            <url>http://subversion.mogul.no/maven2/external</url>
+        </repository>
+        <repository>
+            <id>subversioninternal</id>
+            <name>Kantega Internal Maven Repository</name>
+            <url>http://subversion.mogul.no/maven2/internal</url>
+        </repository>
+
+        <repository>
+            <id>subversion2</id>
+            <name>Kantega Maven Legacy Repository</name>
+            <url>http://subversion.mogul.no/maven</url>
+            <layout>legacy</layout>
+        </repository>
+
+    </repositories>
+
+     <distributionManagement>
+        <repository>
+            <id>subversion</id>
+            <name>subversion.mogul.no</name>
+            <url>scpexe://subversion.mogul.no/var/www/html/maven2/internal/</url>
+        </repository>
+
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>legacy</id>
+            <distributionManagement>
+                <repository>
+                    <id>subversion</id>
+                    <name>subversion.mogul.no</name>
+                    <url>scpexe://subversion.mogul.no/var/www/html/maven/</url>
+                    <layout>legacy</layout>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>local</id>
+            <distributionManagement>
+                <repository>
+                    <id>loc</id>
+                    <name>local</name>
+                    <url>file:///${user.home}/.maven/repository</url>
+                    <layout>legacy</layout>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>subversion</id>
+            <url>http://subversion.mogul.no/maven2/external</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <modules>
+        <module>common</module>
+        <module>dbuser</module>
+        <module>fedag-identity</module>
+        <module>ksi-signature</module>
+        <module>ldap</module>
+        <module>webapp</module>
+    </modules>
+
+    <properties>
+        <springframework.version>1.2.8</springframework.version>
+        <securityapi.version>0.16</securityapi.version>
+        <spring.webflow.version>1.0-ea</spring.webflow.version>
+    </properties>
+
+</project>

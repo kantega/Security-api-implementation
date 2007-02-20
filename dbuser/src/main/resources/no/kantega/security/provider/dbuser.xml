@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <!-- DBUSER configuration -->
+    <bean id="dbuserProfileManager" class="no.kantega.security.api.impl.dbuser.profile.DbUserProfileManager">
+        <property name="dataSource">
+            <ref bean="aksessDataSource"/>
+        </property>
+        <property name="domain">
+            <value>${security.dbuser.domain}</value>
+        </property>
+    </bean>
+
+    <bean id="dbuserRoleManager" class="no.kantega.security.api.impl.dbuser.role.DbUserRoleManager">
+        <property name="dataSource">
+            <ref bean="aksessDataSource"/>
+        </property>
+        <property name="domain">
+            <value>${security.dbuser.domain}</value>
+        </property>
+    </bean>
+
+    <bean id="dbuserPasswordManager" class="no.kantega.security.api.impl.dbuser.password.DbUserPasswordManager">
+        <property name="dataSource">
+            <ref bean="aksessDataSource"/>
+        </property>
+        <property name="domain">
+            <value>${security.dbuser.domain}</value>
+        </property>        
+    </bean>
+
+    <bean id="dbuserIdentityResolver" class="no.kantega.security.api.identity.DefaultIdentityResolver">
+        <property name="authenticationContext">
+            <value>${security.dbuser.domain}</value>
+        </property>
+        <property name="loginPageUrl">
+            <value>${security.login.url}</value>
+        </property>
+    </bean>
+
+    <bean id="dbuserRealm" class="no.kantega.publishing.security.realm.SecurityRealm">
+        <property name="profileManager">
+            <ref bean="dbuserProfileManager"/>
+        </property>
+        <property name="roleManager">
+            <ref bean="dbuserRoleManager"/>
+        </property>
+        <property name="passwordManager">
+            <ref bean="dbuserPasswordManager"/>
+        </property>
+        <property name="identityResolver">
+            <ref bean="dbuserIdentityResolver"/>
+        </property>
+    </bean>
+</beans>

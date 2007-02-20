@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="aksessProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location" value="/Users/bjorsnos/Projects/aksess/projects/trondheim-kommune/kommuneweb/modules/webapp/target/kantega-dir/tk-kommuneweb-webapp/conf/aksess.conf"/>
+    </bean>
+</beans>
