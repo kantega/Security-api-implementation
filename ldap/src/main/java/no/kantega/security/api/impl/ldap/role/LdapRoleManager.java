@@ -44,8 +44,11 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             filter += "(objectclass=" + objectClassRoles + ")";
         }
 
-        if (rolename != null && rolename.length() > 0) {
-            filter += "(" + roleAttribute + "=" + rolename + "*)";
+        if (rolename != null) {
+            rolename = removeChars(rolename);
+            if (rolename.length() > 0) {
+                filter += "(" + roleAttribute + "=" + rolename + "*)";
+            }
         }
 
         if (objectClassRoles.length() > 0 && rolename != null && rolename.length() > 0) {
@@ -153,6 +156,10 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
                 LDAPEntry userEntry = user.next();
 
                 String userDN = userEntry.getDN();
+
+                // This is necessary to handle \ in DN
+                userDN = userDN.replaceAll("\\\\", "\\\\\\\\");
+
                 String rolesFilter = "";
                 if (objectClassUsers.length() > 0) {
                     rolesFilter = "(&(objectclass=" + objectClassRoles + ")(" + roleMemberAttribute + "=" + userDN + "))";
@@ -224,7 +231,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
 
             DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("ANDSKA");
+            andska.setUserId("innholdsprodusent3");
             andska.setDomain("mogul");
 
             Iterator roles = manager.getRolesForUser(andska);
