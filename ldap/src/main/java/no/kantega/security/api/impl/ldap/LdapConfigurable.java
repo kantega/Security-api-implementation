@@ -4,9 +4,7 @@ import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPAttribute;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jan 10, 2007
- * Time: 2:07:15 PM
+ * Base class for LDAP searches
  */
 public class LdapConfigurable {
     protected String host = "";
@@ -38,12 +36,19 @@ public class LdapConfigurable {
         return attribute.getStringValue();
     }
 
-    protected String escapeChars(String str) {
-        String forbidden = "&|()";
-        for (int i = 0; i < forbidden.length(); i++) {
-            char c = forbidden.charAt(i);
-            //str = str.replaceAll("" + c, "\\" + c);
-        }
+
+    /**
+     * Replace and escape strings that will give problem in search
+     * @param str
+     * @return - string with escaped/replaced chars
+     */
+    protected String removeChars(String str) {
+        str = str.replaceAll("&", "");
+        str = str.replaceAll("!", "");
+        str = str.replaceAll("\\*", "");
+        str = str.replaceAll("\\(", "");
+        str = str.replaceAll("\\)", "");
+        System.out.println("søker:" + str);
         return str;
     }
 
