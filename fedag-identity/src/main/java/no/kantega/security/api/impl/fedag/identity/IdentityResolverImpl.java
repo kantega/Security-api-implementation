@@ -279,9 +279,9 @@ public class IdentityResolverImpl implements IdentityResolver, InitializingBean 
             //building logout url
             String url = fedAgLogoutUrl;
             url += "?";
-            url += SESSION_INDEX_PARAMETER_NAME + "=" + sessionIndex;
+            url += SESSION_INDEX_PARAMETER_NAME + "=" + URLEncoder.encode(sessionIndex, "utf-8");
             url += "&";
-            url += SUBJECT_NAME_ID_PARAMETER_NAME + "=" + subjectNameId;
+            url += SUBJECT_NAME_ID_PARAMETER_NAME + "=" + URLEncoder.encode(subjectNameId, "utf-8");
             url += "&";
             url += TARGET_PARAMETER_NAME + "=" + URLEncoder.encode(target, "UTF-8");
             logger.info("Redirected to Federation Agent for logout: " + url);
