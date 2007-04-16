@@ -155,16 +155,20 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             if (user.hasMore()) {
                 LDAPEntry userEntry = user.next();
 
-                String userDN = userEntry.getDN();
-
-                // This is necessary to handle \ in DN
-                userDN = userDN.replaceAll("\\\\", "\\\\\\\\");
+                String key = "";
+                if (roleUserKey.equalsIgnoreCase(ROLE_USER_KEY_DN)) {
+                    key = userEntry.getDN();
+                    // This is necessary to handle \ in DN
+                    key = key.replaceAll("\\\\", "\\\\\\\\");
+                } else {
+                    key = getValue(userEntry, roleUserKey);
+                }
 
                 String rolesFilter = "";
                 if (objectClassUsers.length() > 0) {
-                    rolesFilter = "(&(objectclass=" + objectClassRoles + ")(" + roleMemberAttribute + "=" + userDN + "))";
+                    rolesFilter = "(&(objectclass=" + objectClassRoles + ")(" + roleMemberAttribute + "=" + key + "))";
                 } else {
-                    rolesFilter = "(" + roleMemberAttribute + "=" + userDN + ")";
+                    rolesFilter = "(" + roleMemberAttribute + "=" + key + ")";
                 }
 
                 LDAPSearchResults results = c.search(searchBaseRoles, LDAPConnection.SCOPE_SUB, rolesFilter, new String[]{roleAttribute, "member", "objectClass"}, false);
@@ -218,20 +222,27 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
         this.domain = domain;
     }
 
-
     public static void main(String[] args) {
         try {
 
             LdapRoleManager manager = new LdapRoleManager();
-            manager.setAdminUser("ad@mogul.no");
-            manager.setAdminPassword("Tzg5hh4Vf");
+            manager.setAdminUser("");
+            manager.setAdminPassword("");
             manager.setDomain("mogul");
-            manager.setHost("tom.mogul.no");
-            manager.setSearchBaseUsers("ou=Norway,dc=mogul,dc=no");
-            manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
+            manager.setHost("ldap.uninett.no");
+            manager.setSearchBaseUsers("dc=uninett,dc=no");
+            manager.setSearchBaseRoles("dc=uninett,dc=no");
+            manager.setUsernameAttribute("uid");
+            manager.setRoleMemberAttribute("memberUid");
+            manager.setRoleUserKey("uid");
+            manager.setObjectClassRoles("posixGroup");
+
+
+            manager.setObjectClassUsers("person");
+            manager.setDepartmentAttribute("ou");
 
             DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("innholdsprodusent3");
+            andska.setUserId("im");
             andska.setDomain("mogul");
 
             Iterator roles = manager.getRolesForUser(andska);

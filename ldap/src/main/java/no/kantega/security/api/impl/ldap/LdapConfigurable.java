@@ -7,6 +7,9 @@ import com.novell.ldap.LDAPAttribute;
  * Base class for LDAP searches
  */
 public class LdapConfigurable {
+    protected static final String ROLE_USER_KEY_DN = "dn";
+    protected static final String ROLE_USER_KEY_UID = "uid";
+
     protected String host = "";
     protected int port = 389;
     protected int maxSearchResults = 1000;
@@ -28,6 +31,8 @@ public class LdapConfigurable {
     protected String roleAttribute = "cn";
     protected String roleMemberAttribute = "member";
 
+    protected String roleUserKey = ROLE_USER_KEY_DN;
+
     protected String getValue(LDAPEntry entry, String parameter) {
         LDAPAttribute attribute = entry.getAttribute(parameter);
         if (attribute == null || attribute.getStringValue() == null) {
@@ -48,7 +53,6 @@ public class LdapConfigurable {
         str = str.replaceAll("\\*", "");
         str = str.replaceAll("\\(", "");
         str = str.replaceAll("\\)", "");
-        System.out.println("søker:" + str);
         return str;
     }
 
@@ -114,5 +118,9 @@ public class LdapConfigurable {
 
     public void setRoleMemberAttribute(String roleMemberAttribute) {
         this.roleMemberAttribute = roleMemberAttribute;
+    }
+
+    public void setRoleUserKey(String roleUserKey) {
+        this.roleUserKey = roleUserKey;
     }
 }

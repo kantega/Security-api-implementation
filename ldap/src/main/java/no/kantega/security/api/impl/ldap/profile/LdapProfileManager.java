@@ -195,13 +195,18 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
     public static void main(String[] args) {
         try {
             LdapProfileManager manager = new LdapProfileManager();
-            manager.setAdminUser("ad@mogul.no");
-            manager.setAdminPassword("Tzg5hh4Vf");
+            manager.setAdminUser("");
+            manager.setAdminPassword("");
             manager.setDomain("mogul");
-            manager.setHost("tom.mogul.no");
-            manager.setSearchBaseUsers("ou=Norway,dc=mogul,dc=no");
-            manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
-            SearchResult result = manager.searchProfiles("Anders Skar");
+            manager.setHost("ldap.uninett.no");
+            manager.setSearchBaseUsers("dc=uninett,dc=no");
+            manager.setSearchBaseRoles("dc=uninett,dc=no");
+            manager.setUsernameAttribute("uid");
+
+            manager.setObjectClassUsers("person");
+            manager.setDepartmentAttribute("ou");
+
+            SearchResult result = manager.searchProfiles("Ingrid");
             System.out.println("Found " + result.getSize() + " userprofiles");
             Iterator profiles = result.getAllResults();
 
@@ -212,6 +217,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
                 count++;
             }
 
+            /*
             DefaultIdentity andska = new DefaultIdentity();
             andska.setUserId("andska");
             andska.setDomain("mogul");
@@ -219,7 +225,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             Profile profile = manager.getProfileForUser(andska);
             if (profile != null) {
                 System.out.println("Found userprofile:" + profile.getGivenName() + " " + profile.getSurname() + " - " + profile.getDepartment());
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }
