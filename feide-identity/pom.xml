@@ -7,26 +7,22 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.kantega.security.api.impl</groupId>
-    <artifactId>fedagidentity</artifactId>
+    <artifactId>securityapi-feideidentity</artifactId>
     <packaging>jar</packaging>
 
-    <name>Security-impl identity</name>
+    <name>Security-impl feide-identity</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-
-
-        <dependency>
+    <dependencies>       
+		<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
             <version>${springframework.version}</version>
         </dependency>
-
-
+		<dependency>
+            <groupId>sun-am</groupId>
+            <artifactId>amclientsdk</artifactId>
+            <version>2007-05-21</version>
+        </dependency>
     </dependencies>
 
 </project>
