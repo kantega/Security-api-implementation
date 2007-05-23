@@ -287,7 +287,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
 
             DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("andska");
+            andska.setUserId("aksess2");
             andska.setDomain("mogul");
 
             Iterator roles = manager.getRolesForUser(andska);

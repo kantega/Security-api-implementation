@@ -96,6 +96,7 @@
         <module>common</module>
         <module>dbuser</module>
         <module>fedag-identity</module>
+        <module>feide-identity</module>
         <module>ksi-signature</module>
         <module>ldap</module>
         <module>webapp</module>
@@ -103,7 +104,7 @@
 
     <properties>
         <springframework.version>1.2.8</springframework.version>
-        <securityapi.version>0.16</securityapi.version>
+        <securityapi.version>1.01</securityapi.version>
         <spring.webflow.version>1.0-ea</spring.webflow.version>
     </properties>
 

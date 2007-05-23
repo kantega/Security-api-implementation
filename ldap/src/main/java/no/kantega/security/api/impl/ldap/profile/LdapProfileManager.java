@@ -139,7 +139,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             }
 
         } catch (LDAPException e) {
-             throw new SystemException("Feil ved lesing av LDAP directory", e);
+             throw new SystemException("Feil ved lesing av LDAP directory for:" + identity.getUserId(), e);
         } finally {
             try {
                 c.disconnect();
