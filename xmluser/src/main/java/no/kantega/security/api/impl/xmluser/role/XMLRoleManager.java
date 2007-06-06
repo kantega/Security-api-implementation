@@ -1,4 +1,4 @@
-package no.kantega.security.api.impl.xmluser.role;
+ package no.kantega.security.api.impl.xmluser.role;
 
 import no.kantega.security.api.impl.xmluser.XMLConfigurable;
 import no.kantega.security.api.role.RoleManager;
@@ -35,7 +35,7 @@ public class XMLRoleManager extends XMLConfigurable implements RoleManager {
     public Iterator getAllRoles() throws SystemException {
         return searchRoles(null).getAllResults();
     }
-    
+
 
     public SearchResult searchRoles(String name) throws SystemException {
         DefaultSearchResult searchResult = new DefaultSearchResult();

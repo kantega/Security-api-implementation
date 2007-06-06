@@ -30,7 +30,7 @@ public class FeideIdentityResolver implements IdentityResolver {
     private String loginPageUrl = "";
     private String logoutPageUrl = "";
     private String cookieName = "iPlanetDirectoryPro";
-    private String usernameAttribute = "uid";
+    private String usernameAttribute = "eduPersonPrincipalName";
 
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
@@ -83,6 +83,8 @@ public class FeideIdentityResolver implements IdentityResolver {
                 e.printStackTrace();
                 throw new IdentificationFailedException(SOURCE, "UnsupportedEncodingException:" + e);
             }
+        } else {
+            System.out.println(SOURCE + ": No tokenid");
         }
 
         return identity;
@@ -100,10 +102,11 @@ public class FeideIdentityResolver implements IdentityResolver {
         if (loginPageUrl.indexOf("?") > 0) {
             redirectUrl = loginPageUrl + "&RelayState=";
         } else {
-            redirectUrl = loginPageUrl + "?&RelayState=";
+            redirectUrl = loginPageUrl + "?RelayState=";
         }
 
         try {
+            System.out.println(SOURCE + ": Send redirect to: " + redirectUrl);
             loginContext.getResponse().sendRedirect(redirectUrl + URLEncoder.encode(targetUrl, "UTF-8"));
         } catch (IOException e) {
             //
@@ -181,7 +184,7 @@ public class FeideIdentityResolver implements IdentityResolver {
                     value.append(values[j]);
                 }
 
-                System.out.println("adding:" + names[i] + ":" + value.toString());
+                System.out.println(SOURCE + ": adding:" + names[i] + ":" + value.toString());
 
                 properties.setProperty(names[i], value.toString());
             }
