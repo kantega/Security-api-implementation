@@ -1,19 +1,13 @@
  package no.kantega.security.api.impl.xmluser.role;
 
-import no.kantega.security.api.impl.xmluser.XMLManagerConfigurable;
-import no.kantega.security.api.role.RoleManager;
-import no.kantega.security.api.role.Role;
-import no.kantega.security.api.role.RoleId;
-import no.kantega.security.api.role.DefaultRole;
+import no.kantega.security.api.impl.xmluser.XMLUserManagerConfigurable;
+import no.kantega.security.api.role.*;
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -27,7 +21,7 @@ import javax.xml.transform.TransformerException;
  * Date: Jun 5, 2007
  * Time: 9:48:30 AM
  */
-public class XMLRoleManager extends XMLManagerConfigurable implements RoleManager {
+public class XMLUserRoleManager extends XMLUserManagerConfigurable implements RoleManager {
     private static final String ROLES_MEMBER_ATTRIBUTE = "roles";
     private static final String ROLEID_ATTRIBUTE = "rolename";
     private static final String ROLENAME_ATTRIBUTE = "description";
@@ -39,6 +33,8 @@ public class XMLRoleManager extends XMLManagerConfigurable implements RoleManage
 
     public SearchResult searchRoles(String name) throws SystemException {
         DefaultSearchResult searchResult = new DefaultSearchResult();
+
+        List roles = new ArrayList();
 
         Document usersdoc = null;
         try {
@@ -54,7 +50,7 @@ public class XMLRoleManager extends XMLManagerConfigurable implements RoleManage
                 String roleId = elmRole.getAttribute(ROLEID_ATTRIBUTE);
                 if (roleId != null) {
                     String roleName = elmRole.getAttribute(ROLENAME_ATTRIBUTE);
-                    if (roleName != null && roleName.length() > 0) {
+                    if (roleName == null || roleName.length() == 0) {
                         roleName = roleId;
                     }
 
@@ -63,12 +59,18 @@ public class XMLRoleManager extends XMLManagerConfigurable implements RoleManage
                     role.setName(roleName);
                     role.setDomain(domain);
 
-                    searchResult.addResult(role);
+                    roles.add(role);
                 }
             }
         } catch (Exception e) {
             throw new SystemException("Error processing XML users file:" + getXmlUsersFilename(), e);
         }
+
+        // Sorter lista basert på navn på rolle
+        Comparator comparator = new RoleComparator();
+        Collections.sort(roles, comparator);
+
+        searchResult.setResults(roles);
 
         return searchResult;
     }

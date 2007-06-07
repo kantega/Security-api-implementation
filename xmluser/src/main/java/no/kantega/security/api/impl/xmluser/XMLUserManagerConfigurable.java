@@ -14,7 +14,7 @@ import java.io.IOException;
  * Date: Jun 4, 2007
  * Time: 4:00:34 PM
  */
-public abstract class XMLManagerConfigurable {
+public abstract class XMLUserManagerConfigurable {
     protected String xmlUsersFilename;
     protected String domain;
 
