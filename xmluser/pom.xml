@@ -7,17 +7,17 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.kantega.security.api.impl</groupId>
-    <artifactId>securityapi-ldap</artifactId>
+    <artifactId>securityapi-xmluser</artifactId>
     <packaging>jar</packaging>
 
-    <name>Security-impl ldap</name>
+    <name>Security-impl xmluser</name>
 
     <dependencies>       
-		<dependency>
-			<groupId>jldap</groupId>
-		    <artifactId>ldap</artifactId>
-		    <version>2005.03.29</version>
-		 </dependency>
+    	<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
