@@ -8,21 +8,20 @@ import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.identity.DefaultIdentity;
-import no.kantega.security.api.impl.xmluser.XMLConfigurable;
+import no.kantega.security.api.impl.xmluser.XMLManagerConfigurable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.apache.xpath.XPathAPI;
 
 import javax.xml.transform.TransformerException;
-import java.util.StringTokenizer;
 
 /**
  * User: Anders Skar, Kantega AS
  * Date: Jun 4, 2007
  * Time: 4:16:34 PM
  */
-public class XMLUserProfileManager extends XMLConfigurable implements ProfileManager {
+public class XMLUserProfileManagerManager extends XMLManagerConfigurable implements ProfileManager {
     private static final String USERNAME_ATTRIBUTE = "username";
     private static final String EMAIL_ATTRIBUTE = "email";
     private static final String DEPARTMENT_ATTRIBUTE = "department";
@@ -70,7 +69,7 @@ public class XMLUserProfileManager extends XMLConfigurable implements ProfileMan
     }
 
     public Profile getProfileForUser(Identity identity) throws SystemException {
-        if (identity.getDomain().equalsIgnoreCase(domain)) {
+        if (!identity.getDomain().equalsIgnoreCase(domain)) {
             return null;
         }
 
@@ -104,5 +103,26 @@ public class XMLUserProfileManager extends XMLConfigurable implements ProfileMan
     public boolean userHasProfile(Identity identity) throws SystemException {
         Profile p = getProfileForUser(identity);
         return p != null;
+    }
+
+    public static void main(String[] args) {
+        XMLUserProfileManagerManager manager = new XMLUserProfileManagerManager();
+        manager.setDomain("mydomain");
+        manager.setXmlUsersFilename("/usr/local/tomcat5.0/conf/tomcat-users.xml");
+
+        DefaultIdentity identity = new DefaultIdentity();
+        identity.setDomain("mydomain");
+        identity.setUserId("admin");
+        try {
+            Profile profile = manager.getProfileForUser(identity);
+            if (profile != null) {
+                System.out.println("Givenname:" + profile.getGivenName());
+            } else {
+                System.out.println("Profile == null");
+            }
+
+        } catch (SystemException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 }

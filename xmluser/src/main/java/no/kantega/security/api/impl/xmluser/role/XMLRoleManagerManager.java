@@ -1,6 +1,6 @@
  package no.kantega.security.api.impl.xmluser.role;
 
-import no.kantega.security.api.impl.xmluser.XMLConfigurable;
+import no.kantega.security.api.impl.xmluser.XMLManagerConfigurable;
 import no.kantega.security.api.role.RoleManager;
 import no.kantega.security.api.role.Role;
 import no.kantega.security.api.role.RoleId;
@@ -27,7 +27,7 @@ import javax.xml.transform.TransformerException;
  * Date: Jun 5, 2007
  * Time: 9:48:30 AM
  */
-public class XMLRoleManager extends XMLConfigurable implements RoleManager {
+public class XMLRoleManagerManager extends XMLManagerConfigurable implements RoleManager {
     private static final String ROLES_MEMBER_ATTRIBUTE = "roles";
     private static final String ROLEID_ATTRIBUTE = "rolename";
     private static final String ROLENAME_ATTRIBUTE = "description";

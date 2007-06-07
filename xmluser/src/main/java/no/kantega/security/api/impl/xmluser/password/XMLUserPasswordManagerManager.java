@@ -3,7 +3,7 @@ package no.kantega.security.api.impl.xmluser.password;
 import no.kantega.security.api.password.PasswordManager;
 import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.common.SystemException;
-import no.kantega.security.api.impl.xmluser.XMLConfigurable;
+import no.kantega.security.api.impl.xmluser.XMLManagerConfigurable;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,10 +16,10 @@ import javax.xml.transform.TransformerException;
  * Date: Jun 4, 2007
  * Time: 3:21:18 PM
  */
-public class XMLUserPasswordManager extends XMLConfigurable implements PasswordManager{
+public class XMLUserPasswordManagerManager extends XMLManagerConfigurable implements PasswordManager{
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
-        if (identity.getDomain().equalsIgnoreCase(domain)) {
+        if (!identity.getDomain().equalsIgnoreCase(domain)) {
             return false;
         }
 

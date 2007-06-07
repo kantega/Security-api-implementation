@@ -14,13 +14,13 @@
     </bean>
 
 
-    <bean id="xmluserProfileManager" class="no.kantega.security.api.impl.xmluser.profile.XMLUserProfileManager" parent="xmlUserConfigurable">
+    <bean id="xmluserProfileManager" class="no.kantega.security.api.impl.xmluser.profile.XMLUserProfileManagerManager" parent="xmlUserConfigurable">
     </bean>
 
     <bean id="xmluserRoleManager" class="no.kantega.security.api.impl.xmluser.role.XMLUserRoleManager" parent="xmlUserConfigurable">
     </bean>
 
-    <bean id="xmluserPasswordManager" class="no.kantega.security.api.impl.xmluser.password.XMLUserPasswordManager" parent="xmlUserConfigurable">
+    <bean id="xmluserPasswordManager" class="no.kantega.security.api.impl.xmluser.password.XMLUserPasswordManagerManager" parent="xmlUserConfigurable">
     </bean>
 
     <bean id="xmluserIdentityResolver" class="no.kantega.security.api.identity.DefaultIdentityResolver">
