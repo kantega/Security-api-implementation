@@ -27,7 +27,7 @@ import javax.xml.transform.TransformerException;
  * Date: Jun 5, 2007
  * Time: 9:48:30 AM
  */
-public class XMLRoleManagerManager extends XMLManagerConfigurable implements RoleManager {
+public class XMLRoleManager extends XMLManagerConfigurable implements RoleManager {
     private static final String ROLES_MEMBER_ATTRIBUTE = "roles";
     private static final String ROLEID_ATTRIBUTE = "rolename";
     private static final String ROLENAME_ATTRIBUTE = "description";

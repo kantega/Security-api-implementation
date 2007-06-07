@@ -21,7 +21,7 @@ import javax.xml.transform.TransformerException;
  * Date: Jun 4, 2007
  * Time: 4:16:34 PM
  */
-public class XMLUserProfileManagerManager extends XMLManagerConfigurable implements ProfileManager {
+public class XMLUserProfileManager extends XMLManagerConfigurable implements ProfileManager {
     private static final String USERNAME_ATTRIBUTE = "username";
     private static final String EMAIL_ATTRIBUTE = "email";
     private static final String DEPARTMENT_ATTRIBUTE = "department";
@@ -106,7 +106,7 @@ public class XMLUserProfileManagerManager extends XMLManagerConfigurable impleme
     }
 
     public static void main(String[] args) {
-        XMLUserProfileManagerManager manager = new XMLUserProfileManagerManager();
+        XMLUserProfileManager manager = new XMLUserProfileManager();
         manager.setDomain("mydomain");
         manager.setXmlUsersFilename("/usr/local/tomcat5.0/conf/tomcat-users.xml");
 

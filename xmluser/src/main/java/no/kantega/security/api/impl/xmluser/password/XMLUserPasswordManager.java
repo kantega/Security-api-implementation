@@ -16,7 +16,7 @@ import javax.xml.transform.TransformerException;
  * Date: Jun 4, 2007
  * Time: 3:21:18 PM
  */
-public class XMLUserPasswordManagerManager extends XMLManagerConfigurable implements PasswordManager{
+public class XMLUserPasswordManager extends XMLManagerConfigurable implements PasswordManager{
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
         if (!identity.getDomain().equalsIgnoreCase(domain)) {
