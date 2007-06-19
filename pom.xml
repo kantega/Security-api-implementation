@@ -28,24 +28,24 @@
 
     <repositories>
         <repository>
-            <id>sunsite.dk</id>
-            <url>http://mirrors.sunsite.dk/maven2</url>
+            <id>maven.org</id>
+            <url>http://repo1.maven.org/maven/</url>
         </repository>
         <repository>
             <id>subversion</id>
             <name>Kantega Maven Repository</name>
-            <url>http://subversion.mogul.no/maven2/external</url>
+            <url>http://maven.mogul.no/maven2/external</url>
         </repository>
         <repository>
             <id>subversioninternal</id>
             <name>Kantega Internal Maven Repository</name>
-            <url>http://subversion.mogul.no/maven2/internal</url>
+            <url>http://maven.mogul.no/maven2/internal</url>
         </repository>
 
         <repository>
             <id>subversion2</id>
             <name>Kantega Maven Legacy Repository</name>
-            <url>http://subversion.mogul.no/maven</url>
+            <url>http://maven.mogul.no/maven/</url>
             <layout>legacy</layout>
         </repository>
 
