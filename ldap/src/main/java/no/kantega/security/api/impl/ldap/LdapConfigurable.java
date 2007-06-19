@@ -22,6 +22,8 @@ public class LdapConfigurable {
     protected String objectClassRoles = "group";
     protected String searchBaseRoles = "";
 
+    protected String objectClassOrgUnits = "organizationalUnit";
+
     protected String usernameAttribute = "sAMAccountName";
     protected String givenNameAttribute = "givenName";
     protected String surnameAttribute = "sn";
