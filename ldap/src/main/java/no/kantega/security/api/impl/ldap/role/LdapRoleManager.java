@@ -196,6 +196,10 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
                         if (rolesDN.size() > 1 && i == 0) {
                             roleRoleFilter += "(|";
                         }
+
+                        // This is necessary to handle \ in DN
+                        dn = dn.replaceAll("\\\\", "\\\\\\\\");
+
                         roleRoleFilter += "(" + roleMemberAttribute + "=" + dn + ")";
                         if (rolesDN.size() > 1 && i == rolesDN.size() - 1) {
                             roleRoleFilter += ")";
