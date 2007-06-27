@@ -38,6 +38,9 @@
         <property name="loginPageUrl">
             <value>${security.login.url}</value>
         </property>
+        <property name="useTransportSecurity">
+            <value>${security.login.usessl}</value>
+        </property>        
     </bean>
 
     <bean id="dbuserRealm" class="no.kantega.publishing.security.realm.SecurityRealm">
