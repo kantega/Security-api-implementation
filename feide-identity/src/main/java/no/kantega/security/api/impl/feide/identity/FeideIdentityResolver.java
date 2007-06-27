@@ -10,6 +10,7 @@ import java.net.URLDecoder;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
+import java.util.Enumeration;
 
 import com.iplanet.sso.SSOTokenManager;
 import com.iplanet.sso.SSOException;
@@ -31,6 +32,7 @@ public class FeideIdentityResolver implements IdentityResolver {
     private String logoutPageUrl = "";
     private String cookieName = "iPlanetDirectoryPro";
     private String usernameAttribute = "eduPersonPrincipalName";
+
 
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
@@ -74,6 +76,8 @@ public class FeideIdentityResolver implements IdentityResolver {
                         identity = new DefaultAuthenticatedIdentity(this);
                         identity.setRawAttributes(rawAttributes);
                         identity.setUserId(userId);
+                    } else {
+                        System.out.println(SOURCE + ": UserId not found, looking for:" + userId);
                     }
                 }
             } catch (SSOException e) {
