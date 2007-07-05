@@ -44,7 +44,7 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
         }
 
         if (rolename != null) {
-            rolename = removeChars(rolename);
+            rolename = escapeChars(rolename);
             if (rolename.length() > 0) {
                 filter += "(" + orgUnitNameAttribute + "=" + rolename + "*)";
             }
@@ -105,7 +105,10 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
                 filter += "(objectclass=" + objectClassOrgUnits + ")";
             }
 
-            filter += "(" + orgUnitKeyAttribute + "=" + roleId.getId() + ")";
+            String id = roleId.getId();
+            id = escapeChars(id);
+
+            filter += "(" + orgUnitKeyAttribute + "=" + id + ")";
 
             filter += ")";
             LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[]{orgUnitKeyAttribute, orgUnitNameAttribute, "objectClass"}, false, constraints);
