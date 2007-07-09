@@ -68,7 +68,7 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
 
     public boolean userHasRole(Identity identity, String role) throws SystemException {
         // TODO: Skal man kunne spørre etter rollenavn eller rolleid ?
-        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserrole2user WHERE RoleId IN (SELECT RoleId FROM dbuserrole WHERE RoleName = ?) AND UserId = ? AND Domain = ?",
+        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserrole2user WHERE RoleId IN (SELECT RoleId FROM dbuserrole WHERE RoleName = ?) AND UserId = ? AND UserDomain = ?",
                 new Object[] {role, identity.getUserId(), identity.getDomain()} );
 
         return antall > 0;
