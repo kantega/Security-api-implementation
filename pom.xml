@@ -3,11 +3,11 @@
     <groupId>no.kantega.security.api.impl</groupId>
     <artifactId>securityapi-impl</artifactId>
     <packaging>pom</packaging>
-    <version>1.05-SNAPSHOT</version>
+    <version>1.05</version>
     <name>Implementation of security-api</name>
     <url>http://kantega.no</url>
     <scm>
-        <connection>scm:svn:https://subversion.mogul.no/svn/aksess/projects/security-api-impl/trunk/</connection>
+        <connection>scm:svn:https://subversion.mogul.no/svn/aksess/projects/security-api-impl/tags/securityapi-impl-1.05</connection>
     </scm>
 
 <dependencies>
