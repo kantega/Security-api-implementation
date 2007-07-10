@@ -29,7 +29,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
 
         if (name == null) name = "";
 
-        name = removeChars(name).trim();
+        name = escapeChars(name).trim();
 
         if (name.length() < 3) {
             return searchResult;
@@ -54,8 +54,8 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
                     name2 = name.substring(name.lastIndexOf(" "), name.length()).trim();
                 }
 
-                name1 = removeChars(name1);
-                name2 = removeChars(name2);
+                name1 = escapeChars(name1);
+                name2 = escapeChars(name2);
 
                 if (name2.length() > 0) {
                     filter += "(" + givenNameAttribute + "=" + name1 + "*)(" + surnameAttribute + "=" + name2 + "*)";
@@ -107,13 +107,17 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
 
 
     public Profile getProfileForUser(Identity identity) throws SystemException {
+        if (!identity.getDomain().equals(domain)) {
+            return null;
+        }
+
         Profile profile = null;
 
         LDAPConnection c = new LDAPConnection();
 
         try {
             c.connect(host, port);
-            String filter = "";
+            String filter;
             if (objectClassUsers.length() > 0) {
                 filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
             } else {

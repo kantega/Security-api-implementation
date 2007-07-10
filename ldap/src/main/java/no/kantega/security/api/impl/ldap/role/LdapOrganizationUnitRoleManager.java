@@ -1,15 +1,12 @@
 package no.kantega.security.api.impl.ldap.role;
 
-import no.kantega.security.api.role.RoleManager;
-import no.kantega.security.api.role.Role;
-import no.kantega.security.api.role.RoleId;
-import no.kantega.security.api.role.DefaultRole;
+import no.kantega.security.api.impl.ldap.LdapConfigurable;
+import no.kantega.security.api.role.*;
+import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.identity.DefaultIdentity;
-import no.kantega.security.api.impl.ldap.LdapConfigurable;
-import no.kantega.security.api.common.SystemException;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,9 +15,15 @@ import java.util.ArrayList;
 import com.novell.ldap.*;
 
 /**
- * Henter roller fra LDAP ut i fra en grupppetankegang, dvs alle grupper (groups) blir en rolle
+ *
+ * Henter roller fra LDAP ut i fra en organisasjonstankegang, dvs alle organization units blir en rolle
+ *
  */
-public class LdapRoleManager extends LdapConfigurable implements RoleManager {
+public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements RoleManager {
+    private String orgUnitNameAttribute = "ou";
+    private String orgUnitKeyAttribute = "distinguishedName";
+
+
     private String domain = "";
 
     public Iterator getAllRoles() throws SystemException {
@@ -32,22 +35,22 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
         LDAPConnection c = new LDAPConnection();
 
         String filter = "";
-        if (objectClassRoles.length() > 0 && rolename != null && rolename.length() > 0) {
-            filter += "(&";    
+        if (objectClassOrgUnits.length() > 0 && rolename != null && rolename.length() > 0) {
+            filter += "(&";
         }
 
-        if (objectClassRoles.length() > 0) {
-            filter += "(objectclass=" + objectClassRoles + ")";
+        if (objectClassOrgUnits.length() > 0) {
+            filter += "(objectclass=" + objectClassOrgUnits + ")";
         }
 
         if (rolename != null) {
             rolename = escapeChars(rolename);
             if (rolename.length() > 0) {
-                filter += "(" + roleAttribute + "=" + rolename + "*)";
+                filter += "(" + orgUnitNameAttribute + "=" + rolename + "*)";
             }
         }
 
-        if (objectClassRoles.length() > 0 && rolename != null && rolename.length() > 0) {
+        if (objectClassOrgUnits.length() > 0 && rolename != null && rolename.length() > 0) {
             filter += ")";
         }
 
@@ -59,7 +62,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             ldapConstraints.setMaxResults(maxSearchResults);
             c.setConstraints(ldapConstraints);
 
-            LDAPSearchResults results = c.search(searchBaseRoles, LDAPConnection.SCOPE_SUB, filter, new String[]{roleAttribute, "member", "objectClass"}, false);
+            LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[]{orgUnitKeyAttribute, orgUnitNameAttribute, "objectClass"}, false);
             while (results.hasMore()) {
                 try {
                     searchResult.addResult(getRoleFromLDAPEntry(results.next()));
@@ -98,23 +101,17 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             c.setConstraints(constraints);
 
             String filter = "(&";
-            if (objectClassRoles.length() > 0) {
-                filter += "(objectclass=" + objectClassRoles + ")";
+            if (objectClassOrgUnits.length() > 0) {
+                filter += "(objectclass=" + objectClassOrgUnits + ")";
             }
 
             String id = roleId.getId();
-            id = escapeChars(id);                    
+            id = escapeChars(id);
 
-            filter += "(" + roleAttribute + "=" + id + ")";
+            filter += "(" + orgUnitKeyAttribute + "=" + id + ")";
 
             filter += ")";
-
-            String base = searchBaseAllRoles;
-            if (base == null || base.length() == 0) {
-                base = searchBaseRoles;
-            }
-
-            LDAPSearchResults results = c.search(base, LDAPConnection.SCOPE_SUB, filter, new String[]{roleAttribute, "member", "objectClass"}, false, constraints);
+            LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[]{orgUnitKeyAttribute, orgUnitNameAttribute, "objectClass"}, false, constraints);
             if (results.hasMore()) {
                 try {
                     LDAPEntry entry = results.next();
@@ -139,7 +136,6 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
 
 
     public Iterator getRolesForUser(Identity identity) throws SystemException {
-
         List roles = new ArrayList();
         if (!identity.getDomain().equals(domain)) {
             return roles.iterator();
@@ -163,91 +159,26 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             if (user.hasMore()) {
                 LDAPEntry userEntry = user.next();
 
-                String key;
-                if (roleUserKey.equalsIgnoreCase(ROLE_USER_KEY_DN)) {
-                    key = userEntry.getDN();
-                } else {
-                    key = getValue(userEntry, roleUserKey);
-                }
+                String dn = userEntry.getDN();
+                String[] orgUnits = dn.split(",");
 
-                key = escapeChars(key);
+                String orgUnitId = "";
+                for (int i = 0; i < orgUnits.length; i++) {
+                    if (i == 0) {
+                        orgUnitId = orgUnits[orgUnits.length - (i+1)];
+                    } else {
+                        orgUnitId = orgUnits[orgUnits.length - (i+1)] + "," + orgUnitId;
+                    }
 
-                String rolesFilter;
-                if (objectClassRoles.length() > 0) {
-                    rolesFilter = "(&(objectclass=" + objectClassRoles + ")(" + roleMemberAttribute + "=" + key + "))";
-                } else {
-                    rolesFilter = "(" + roleMemberAttribute + "=" + key + ")";
-                }
+                    DefaultRoleId roleId = new DefaultRoleId();
+                    roleId.setDomain(domain);
+                    roleId.setId(orgUnitId);
 
-                List rolesDN = new ArrayList();
-
-                // Finn roller som brukeren er gitt direkte tilgang til
-                String base = searchBaseAllRoles;
-                if (base == null || base.length() == 0) {
-                    base = searchBaseRoles;
-                }
-
-                LDAPSearchResults resultsRoles = c.search(base, LDAPConnection.SCOPE_SUB, rolesFilter, new String[]{roleAttribute, roleMemberAttribute, "objectClass"}, false);
-                while (resultsRoles.hasMore()) {
-                    try {
-                        LDAPEntry entry = resultsRoles.next();
-                        rolesDN.add(entry.getDN());
-                        Role role = getRoleFromLDAPEntry(entry);
+                    Role role = getRoleById(roleId);
+                    if (role != null) {
                         roles.add(role);
-
-                        // Find roles contained in role
-                    } catch (LDAPReferralException l) {
-                        // Ignore LDAPReferralException
                     }
                 }
-
-                // Finn roller i roller
-                if (rolesDN.size() > 0) {
-                    String roleRoleFilter = "(&";
-                    if (objectClassRoles.length() > 0) {
-                        roleRoleFilter += "(objectclass=" + objectClassRoles + ")";
-                    }
-
-                    for (int i = 0; i < rolesDN.size(); i++) {
-                        String dn = (String) rolesDN.get(i);
-                        if (rolesDN.size() > 1 && i == 0) {
-                            roleRoleFilter += "(|";
-                        }
-
-                        dn = escapeChars(dn);
-
-                        roleRoleFilter += "(" + roleMemberAttribute + "=" + dn + ")";
-                        if (rolesDN.size() > 1 && i == rolesDN.size() - 1) {
-                            roleRoleFilter += ")";
-                        }
-                    }
-
-                    roleRoleFilter += ")";
-
-                    LDAPSearchResults resultsRoleRoles = c.search(base, LDAPConnection.SCOPE_SUB, roleRoleFilter, new String[]{roleAttribute, roleMemberAttribute, "objectClass"}, false);
-                    while (resultsRoleRoles.hasMore()) {
-                        try {
-                            LDAPEntry entry = resultsRoleRoles.next();
-                            Role role = getRoleFromLDAPEntry(entry);
-                            boolean userHasRole = false;
-                            for (int i = 0; i < roles.size(); i++) {
-                                Role tmp = (Role)roles.get(i);
-                                if (role.getId().equals(tmp.getId())) {
-                                    userHasRole = true;
-                                    break;
-                                }
-                            }
-
-                            if (!userHasRole) {
-                                // Bruker har ikke rolle, legg til den
-                                roles.add(role);
-                            }
-                        } catch (LDAPReferralException l) {
-                            // Ignore LDAPReferralException
-                        }
-                    }
-                }
-
             }
         } catch (Exception e) {
              throw new SystemException("Feil ved lesing av LDAP directory", e);
@@ -281,11 +212,12 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
 
 
     private Role getRoleFromLDAPEntry(LDAPEntry entry) {
-        String roleId = getValue(entry, roleAttribute);
+        String roleId = getValue(entry, orgUnitKeyAttribute);
+        String roleName = getValue(entry, orgUnitNameAttribute);
 
         DefaultRole role = new DefaultRole();
         role.setId(roleId);
-        role.setName(roleId);
+        role.setName(roleName);
         role.setDomain(domain);
         return role;
     }
@@ -297,8 +229,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
 
     public static void main(String[] args) {
         try {
-
-            LdapRoleManager manager = new LdapRoleManager();
+            LdapOrganizationUnitRoleManager manager = new LdapOrganizationUnitRoleManager();
             manager.setAdminUser("ad@mogul.no");
             manager.setAdminPassword("Tzg5hh4Vf");
             manager.setDomain("mogul");
@@ -307,7 +238,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
 
             DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("aksess1");
+            andska.setUserId("aksess2");
             andska.setDomain("mogul");
 
             Iterator roles = manager.getRolesForUser(andska);
@@ -321,3 +252,4 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
         }
     }
 }
+
