@@ -136,12 +136,14 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
 
 
     public Iterator getRolesForUser(Identity identity) throws SystemException {
-
         List roles = new ArrayList();
+        if (!identity.getDomain().equals(domain)) {
+            return roles.iterator();
+        }
 
         LDAPConnection c = new LDAPConnection();
 
-        String userFilter = "";
+        String userFilter;
         if (objectClassUsers.length() > 0) {
             userFilter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
         } else {
@@ -194,6 +196,10 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
 
 
     public boolean userHasRole(Identity identity, String roleId) throws SystemException {
+        if (!identity.getDomain().equals(domain)) {
+            return false;
+        }
+
         Iterator it = getRolesForUser(identity);
         while (it.hasNext()) {
             Role role = (Role)it.next();

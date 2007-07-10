@@ -107,13 +107,17 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
 
 
     public Profile getProfileForUser(Identity identity) throws SystemException {
+        if (!identity.getDomain().equals(domain)) {
+            return null;
+        }
+
         Profile profile = null;
 
         LDAPConnection c = new LDAPConnection();
 
         try {
             c.connect(host, port);
-            String filter = "";
+            String filter;
             if (objectClassUsers.length() > 0) {
                 filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
             } else {

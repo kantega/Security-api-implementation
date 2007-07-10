@@ -141,10 +141,13 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
     public Iterator getRolesForUser(Identity identity) throws SystemException {
 
         List roles = new ArrayList();
+        if (!identity.getDomain().equals(domain)) {
+            return roles.iterator();
+        }
 
         LDAPConnection c = new LDAPConnection();
 
-        String userFilter = "";
+        String userFilter;
         if (objectClassUsers.length() > 0) {
             userFilter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
         } else {
@@ -160,7 +163,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             if (user.hasMore()) {
                 LDAPEntry userEntry = user.next();
 
-                String key = "";
+                String key;
                 if (roleUserKey.equalsIgnoreCase(ROLE_USER_KEY_DN)) {
                     key = userEntry.getDN();
                 } else {
@@ -169,7 +172,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
 
                 key = escapeChars(key);
 
-                String rolesFilter = "";
+                String rolesFilter;
                 if (objectClassRoles.length() > 0) {
                     rolesFilter = "(&(objectclass=" + objectClassRoles + ")(" + roleMemberAttribute + "=" + key + "))";
                 } else {
@@ -262,6 +265,10 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
 
 
     public boolean userHasRole(Identity identity, String roleId) throws SystemException {
+        if (!identity.getDomain().equals(domain)) {
+            return false;
+        }
+
         Iterator it = getRolesForUser(identity);
         while (it.hasNext()) {
             Role role = (Role)it.next();
