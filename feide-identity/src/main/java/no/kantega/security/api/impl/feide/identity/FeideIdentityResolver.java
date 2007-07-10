@@ -21,7 +21,7 @@ import com.iplanet.sso.SSOToken;
  * Date: May 21, 2007
  * Time: 2:02:43 PM
  */
-public class FeideIdentityResolver implements IdentityResolver {
+public class  FeideIdentityResolver implements IdentityResolver {
     public static String SESSION_IDENTITY_NAME = "KANTEGA_FEIDE_IDENTITY";
     private static String SOURCE = "FeideIdentityResolver";
 
@@ -59,16 +59,18 @@ public class FeideIdentityResolver implements IdentityResolver {
         }
 
         if (tokenId != null) {
-            System.out.println(SOURCE + ": Got tokenId");
-
             SSOToken ssoToken = null;
 
             try {
                 ssoToken = manager.createSSOToken(tokenId);
+            } catch (SSOException e) {
+                // Probably old session cookie
+                e.printStackTrace();
+                return null;
+            }
 
+            try {
                 if (ssoToken != null && manager.isValidToken(ssoToken)) {
-                    System.out.println(SOURCE + ": Got valid token");
-
                     // Bruker er logget inn med gyldig token
                     Properties rawAttributes = getAttributes(ssoToken);
                     String userId = rawAttributes.getProperty(usernameAttribute);
@@ -77,7 +79,7 @@ public class FeideIdentityResolver implements IdentityResolver {
                         identity.setRawAttributes(rawAttributes);
                         identity.setUserId(userId);
                     } else {
-                        System.out.println(SOURCE + ": UserId not found, looking for:" + userId);
+                        System.err.println(SOURCE + ": UserId attribute :" + userId + " not found in data sent from Feide. Check config and contact Feide.");
                     }
                 }
             } catch (SSOException e) {
@@ -87,8 +89,6 @@ public class FeideIdentityResolver implements IdentityResolver {
                 e.printStackTrace();
                 throw new IdentificationFailedException(SOURCE, "UnsupportedEncodingException:" + e);
             }
-        } else {
-            System.out.println(SOURCE + ": No tokenid");
         }
 
         return identity;
@@ -124,22 +124,8 @@ public class FeideIdentityResolver implements IdentityResolver {
             session.removeAttribute(authenticationContext + SESSION_IDENTITY_NAME);
         }
 
-        String targetUrl = "/";
-        if (logoutContext.getTargetUri() != null) {
-            targetUrl = logoutContext.getTargetUri().toASCIIString();
-            targetUrl = targetUrl.replaceAll("<", "");
-            targetUrl = targetUrl.replaceAll(">", "");
-        }
-
-        String redirectUrl;
-        if (logoutPageUrl.indexOf("?") > 0) {
-            redirectUrl = logoutPageUrl + "&redirect=";
-        } else {
-            redirectUrl = logoutPageUrl + "?redirect=";
-        }
-
         try {
-            logoutContext.getResponse().sendRedirect(redirectUrl + URLEncoder.encode(targetUrl, "UTF-8"));
+            logoutContext.getResponse().sendRedirect(logoutPageUrl);
         } catch (IOException e) {
             //
         }
