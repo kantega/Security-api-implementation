@@ -67,27 +67,29 @@ public class DbUserProfileUpdateManager extends JdbcDaoSupport implements Profil
 
         // Lagre attributter
         Properties p = profile.getRawAttributes();
-        Enumeration propertyNames = p.propertyNames();
-        while (propertyNames.hasMoreElements()) {
-            String name =  (String)propertyNames.nextElement();
-            String value = p.getProperty(name);
-            if (value == null) value = "";
+        if (p != null) {
+            Enumeration propertyNames = p.propertyNames();
+            while (propertyNames.hasMoreElements()) {
+                String name =  (String)propertyNames.nextElement();
+                String value = p.getProperty(name);
+                if (value == null) value = "";
 
-            int antallA = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserattributes WHERE Domain = ? AND UserId = ? AND Name = ?", new Object[] {identity.getDomain(), identity.getUserId(), name});
-            if (antallA > 0) {
-                if (value.length() == 0) {
-                    // Slett property
-                    getJdbcTemplate().update("DELETE FROM dbuserattributes WHERE Domain = ? AND UserId = ? AND Name = ?", new Object[] {identity.getDomain(), identity.getUserId(), name});
+                int antallA = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserattributes WHERE Domain = ? AND UserId = ? AND Name = ?", new Object[] {identity.getDomain(), identity.getUserId(), name});
+                if (antallA > 0) {
+                    if (value.length() == 0) {
+                        // Slett property
+                        getJdbcTemplate().update("DELETE FROM dbuserattributes WHERE Domain = ? AND UserId = ? AND Name = ?", new Object[] {identity.getDomain(), identity.getUserId(), name});
+                    } else {
+                        // Oppdater
+                        Object[] param = { value, identity.getDomain(), identity.getUserId(), name };
+                        getJdbcTemplate().update("UPDATE dbuserattributes SET Value = ? WHERE Domain = ? AND UserId = ? AND Name = ?", param);
+                    }
                 } else {
-                    // Oppdater
-                    Object[] param = { value, identity.getDomain(), identity.getUserId(), name };
-                    getJdbcTemplate().update("UPDATE dbuserattributes SET Value = ? WHERE Domain = ? AND UserId = ? AND Name = ?", param);
-                }
-            } else {
-                // Finnes ikke fra før
-                if (value.length() > 0) {
-                    Object[] param = { identity.getDomain(), identity.getUserId(), name, value };
-                    getJdbcTemplate().update("INSERT INTO dbuserattributes (Domain, UserId, Name, Value) VALUES(?,?,?,?)", param);
+                    // Finnes ikke fra før
+                    if (value.length() > 0) {
+                        Object[] param = { identity.getDomain(), identity.getUserId(), name, value };
+                        getJdbcTemplate().update("INSERT INTO dbuserattributes (Domain, UserId, Name, Value) VALUES(?,?,?,?)", param);
+                    }
                 }
             }
         }

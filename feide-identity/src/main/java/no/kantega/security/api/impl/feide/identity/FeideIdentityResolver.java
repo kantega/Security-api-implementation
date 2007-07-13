@@ -10,7 +10,6 @@ import java.net.URLDecoder;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
-import java.util.Enumeration;
 
 import com.iplanet.sso.SSOTokenManager;
 import com.iplanet.sso.SSOException;
@@ -29,7 +28,7 @@ public class  FeideIdentityResolver implements IdentityResolver {
     private String authenticationContextDescription = "FeideID";
     private String authenticationContextIconUrl = "";
     private String loginPageUrl = "";
-    private String logoutPageUrl = "";
+    private String logoutPageUrl = "https://sam.feide.no/amserver/saml2/jsp/idpSingleLogoutInit.jsp?binding=urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect";
     private String cookieName = "iPlanetDirectoryPro";
     private String usernameAttribute = "eduPersonPrincipalName";
 
@@ -110,7 +109,6 @@ public class  FeideIdentityResolver implements IdentityResolver {
         }
 
         try {
-            System.out.println(SOURCE + ": Send redirect to: " + redirectUrl);
             loginContext.getResponse().sendRedirect(redirectUrl + URLEncoder.encode(targetUrl, "UTF-8"));
         } catch (IOException e) {
             //
@@ -158,7 +156,6 @@ public class  FeideIdentityResolver implements IdentityResolver {
 
 
     private Properties getAttributes(SSOToken ssoToken) throws SSOException, UnsupportedEncodingException {
-
         Properties properties = new Properties();
 
         String[] names = AttributeManager.getAvailableAttributes(ssoToken);
@@ -173,12 +170,8 @@ public class  FeideIdentityResolver implements IdentityResolver {
                     }
                     value.append(values[j]);
                 }
-
-                System.out.println(SOURCE + ": adding:" + names[i] + ":" + value.toString());
-
                 properties.setProperty(names[i], value.toString());
             }
-
         }
 
         return properties;

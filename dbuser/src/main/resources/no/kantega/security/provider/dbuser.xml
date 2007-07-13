@@ -13,7 +13,25 @@
         </property>
     </bean>
 
+    <bean id="dbuserProfileUpdateManager" class="no.kantega.security.api.impl.dbuser.profile.DbUserProfileUpdateManager">
+        <property name="dataSource">
+            <ref bean="aksessDataSource"/>
+        </property>
+        <property name="domain">
+            <value>${security.dbuser.domain}</value>
+        </property>
+    </bean>
+
     <bean id="dbuserRoleManager" class="no.kantega.security.api.impl.dbuser.role.DbUserRoleManager">
+        <property name="dataSource">
+            <ref bean="aksessDataSource"/>
+        </property>
+        <property name="domain">
+            <value>${security.dbuser.domain}</value>
+        </property>
+    </bean>
+
+    <bean id="dbuserRoleUpdateManager" class="no.kantega.security.api.impl.dbuser.role.DbUserRoleUpdateManager">
         <property name="dataSource">
             <ref bean="aksessDataSource"/>
         </property>
@@ -43,6 +61,7 @@
         </property>        
     </bean>
 
+    <!-- Sikkerhetsrealm for Aksess -->
     <bean id="dbuserRealm" class="no.kantega.publishing.security.realm.SecurityRealm">
         <property name="profileManager">
             <ref bean="dbuserProfileManager"/>
@@ -57,4 +76,21 @@
             <ref bean="dbuserIdentityResolver"/>
         </property>
     </bean>
+
+    <!-- Konfigurasjon for brukeradministrasjon -->
+    <bean id="dbuserProfileConfiguration" class="no.kantega.useradmin.model.ProfileManagementConfiguration">
+        <property name="description" value="DB - Aksess"/>
+        <property name="domain" value="${security.dbuser.domain}"/>
+        <property name="profileManager" ref="dbuserProfileManager"/>
+        <property name="profileUpdateManager" ref="dbuserProfileUpdateManager"/>
+        <property name="passwordManager" ref="dbuserPasswordManager"/>
+    </bean>
+
+    <bean id="dbuserRoleConfiguration" class="no.kantega.useradmin.model.RoleManagementConfiguration">
+        <property name="description" value="DB - Aksess"/>
+        <property name="domain" value="dbuser"/>
+        <property name="roleManager" ref="dbuserRoleManager"/>
+        <property name="roleUpdateManager" ref="dbuserRoleUpdateManager"/>
+    </bean>
+
 </beans>

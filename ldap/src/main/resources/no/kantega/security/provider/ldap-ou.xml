@@ -60,6 +60,7 @@
         </property>
     </bean>
 
+    <!-- Sikkerhetsrealm for Aksess -->
     <bean id="ldapRealm" class="no.kantega.publishing.security.realm.SecurityRealm">
         <property name="profileManager">
             <ref bean="ldapProfileManager"/>
@@ -73,5 +74,18 @@
         <property name="identityResolver">
             <ref bean="ldapIdentityResolver"/>
         </property>
+    </bean>
+
+    <!-- Konfigurasjon for brukeradministrasjon -->
+    <bean id="ldapProfileConfiguration" class="no.kantega.useradmin.model.ProfileManagementConfiguration">
+        <property name="description" value="LDAP/AD - interne brukere"/>
+        <property name="domain" value="${security.ldap.domain}"/>
+        <property name="profileManager" ref="ldapProfileManager"/>
+    </bean>
+
+    <bean id="ldapRoleConfiguration" class="no.kantega.useradmin.model.RoleManagementConfiguration">
+        <property name="description" value="LDAP/AD - interne roller"/>
+        <property name="domain" value="${security.ldap.domain}"/>
+        <property name="roleManager" ref="ldapCompoundManager"/>
     </bean>
 </beans>
