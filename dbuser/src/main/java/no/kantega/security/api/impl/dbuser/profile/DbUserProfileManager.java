@@ -65,7 +65,6 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
         }
 
         List profiles = getJdbcTemplate().query("SELECT * FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()}, new UserProfileRowMapper());
-        System.out.println("Finner profiler:" + profiles.size() + " for id: " + identity.getDomain() + "/" + identity.getUserId());
         if (profiles != null && profiles.size() == 1) {
             DefaultProfile p = (DefaultProfile)profiles.get(0);
 

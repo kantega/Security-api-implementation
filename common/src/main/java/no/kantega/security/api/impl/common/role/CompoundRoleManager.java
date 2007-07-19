@@ -92,6 +92,23 @@ public class CompoundRoleManager extends CompoundManagerConfigurable implements 
         return totalResult.iterator();
     }
 
+    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
+        List totalResult = new ArrayList();
+        for (int i = 0; i < managers.size(); i++) {
+            RoleManager rm = (RoleManager)managers.get(i);
+            Iterator it = rm.getUsersWithRole(roleId);
+            if (it != null) {
+                while (it.hasNext()) {
+                    totalResult.add(it.next());
+                }
+            }
+        }
+
+        // Ikke noe poeng i å sortere ettersom dette bare er brukerider...
+
+        return totalResult.iterator();
+    }
+
     public boolean userHasRole(Identity identity, String role) throws SystemException {
         for (int i = 0; i < managers.size(); i++) {
             RoleManager rm = (RoleManager)managers.get(i);

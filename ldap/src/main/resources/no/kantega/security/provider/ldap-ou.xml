@@ -2,8 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
-    <!-- LDAP configuration -->
+    <!-- LDAP OU configuration -->
     <bean id="ldapConfigurable" abstract="true">
         <property name="adminUser">
             <value>${security.ldap.adminuser}</value>
@@ -31,6 +30,21 @@
     <bean id="ldapRoleManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.role.LdapRoleManager">
     </bean>
 
+    <bean id="ldapOuRoleManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.role.LdapOrganizationUnitRoleManager">
+    </bean>
+
+    <bean id="ldapCompoundManager" class="no.kantega.security.api.impl.common.role.CompoundRoleManager">
+        <property name="domain">
+            <value>${security.ldap.domain}</value>
+        </property>
+        <property name="managers">
+            <list>
+                <ref bean="ldapRoleManager"/>
+                <ref bean="ldapOuRoleManager"/>
+            </list>
+        </property>
+    </bean>
+
     <bean id="ldapPasswordManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.password.LdapPasswordManager">
     </bean>
 
@@ -52,7 +66,7 @@
             <ref bean="ldapProfileManager"/>
         </property>
         <property name="roleManager">
-            <ref bean="ldapRoleManager"/>
+            <ref bean="ldapCompoundManager"/>
         </property>
         <property name="passwordManager">
             <ref bean="ldapPasswordManager"/>
@@ -72,7 +86,6 @@
     <bean id="ldapRoleConfiguration" class="no.kantega.useradmin.model.RoleManagementConfiguration">
         <property name="description" value="LDAP/AD - interne roller"/>
         <property name="domain" value="${security.ldap.domain}"/>
-        <property name="roleManager" ref="ldapRoleManager"/>
+        <property name="roleManager" ref="ldapCompoundManager"/>
     </bean>
-
 </beans>
