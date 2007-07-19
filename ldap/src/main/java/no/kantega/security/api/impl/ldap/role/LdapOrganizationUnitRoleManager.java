@@ -195,6 +195,82 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
     }
 
 
+    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
+        List users = new ArrayList();
+
+        if (!roleId.getDomain().equals(domain)) {
+            return users.iterator();
+        }
+
+        LDAPConnection c = new LDAPConnection();
+
+        try {
+            c.connect(host, port);
+            c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
+            LDAPSearchConstraints constraints = new LDAPSearchConstraints();
+            constraints.setDereference(LDAPSearchConstraints.DEREF_ALWAYS);
+            c.setConstraints(constraints);
+
+            String filter = "(&";
+            if (objectClassOrgUnits.length() > 0) {
+                filter += "(objectclass=" + objectClassOrgUnits + ")";
+            }
+
+            String id = roleId.getId();
+            id = escapeChars(id);
+
+            filter += "(" + orgUnitKeyAttribute + "=" + id + ")";
+
+            filter += ")";
+            LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[]{orgUnitKeyAttribute, "objectClass"}, false, constraints);
+            if (results.hasMore()) {
+                try {
+                    LDAPEntry entry = results.next();
+                    String dn = entry.getDN();
+
+                    // Søk opp brukere innenfor denne delen av basen
+                    LDAPSearchConstraints ldapConstraints = new LDAPSearchConstraints();
+                    ldapConstraints.setMaxResults(maxSearchResults);
+                    c.setConstraints(ldapConstraints);
+
+                    String[] searchAttributes = new String[] {usernameAttribute};
+
+                    LDAPSearchResults usersResults = c.search(dn, LDAPConnection.SCOPE_SUB, "(objectclass=" + objectClassUsers + ")", searchAttributes, false);
+                    while (usersResults.hasMore()) {
+                        try {
+                            LDAPEntry userEntry = usersResults.next();
+                            String userId = getValue(userEntry, usernameAttribute);
+                            if (userId != null && !userId.endsWith("$")) {
+                                DefaultIdentity identity = new DefaultIdentity();
+                                identity.setUserId(userId);
+                                identity.setDomain(domain);
+                                users.add(identity);
+                            }
+
+                        } catch (LDAPReferralException l) {
+                            // Ignore LDAPReferralException
+                        }
+                    }
+
+
+                } catch (LDAPReferralException l) {
+                    // Ignore LDAPReferralException
+                }
+            }
+
+        } catch (LDAPException e) {
+             throw new SystemException("Feil ved lesing av LDAP directory", e);
+        } finally {
+            try {
+                c.disconnect();
+            } catch (LDAPException e) {
+                //
+            }
+        }
+        return users.iterator();
+    }
+
+
     public boolean userHasRole(Identity identity, String roleId) throws SystemException {
         if (!identity.getDomain().equals(domain)) {
             return false;
@@ -238,13 +314,24 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
             manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
 
             DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("aksess2");
+            andska.setUserId("aksess1");
             andska.setDomain("mogul");
 
             Iterator roles = manager.getRolesForUser(andska);
             while (roles.hasNext()) {
                 Role role =  (Role)roles.next();
-                System.out.println("Role:" + role.getName());
+                System.out.println("Role:" + role.getName() + "," + role.getId());
+            }
+
+
+            DefaultRoleId norway = new DefaultRoleId();
+            norway.setId("OU=Norway,DC=mogul,DC=no");
+            norway.setDomain("mogul");
+
+            Iterator users = manager.getUsersWithRole(norway);
+            while (users.hasNext()) {
+                Identity user =  (Identity)users.next();
+                System.out.println("UserId:" + user.getUserId());
             }
 
         } catch (Exception e) {

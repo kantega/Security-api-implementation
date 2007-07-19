@@ -105,7 +105,7 @@
 
     <properties>
         <springframework.version>1.2.8</springframework.version>
-        <securityapi.version>1.01</securityapi.version>
+        <securityapi.version>1.05</securityapi.version>
         <spring.webflow.version>1.0-ea</spring.webflow.version>
     </properties>
 

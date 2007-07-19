@@ -27,7 +27,6 @@ import java.util.Collections;
  * Time: 4:16:34 PM
  */
 public class XMLUserProfileManager extends XMLUserManagerConfigurable implements ProfileManager {
-    private static final String USERNAME_ATTRIBUTE = "username";
     private static final String EMAIL_ATTRIBUTE = "email";
     private static final String DEPARTMENT_ATTRIBUTE = "department";
 

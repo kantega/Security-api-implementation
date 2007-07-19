@@ -6,6 +6,8 @@ import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.identity.DefaultIdentity;
+import no.kantega.security.api.profile.DefaultProfile;
 
 import java.util.*;
 
@@ -118,7 +120,7 @@ public class XMLUserRoleManager extends XMLUserManagerConfigurable implements Ro
         if (userRoles != null && userRoles.length() > 0) {
             StringTokenizer tokens = new StringTokenizer(userRoles, ",");
             while (tokens.hasMoreTokens()) {
-                String id = tokens.nextToken();
+                String id = tokens.nextToken().trim();
                 DefaultRole role = new DefaultRole();
                 role.setDomain(domain);
                 role.setId(id);
@@ -128,6 +130,47 @@ public class XMLUserRoleManager extends XMLUserManagerConfigurable implements Ro
         }
 
         return roles.iterator();
+    }
+
+    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
+        List users = new ArrayList();
+
+        if (!roleId.getDomain().equalsIgnoreCase(domain)) {
+            return users.iterator();
+        }
+
+        Document usersdoc = null;
+        try {
+            usersdoc = getUserPasswordFileAsXMLDocument();
+        } catch (Exception e) {
+            throw new SystemException("Error opening XML users file:" + getXmlUsersFilename(), e);
+        }
+
+        try {
+            NodeList lstUsers = XPathAPI.selectNodeList(usersdoc.getDocumentElement(), "user");
+            for (int i = 0; i < lstUsers.getLength(); i++) {
+                Element elmUser = (Element)lstUsers.item(i);
+                String userRoles = elmUser.getAttribute(ROLES_MEMBER_ATTRIBUTE);
+                if (userRoles != null && userRoles.length() > 0) {
+                    StringTokenizer tokens = new StringTokenizer(userRoles, ",");
+                    while (tokens.hasMoreTokens()) {
+                        String id = tokens.nextToken().trim();
+                        if (id.equalsIgnoreCase(roleId.getId())) {
+                            DefaultIdentity identity = new DefaultIdentity();
+                            String username = elmUser.getAttribute(USERNAME_ATTRIBUTE);
+                            identity.setUserId(username);
+                            identity.setDomain(domain);
+                            users.add(identity);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new SystemException("Error processing XML users file:" + getXmlUsersFilename(), e);
+        }
+
+        return users.iterator();
     }
 
 

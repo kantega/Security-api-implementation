@@ -1,9 +1,6 @@
 package no.kantega.security.api.impl.ldap.role;
 
-import no.kantega.security.api.role.RoleManager;
-import no.kantega.security.api.role.Role;
-import no.kantega.security.api.role.RoleId;
-import no.kantega.security.api.role.DefaultRole;
+import no.kantega.security.api.role.*;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
@@ -263,6 +260,82 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
         return roles.iterator();
     }
 
+    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
+        List users = new ArrayList();
+
+        if (!roleId.getDomain().equals(domain)) {
+            return users.iterator();
+        }
+
+        LDAPConnection c = new LDAPConnection();
+
+        try {
+            c.connect(host, port);
+            c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
+            LDAPSearchConstraints constraints = new LDAPSearchConstraints();
+            constraints.setDereference(LDAPSearchConstraints.DEREF_ALWAYS);
+            c.setConstraints(constraints);
+
+            String filter = "(&";
+            if (objectClassOrgUnits.length() > 0) {
+                filter += "(objectclass=" + objectClassRoles + ")";
+            }
+
+            String id = roleId.getId();
+            id = escapeChars(id);
+
+            filter += "(" + roleAttribute + "=" + id + ")";
+
+            filter += ")";
+            LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[]{roleAttribute, "objectClass"}, false, constraints);
+            if (results.hasMore()) {
+                try {
+                    LDAPEntry entry = results.next();
+                    String roleDN = entry.getDN();
+
+                    // Søk opp brukere innenfor denne delen av basen
+                    LDAPSearchConstraints ldapConstraints = new LDAPSearchConstraints();
+                    ldapConstraints.setMaxResults(maxSearchResults);
+                    c.setConstraints(ldapConstraints);
+
+                    String usersFilter = "(&(objectclass=" + objectClassUsers + ")(" + roleMemberOfAttribute + "=" + roleDN + "))";
+                    String[] searchAttributes = new String[] {usernameAttribute};
+
+                    LDAPSearchResults usersResults = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, usersFilter, searchAttributes, false);
+                    while (usersResults.hasMore()) {
+                        try {
+                            LDAPEntry userEntry = usersResults.next();
+                            String userId = getValue(userEntry, usernameAttribute);
+                            if (userId != null && !userId.endsWith("$")) {
+                                DefaultIdentity identity = new DefaultIdentity();
+                                identity.setUserId(userId);
+                                identity.setDomain(domain);
+                                users.add(identity);
+                            }
+
+                        } catch (LDAPReferralException l) {
+                            // Ignore LDAPReferralException
+                        }
+                    }
+
+
+                } catch (LDAPReferralException l) {
+                    // Ignore LDAPReferralException
+                }
+            }
+
+        } catch (LDAPException e) {
+             throw new SystemException("Feil ved lesing av LDAP directory", e);
+        } finally {
+            try {
+                c.disconnect();
+            } catch (LDAPException e) {
+                //
+            }
+        }
+        return users.iterator();
+    }
+
 
     public boolean userHasRole(Identity identity, String roleId) throws SystemException {
         if (!identity.getDomain().equals(domain)) {
@@ -315,6 +388,17 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
                 Role role =  (Role)roles.next();
                 System.out.println("Role:" + role.getName());
             }
+
+            DefaultRoleId norway = new DefaultRoleId();
+            norway.setId("innholdsprodusent");
+            norway.setDomain("mogul");
+
+            Iterator users = manager.getUsersWithRole(norway);
+            while (users.hasNext()) {
+                Identity user =  (Identity)users.next();
+                System.out.println("UserId:" + user.getUserId());
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();

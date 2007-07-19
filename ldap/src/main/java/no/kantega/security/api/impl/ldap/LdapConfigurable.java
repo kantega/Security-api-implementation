@@ -33,6 +33,7 @@ public class LdapConfigurable {
 
     protected String roleAttribute = "cn";
     protected String roleMemberAttribute = "member";
+    protected String roleMemberOfAttribute = "memberOf";
 
     protected String roleUserKey = ROLE_USER_KEY_DN;
 
@@ -126,6 +127,10 @@ public class LdapConfigurable {
 
     public void setRoleMemberAttribute(String roleMemberAttribute) {
         this.roleMemberAttribute = roleMemberAttribute;
+    }
+
+    public void setRoleMemberOfAttribute(String roleMemberOfAttribute) {
+        this.roleMemberOfAttribute = roleMemberOfAttribute;
     }
 
     public void setRoleUserKey(String roleUserKey) {
