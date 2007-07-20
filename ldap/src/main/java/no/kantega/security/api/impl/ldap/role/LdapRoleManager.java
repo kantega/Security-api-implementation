@@ -7,10 +7,12 @@ import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.identity.DefaultIdentity;
 import no.kantega.security.api.impl.ldap.LdapConfigurable;
 import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.profile.ProfileComparator;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.novell.ldap.*;
 
@@ -56,14 +58,19 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             ldapConstraints.setMaxResults(maxSearchResults);
             c.setConstraints(ldapConstraints);
 
+            List roles = new ArrayList();
             LDAPSearchResults results = c.search(searchBaseRoles, LDAPConnection.SCOPE_SUB, filter, new String[]{roleAttribute, "member", "objectClass"}, false);
             while (results.hasMore()) {
                 try {
-                    searchResult.addResult(getRoleFromLDAPEntry(results.next()));
+                    roles.add(getRoleFromLDAPEntry(results.next()));
                 } catch (LDAPReferralException l) {
                     // Ignore LDAPReferralException
                 }
             }
+
+            // Sorter
+            Collections.sort(roles, new RoleComparator());
+            searchResult.setResults(roles);
 
         } catch (Exception e) {
              throw new SystemException("Feil ved lesing av LDAP directory", e);

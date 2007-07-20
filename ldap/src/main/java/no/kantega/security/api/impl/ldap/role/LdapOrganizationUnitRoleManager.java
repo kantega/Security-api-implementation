@@ -11,6 +11,7 @@ import no.kantega.security.api.identity.DefaultIdentity;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.novell.ldap.*;
 
@@ -62,14 +63,19 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
             ldapConstraints.setMaxResults(maxSearchResults);
             c.setConstraints(ldapConstraints);
 
+            List roles = new ArrayList();
             LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[]{orgUnitKeyAttribute, orgUnitNameAttribute, "objectClass"}, false);
             while (results.hasMore()) {
                 try {
-                    searchResult.addResult(getRoleFromLDAPEntry(results.next()));
+                    roles.add(getRoleFromLDAPEntry(results.next()));
                 } catch (LDAPReferralException l) {
                     // Ignore LDAPReferralException
                 }
             }
+
+            // Sorter
+            Collections.sort(roles, new RoleComparator());
+            searchResult.setResults(roles);
 
         } catch (Exception e) {
              throw new SystemException("Feil ved lesing av LDAP directory", e);
