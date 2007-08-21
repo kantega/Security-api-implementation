@@ -297,6 +297,27 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
         String roleId = getValue(entry, orgUnitKeyAttribute);
         String roleName = getValue(entry, orgUnitNameAttribute);
 
+        if ("distinguishedName".equalsIgnoreCase(orgUnitKeyAttribute)) {
+            String units[] = roleId.split(",");
+            int start = 0;
+            if (searchBaseUsers.length() > 0) {
+                String baseUnits[] = searchBaseUsers.split(",");
+                start = baseUnits.length;
+            }
+            if (units.length > start) {
+                roleName += " (";
+                for (int i = 0; i < units.length - start; i++) {
+                    if (i > 0) {
+                        roleName += " / ";
+                    }
+                    String unit = units[i];
+                    unit = unit.substring(unit.indexOf("=") + 1, unit.length());
+                    roleName += unit;
+                }
+                roleName += ")";
+            }
+        }
+
         DefaultRole role = new DefaultRole();
         role.setId(roleId);
         role.setName(roleName);
@@ -334,11 +355,6 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
             norway.setId("OU=Norway,DC=mogul,DC=no");
             norway.setDomain("mogul");
 
-            Iterator users = manager.getUsersWithRole(norway);
-            while (users.hasNext()) {
-                Identity user =  (Identity)users.next();
-                System.out.println("UserId:" + user.getUserId());
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
