@@ -58,7 +58,7 @@
 
     <bean id="dbuserRoleConfiguration" class="no.kantega.useradmin.model.RoleManagementConfiguration">
         <property name="description" value="XML - Aksess"/>
-        <property name="domain" value="xmluser"/>
+        <property name="domain" value="${security.xmluser.domain}"/>
         <property name="roleManager" ref="xmluserRoleManager"/>
     </bean>
 </beans>

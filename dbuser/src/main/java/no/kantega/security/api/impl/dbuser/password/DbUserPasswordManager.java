@@ -23,7 +23,6 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
 
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
-        //TODO: Sjekk dette med store og små tegn, gir dette match ?
         String dbPassword = null;
         try {
             dbPassword = (String) getJdbcTemplate().queryForObject("SELECT Password FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
@@ -58,9 +57,8 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
             // New user, without password
             getJdbcTemplate().update("INSERT INTO dbuserpassword VALUES (?, ?, ?)", new Object[] { identity.getDomain(), identity.getUserId(), cryptPW });
         } else {
-            getJdbcTemplate().update("UPDATE dbuserpassword SET Password = ? WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId(), cryptPW });
+            getJdbcTemplate().update("UPDATE dbuserpassword SET Password = ? WHERE Domain = ? AND UserId = ?", new Object[] { cryptPW, identity.getDomain(), identity.getUserId() });
         }
-
     }
 
     public String getDomain() {

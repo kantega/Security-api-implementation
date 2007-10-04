@@ -267,7 +267,7 @@ public class MD5Crypt {
 
     public static void main(String[] args) {
         try {
-            String cryptPW = MD5Crypt.crypt("Approver");
+            String cryptPW = MD5Crypt.crypt("herrnilsson");
             System.out.println("Encrypted password is:" + cryptPW);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
