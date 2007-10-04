@@ -27,8 +27,12 @@
         <property name="loginPageUrl">
             <value>${security.login.url}</value>
         </property>
+        <property name="useTransportSecurity">
+            <value>${security.login.usessl}</value>
+        </property>        
     </bean>
 
+    <!-- Sikkerhetsrealm for Aksess -->
     <bean id="xmluserRealm" class="no.kantega.publishing.security.realm.SecurityRealm">
         <property name="profileManager">
             <ref bean="xmluserProfileManager"/>
@@ -42,5 +46,19 @@
         <property name="identityResolver">
             <ref bean="xmluserIdentityResolver"/>
         </property>
+    </bean>
+
+    <!-- Konfigurasjon for brukeradministrasjon -->
+    <bean id="xmluserProfileConfiguration" class="no.kantega.useradmin.model.ProfileManagementConfiguration">
+        <property name="description" value="XML - Aksess"/>
+        <property name="domain" value="${security.xmluser.domain}"/>
+        <property name="profileManager" ref="xmluserProfileManager"/>
+        <property name="passwordManager" ref="xmluserPasswordManager"/>
+    </bean>
+
+    <bean id="dbuserRoleConfiguration" class="no.kantega.useradmin.model.RoleManagementConfiguration">
+        <property name="description" value="XML - Aksess"/>
+        <property name="domain" value="${security.xmluser.domain}"/>
+        <property name="roleManager" ref="xmluserRoleManager"/>
     </bean>
 </beans>

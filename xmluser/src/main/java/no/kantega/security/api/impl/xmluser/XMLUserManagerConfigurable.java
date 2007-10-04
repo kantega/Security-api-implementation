@@ -15,6 +15,8 @@ import java.io.IOException;
  * Time: 4:00:34 PM
  */
 public abstract class XMLUserManagerConfigurable {
+    protected static final String USERNAME_ATTRIBUTE = "username";
+
     protected String xmlUsersFilename;
     protected String domain;
 

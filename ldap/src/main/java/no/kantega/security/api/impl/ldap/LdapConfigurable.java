@@ -21,6 +21,9 @@ public class LdapConfigurable {
 
     protected String objectClassRoles = "group";
     protected String searchBaseRoles = "";
+    protected String searchBaseAllRoles = "";
+
+    protected String objectClassOrgUnits = "organizationalUnit";
 
     protected String usernameAttribute = "sAMAccountName";
     protected String givenNameAttribute = "givenName";
@@ -30,6 +33,7 @@ public class LdapConfigurable {
 
     protected String roleAttribute = "cn";
     protected String roleMemberAttribute = "member";
+    protected String roleMemberOfAttribute = "memberOf";
 
     protected String roleUserKey = ROLE_USER_KEY_DN;
 
@@ -47,12 +51,13 @@ public class LdapConfigurable {
      * @param str
      * @return - string with escaped/replaced chars
      */
-    protected String removeChars(String str) {
-        str = str.replaceAll("&", "");
-        str = str.replaceAll("!", "");
-        str = str.replaceAll("\\*", "");
-        str = str.replaceAll("\\(", "");
-        str = str.replaceAll("\\)", "");
+    protected String escapeChars(String str) {
+        str = str.replaceAll("\\\\", "\\\\\\\\");
+        str = str.replaceAll("\\(", "\\\\28");
+        str = str.replaceAll("\\)", "\\\\29");
+        str = str.replaceAll("\\*", "\\\\*");
+        str = str.replaceAll("\\&", "\\\\&");
+        str = str.replaceAll("\\!", "\\\\!");
         return str;
     }
 
@@ -88,6 +93,10 @@ public class LdapConfigurable {
         this.objectClassRoles = objectClassRoles;
     }
 
+    public void setSearchBaseAllRoles(String searchBaseAllRoles) {
+        this.searchBaseAllRoles = searchBaseAllRoles;
+    }
+
     public void setSearchBaseRoles(String searchBaseRoles) {
         this.searchBaseRoles = searchBaseRoles;
     }
@@ -118,6 +127,10 @@ public class LdapConfigurable {
 
     public void setRoleMemberAttribute(String roleMemberAttribute) {
         this.roleMemberAttribute = roleMemberAttribute;
+    }
+
+    public void setRoleMemberOfAttribute(String roleMemberOfAttribute) {
+        this.roleMemberOfAttribute = roleMemberOfAttribute;
     }
 
     public void setRoleUserKey(String roleUserKey) {

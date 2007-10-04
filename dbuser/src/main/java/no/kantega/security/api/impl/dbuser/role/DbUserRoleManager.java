@@ -10,6 +10,7 @@ import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.identity.DefaultIdentity;
 import no.kantega.security.api.profile.DefaultProfile;
 
 import java.util.Iterator;
@@ -66,13 +67,19 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
         return results.iterator();
     }
 
+    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
+        List results = getJdbcTemplate().query("SELECT * FROM dbuserrole2user WHERE " +
+                "dbuserrole2user.RoleDomain = ? AND dbuserrole2user.RoleId = ?",
+                new Object[] {roleId.getDomain(), roleId.getId()}, new IdentityRowMapper());
+        return results.iterator();
+    }
+
+
     public boolean userHasRole(Identity identity, String role) throws SystemException {
-        // TODO: Skal man kunne spørre etter rollenavn eller rolleid ?
-        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserrole2user WHERE RoleId IN (SELECT RoleId FROM dbuserrole WHERE RoleName = ?) AND UserId = ? AND Domain = ?",
+        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserrole2user WHERE RoleId IN (SELECT RoleId FROM dbuserrole WHERE RoleName = ?) AND UserId = ? AND UserDomain = ?",
                 new Object[] {role, identity.getUserId(), identity.getDomain()} );
 
         return antall > 0;
-
     }
 
     public void setDomain(String domain) {
@@ -87,6 +94,18 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
             role.setDomain(rs.getString("Domain"));
             role.setName(rs.getString("RoleName"));
             return role;
+        }
+
+
+    }
+
+    private class IdentityRowMapper implements RowMapper {
+
+        public Object mapRow(ResultSet rs, int i) throws SQLException {
+            DefaultIdentity identity = new DefaultIdentity();
+            identity.setUserId(rs.getString("UserId"));
+            identity.setDomain(rs.getString("UserDomain"));
+            return identity;
         }
 
 
