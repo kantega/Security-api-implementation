@@ -24,7 +24,7 @@ public class SpringConfigurableNtlmHttpFilter extends NtlmHttpFilter implements 
     
 
     public void afterPropertiesSet() throws Exception {
-        Config.setProperty("jcifs.http.domainController", domainController);
+        Config.setProperty("jcifs.netbios.wins", domainController);
         Config.setProperty("jcifs.smb.client.domain", domain);
     }
 
