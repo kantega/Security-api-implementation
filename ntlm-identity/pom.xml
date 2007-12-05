@@ -1,0 +1,25 @@
+<?xml version="1.0"?><project>
+  <parent>
+    <artifactId>securityapi-impl</artifactId>
+    <groupId>no.kantega.security.api.impl</groupId>
+    <version>1.08-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>no.kantega.security.api.impl</groupId>
+  <artifactId>securityapi-ntlm</artifactId>
+  <name>securityapi-ntlm</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+      <dependency>
+          <groupId>org.samba.jcifs</groupId>
+          <artifactId>jcifs</artifactId>
+          <version>1.2.17</version>
+      </dependency>
+  </dependencies>
+</project>

@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <artifactId>securityapi-impl</artifactId>
+        <groupId>no.kantega.security.api.impl</groupId>
+        <version>1.08-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>no.kantega.security.api.impl</groupId>
+    <artifactId>securityapi-ntlm-webapp</artifactId>
+    <packaging>war</packaging>
+    <name>securityapi-ntlm-webapp Maven Webapp</name>
+    <url>http://maven.apache.org</url>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.kantega.security.api.impl</groupId>
+            <artifactId>securityapi-ntlm</artifactId>
+            <version>1.08-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>no.kantega.security.api.impl</groupId>
+            <artifactId>securityapi-dbsession</artifactId>
+            <version>1.08-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <finalName>securityapi-ntlm-webapp</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.5</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>hsqldb</groupId>
+                        <artifactId>hsqldb</artifactId>
+                        <version>1.8.0.7</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>net.sourceforge.jtds</groupId>
+                        <artifactId>jtds</artifactId>
+                        <version>1.2</version>
+                    </dependency>
+
+                </dependencies>
+                
+                <configuration>
+                    <jettyEnvXml>${basedir}/src/main/jetty/jetty-env.xml</jettyEnvXml>
+                    <contextPath>/</contextPath>
+                    <connectors>
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                            <port>9090</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>slf4j</name>
+                            <value>false</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>log4j.configuration</name>
+                            <value>file:./src/main/jetty/log4j.properties</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+
+            </plugin>
+        </plugins>
+
+    </build>
+
+</project>
