@@ -42,7 +42,7 @@ public class DbSessionIdentityResolver implements IdentityResolver {
                     }
                     store.removeSession(keyValue);
                     if(log.isDebugEnabled()) {
-                        log.debug("Creating " + DbSessionAuthenticatedIdentity.class.getSimpleName() +" for session and adding it as a http session attribute with key " + IDENTITY_ATTR_KEY);
+                        log.debug("Creating " + DbSessionAuthenticatedIdentity.class.getName() +" for session and adding it as a http session attribute with key " + IDENTITY_ATTR_KEY);
                     }
                     AuthenticatedIdentity id = new DbSessionAuthenticatedIdentity(session);
                     request.getSession().setAttribute(IDENTITY_ATTR_KEY, id);

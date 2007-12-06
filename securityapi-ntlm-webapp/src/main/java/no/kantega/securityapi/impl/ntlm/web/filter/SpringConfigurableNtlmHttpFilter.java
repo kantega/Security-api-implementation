@@ -2,33 +2,34 @@ package no.kantega.securityapi.impl.ntlm.web.filter;
 
 import jcifs.Config;
 import jcifs.http.NtlmHttpFilter;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-
-import org.springframework.beans.factory.InitializingBean;
+import java.util.Properties;
+import java.util.Enumeration;
 
 
 public class SpringConfigurableNtlmHttpFilter extends NtlmHttpFilter implements InitializingBean {
-    private String domainController;
-    private String domain;
+    private Properties properties;
 
-    public void setDomainController(String domainController) {
-        this.domainController = domainController;
-    }
 
     public void init(FilterConfig filterConfig) throws ServletException {
         super.init(filterConfig);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
-    
-
     public void afterPropertiesSet() throws Exception {
-        Config.setProperty("jcifs.netbios.wins", domainController);
-        Config.setProperty("jcifs.smb.client.domain", domain);
+
+        Enumeration e = properties.propertyNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            if(name.startsWith("jcifs.")) {
+                Config.setProperty(name, properties.getProperty(name));
+            }
+        }
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

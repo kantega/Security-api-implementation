@@ -4,8 +4,13 @@
 <beans>
 
     <bean id="ntlmFilter" class="no.kantega.securityapi.impl.ntlm.web.filter.SpringConfigurableNtlmHttpFilter">
-        <property name="domainController" value="${ntlm.wins}"/>
-        <property name="domain" value="${ntlm.domain}"/>
+        <property name="properties">
+            <props>
+                <prop key="jcifs.http.domainController">${ntlm.domainController}</prop>
+                <prop key="jcifs.util.loglevel">6</prop>
+            </props>
+        </property>
+
     </bean>
 
     <bean id="ntlmIdentityResolver" class="no.kantega.security.api.impl.ntlm.NtlmIdentityResolver"/>
