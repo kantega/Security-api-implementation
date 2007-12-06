@@ -50,7 +50,7 @@ public class LoginController extends AbstractController {
             if(log.isDebugEnabled()) {
                 log.info("Redirecting user to url " + redirectUrl);
             }
-            response.sendRedirect(redirectUrl.toString());
+            response.sendRedirect(redirectUrl);
             return null;
         } catch (IdentificationFailedException e) {
             log.error("Identification of request failed width exception", e);
