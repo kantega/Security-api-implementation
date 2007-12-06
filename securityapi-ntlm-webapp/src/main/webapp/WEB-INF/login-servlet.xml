@@ -13,7 +13,7 @@
     <bean id="loginController" class="no.kantega.securityapi.impl.ntlm.web.LoginController">
         <property name="identityResolver" ref="ntlmIdentityResolver"/>
         <property name="store" ref="sessionStore"/>
-        <property name="targetUri" value="${targetUri}"/>
+        <property name="loginUri" value="${loginUri}"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

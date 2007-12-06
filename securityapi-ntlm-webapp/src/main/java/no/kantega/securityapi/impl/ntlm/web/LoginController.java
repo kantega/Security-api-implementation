@@ -7,7 +7,6 @@ import no.kantega.security.api.impl.dbsession.dao.SessionStore;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,15 +17,16 @@ public class LoginController extends AbstractController {
     private IdentityResolver identityResolver;
     private SessionStore store;
     private Logger log = Logger.getLogger(getClass());
-    private String targetUri;
+    private String loginUri;
     private String identityKeyParam = "identityKey";
+    private static final String TARGET_URI_PARAM = "targetUri";
 
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             AuthenticatedIdentity identity = identityResolver.getIdentity(request);
 
-            // This shouldn't happen if this url is protected by NTLM filter.
+            // Verify that we are protected by the NTLM filter
             if(identity == null) {
                 log.error(identityResolver.getClass().getName() + " returned null for request. Is this url protected with NTLM?");
                 PrintWriter out = response.getWriter();
@@ -41,12 +41,17 @@ public class LoginController extends AbstractController {
             String key = store.storeSession(userId);
 
             log.info("User with username " + userId +" was saved in store with key " + key);
+            String targetUri = request.getParameter(TARGET_URI_PARAM);
 
-            String redirectUrl = targetUri + "?" + identityKeyParam +"=" + URLEncoder.encode(key, "utf-8");
+            String redirectUrl = loginUri + "?" + identityKeyParam +"=" + URLEncoder.encode(key, "utf-8");
+            if(targetUri != null) {
+                redirectUrl += "&" +TARGET_URI_PARAM +"=" +URLEncoder.encode(targetUri, "utf-8"); 
+            }
             if(log.isDebugEnabled()) {
                 log.info("Redirecting user to url " + redirectUrl);
             }
-            return new ModelAndView(new RedirectView(targetUri), identityKeyParam, URLEncoder.encode(key, "utf-8"));
+            response.sendRedirect(redirectUrl.toString());
+            return null;
         } catch (IdentificationFailedException e) {
             log.error("Identification of request failed width exception", e);
             response.getWriter().write("Identification failed");
@@ -54,8 +59,8 @@ public class LoginController extends AbstractController {
         }
     }
 
-    public void setTargetUri(String targetUri) {
-        this.targetUri = targetUri;
+    public void setLoginUri(String loginUri) {
+        this.loginUri = loginUri;
     }
 
     public void setIdentityKeyParam(String identityKeyParam) {
