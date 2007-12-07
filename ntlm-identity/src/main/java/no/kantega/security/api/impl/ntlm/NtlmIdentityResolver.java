@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Properties;
+import java.net.URLEncoder;
+import java.io.IOException;
 
 
 public class NtlmIdentityResolver implements IdentityResolver {
@@ -13,6 +15,8 @@ public class NtlmIdentityResolver implements IdentityResolver {
     private static final String NTML_REQUEST_ATTR = "NtlmHttpAuth";
     private String authenticationContext = "ntlm";
     private Logger log = Logger.getLogger(getClass());
+    private static final String TARGET_URI_PARAM = "targetUri";
+    private String ntlmUrl;
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest httpServletRequest) throws IdentificationFailedException {
         NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication) httpServletRequest.getSession().getAttribute(NTML_REQUEST_ATTR);
@@ -28,7 +32,20 @@ public class NtlmIdentityResolver implements IdentityResolver {
     }
 
     public void initateLogin(LoginContext loginContext) {
-        throw new IllegalStateException("NTLM authentication is not supposed to be initialized, it should be automatic");
+        String targetUri = loginContext.getTargetUri().toString();
+        if(targetUri == null) {
+            HttpServletRequest request = loginContext.getRequest();
+            targetUri = request.getRequestURL().toString();
+        }
+        String authenticationService = ntlmUrl.startsWith("/") ? loginContext.getRequest().getContextPath() + ntlmUrl : ntlmUrl;
+        
+        String redirectUrl = null;
+        try {
+            redirectUrl = authenticationService +"?" + TARGET_URI_PARAM +"=" + URLEncoder.encode(targetUri, "utf-8");
+            loginContext.getResponse().sendRedirect(redirectUrl);
+        } catch (IOException e) {
+            throw new RuntimeException("Exception redirecting to uri " + redirectUrl, e);
+        }
     }
 
     public void initiateLogout(LogoutContext logoutContext) {
@@ -49,6 +66,10 @@ public class NtlmIdentityResolver implements IdentityResolver {
 
     public void setAuthenticationContext(String authenticationContext) {
         this.authenticationContext = authenticationContext;
+    }
+
+    public void setNtlmUrl(String ntlmUrl) {
+        this.ntlmUrl = ntlmUrl;
     }
 
     class NtlmAuthenticatedIdentity implements AuthenticatedIdentity {
