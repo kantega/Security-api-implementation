@@ -17,8 +17,8 @@ import java.util.Properties;
  */
 public class FeideProfileManager implements ProfileManager {
     protected String displayNameAttribute = "displayName";
-    protected String givenNameAttribute = null;
-    protected String surnameAttribute = null;
+    protected String givenNameAttribute = "givenName";
+    protected String surnameAttribute = "sn";
     protected String departmentAttribute = "o";
     protected String emailAttribute = "mail";
 
@@ -37,26 +37,28 @@ public class FeideProfileManager implements ProfileManager {
             Properties attributes = authenticatedIdentity.getRawAttributes();
             profile.setRawAttributes(attributes);
 
-            // Er mulig å angi både displayname og surname/givenname med Feide
-            if (displayNameAttribute != null && displayNameAttribute.length() > 0) {
-                String displayName = attributes.getProperty(displayNameAttribute);
-                if (displayName != null) {
-                    int inx = displayName.lastIndexOf(" ");
-                    if (inx == -1) {
-                        profile.setGivenName(displayName);
-                    } else {
-                        profile.setGivenName(displayName.substring(0, inx));
-                        profile.setSurname(displayName.substring(inx + 1, displayName.length()));
-                    }
-                }
-            }
-
             if (surnameAttribute != null && surnameAttribute.length() > 0) {
                 profile.setSurname(attributes.getProperty(surnameAttribute));
             }
 
             if (givenNameAttribute != null && givenNameAttribute.length() > 0) {
                 profile.setGivenName(attributes.getProperty(givenNameAttribute));
+            }
+
+            // Dersom fornavn / etternavn ikke er gitt bruker vi displayName og splitter opp dette
+            if (displayNameAttribute != null && displayNameAttribute.length() > 0) {
+                if (profile.getSurname() == null || profile.getGivenName() == null) {
+                    String displayName = attributes.getProperty(displayNameAttribute);
+                    if (displayName != null) {
+                        int inx = displayName.lastIndexOf(" ");
+                        if (inx == -1) {
+                            profile.setGivenName(displayName);
+                        } else {
+                            profile.setGivenName(displayName.substring(0, inx));
+                            profile.setSurname(displayName.substring(inx + 1, displayName.length()));
+                        }
+                    }
+                }
             }
 
             if (emailAttribute != null && emailAttribute.length() > 0) {
