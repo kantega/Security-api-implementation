@@ -16,8 +16,9 @@ import java.util.Properties;
  * Time: 4:03:40 PM
  */
 public class FeideProfileManager implements ProfileManager {
-    protected String givenNameAttribute = "givenName";
-    protected String surnameAttribute = "sn";
+    protected String displayNameAttribute = "displayName";
+    protected String givenNameAttribute = null;
+    protected String surnameAttribute = null;
     protected String departmentAttribute = "o";
     protected String emailAttribute = "mail";
 
@@ -36,10 +37,32 @@ public class FeideProfileManager implements ProfileManager {
             Properties attributes = authenticatedIdentity.getRawAttributes();
             profile.setRawAttributes(attributes);
 
-            profile.setSurname(attributes.getProperty(surnameAttribute));
-            profile.setGivenName(attributes.getProperty(givenNameAttribute));
-            profile.setEmail(attributes.getProperty(emailAttribute));
-            if (departmentAttribute != null) {
+            // Er mulig å angi både displayname og surname/givenname med Feide
+            if (displayNameAttribute != null && displayNameAttribute.length() > 0) {
+                String displayName = attributes.getProperty(displayNameAttribute);
+                if (displayName != null) {
+                    int inx = displayName.lastIndexOf(" ");
+                    if (inx == -1) {
+                        profile.setGivenName(displayName);
+                    } else {
+                        profile.setGivenName(displayName.substring(0, inx));
+                        profile.setSurname(displayName.substring(inx + 1, displayName.length()));
+                    }
+                }
+            }
+
+            if (surnameAttribute != null && surnameAttribute.length() > 0) {
+                profile.setSurname(attributes.getProperty(surnameAttribute));
+            }
+
+            if (givenNameAttribute != null && givenNameAttribute.length() > 0) {
+                profile.setGivenName(attributes.getProperty(givenNameAttribute));
+            }
+
+            if (emailAttribute != null && emailAttribute.length() > 0) {
+                profile.setEmail(attributes.getProperty(emailAttribute));
+            }
+            if (departmentAttribute != null && departmentAttribute.length() > 0) {
                 profile.setDepartment(attributes.getProperty(departmentAttribute));
             }
         }
@@ -51,5 +74,25 @@ public class FeideProfileManager implements ProfileManager {
             return true;
         }
         return false;
+    }
+
+    public void setDisplayNameAttribute(String displayNameAttribute) {
+        this.displayNameAttribute = displayNameAttribute;
+    }
+
+    public void setGivenNameAttribute(String givenNameAttribute) {
+        this.givenNameAttribute = givenNameAttribute;
+    }
+
+    public void setSurnameAttribute(String surnameAttribute) {
+        this.surnameAttribute = surnameAttribute;
+    }
+
+    public void setDepartmentAttribute(String departmentAttribute) {
+        this.departmentAttribute = departmentAttribute;
+    }
+
+    public void setEmailAttribute(String emailAttribute) {
+        this.emailAttribute = emailAttribute;
     }
 }

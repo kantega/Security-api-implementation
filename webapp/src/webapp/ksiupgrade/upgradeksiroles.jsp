@@ -7,7 +7,7 @@
     Connection cKsi = ksiDs.getConnection();
     PreparedStatement ksiSt = cKsi.prepareStatement("select * from role");
 
-    Connection cAksess = ksiDs.getConnection();
+    Connection cAksess = aksessDs.getConnection();
 
     PreparedStatement deleteSt = cAksess.prepareStatement("delete from dbuserrole");
     deleteSt.executeUpdate();

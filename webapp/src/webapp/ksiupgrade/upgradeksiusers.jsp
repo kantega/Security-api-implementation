@@ -1,6 +1,7 @@
 <%@ page import="java.sql.Connection" %>
 <%@ page import="java.sql.PreparedStatement" %>
 <%@ page import="java.sql.ResultSet" %>
+<%@ page import="com.novell.ldap.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="dbconn.jsp"%>
 <%@ include file="ldapconn.jsp"%>
@@ -36,27 +37,15 @@
                 str = str.replaceAll("\\&", "\\\\&");
                 str = str.replaceAll("\\!", "\\\\!");
 
-                String filter;
-                filter = "(DN=" + str + ")";
-
-                c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
-                LDAPSearchResults results = c.search("", LDAPConnection.SCOPE_SUB, filter, new String[0], false);
 
                 String realUserId = null;
-                if (results.hasMore()) {
-                    try {
-                        LDAPEntry entry = results.next();
 
-                        // Hent alle attributtene
-                        entry = c.read(entry.getDN());
+                LDAPEntry entry = c.read(str);
+                if (entry != null) {
+                    LDAPAttribute attribute = entry.getAttribute("sAMAccountName");
 
-                        LDAPAttribute attribute = entry.getAttribute("sAMAccountName");
-
-                        if (attribute != null) {
-                            realUserId = attribute.getStringValue();
-                        }
-                    } catch (LDAPReferralException l) {
-
+                    if (attribute != null) {
+                        realUserId = attribute.getStringValue();
                     }
 
                 }
