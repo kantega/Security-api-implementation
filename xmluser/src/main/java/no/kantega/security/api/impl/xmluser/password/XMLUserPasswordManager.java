@@ -8,6 +8,7 @@ import no.kantega.security.api.impl.xmluser.XMLUserManagerConfigurable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.apache.xpath.XPathAPI;
+import org.apache.log4j.Logger;
 
 import javax.xml.transform.TransformerException;
 
@@ -17,6 +18,8 @@ import javax.xml.transform.TransformerException;
  * Time: 3:21:18 PM
  */
 public class XMLUserPasswordManager extends XMLUserManagerConfigurable implements PasswordManager {
+
+    private Logger log = Logger.getLogger(getClass());
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
         if (!identity.getDomain().equalsIgnoreCase(domain)) {
@@ -43,7 +46,14 @@ public class XMLUserPasswordManager extends XMLUserManagerConfigurable implement
 
         String userPassword = elmUser.getAttribute("password");
 
-        return userPassword.equalsIgnoreCase(password);
+        boolean correctPassword = userPassword.equalsIgnoreCase(password);
+        if (correctPassword) {
+            log.debug("Password verified for userid:" + identity.getUserId());
+        } else {
+            log.debug("Password verification failed for userid:" + identity.getUserId());
+        }
+
+        return correctPassword;
     }
 
     public void setPassword(Identity identity, String string, String string1) throws SystemException {
@@ -51,7 +61,7 @@ public class XMLUserPasswordManager extends XMLUserManagerConfigurable implement
     }
 
     public boolean supportsPasswordChange() {
-        return true;
+        return false;
     }
 
 }

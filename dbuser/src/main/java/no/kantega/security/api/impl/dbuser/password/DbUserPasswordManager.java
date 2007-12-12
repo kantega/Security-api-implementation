@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.apache.log4j.Logger;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -20,6 +21,7 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
     private static final String SOURCE = "security.DbUserPasswordManager";
 
     private String domain;
+    private Logger log = Logger.getLogger(getClass());
 
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
@@ -38,7 +40,14 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
             throw new SystemException(SOURCE, e);
         }
 
-        return dbPassword.equals(cryptPW);
+        boolean correctPassword = dbPassword.equals(cryptPW);
+        if (correctPassword) {
+            log.debug("Password verified for userid:" + identity.getUserId());
+        } else {
+            log.debug("Password verification failed for userid:" + identity.getUserId());
+        }
+
+        return correctPassword;
     }
 
     public void setPassword(Identity identity, String password, String password2) throws SystemException {
@@ -59,6 +68,7 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
         } else {
             getJdbcTemplate().update("UPDATE dbuserpassword SET Password = ? WHERE Domain = ? AND UserId = ?", new Object[] { cryptPW, identity.getDomain(), identity.getUserId() });
         }
+        log.debug("Password set for userid:" + identity.getUserId());
     }
 
     public String getDomain() {
