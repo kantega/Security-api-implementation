@@ -11,21 +11,24 @@
         <connection>scm:svn:https://subversion.mogul.no/svn/aksess/projects/security-api-impl/trunk/</connection>
     </scm>
 
-<dependencies>
+    <dependencies>
 
         <dependency>
             <groupId>no.kantega.security-api</groupId>
             <artifactId>security-api</artifactId>
             <version>${securityapi.version}</version>
         </dependency>
-             
-
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.12</version>
         </dependency>
-     </dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.1</version>
+        </dependency>
+    </dependencies>
 
     <repositories>
         <repository>
@@ -52,7 +55,7 @@
 
     </repositories>
 
-     <distributionManagement>
+    <distributionManagement>
         <repository>
             <id>subversion</id>
             <name>subversion.mogul.no</name>
@@ -104,13 +107,25 @@
         <module>xmluser</module>
         <module>ntlm-identity</module>
         <module>dbsession-identity</module>
-    <module>securityapi-ntlm-webapp</module>
-  </modules>
+        <module>securityapi-ntlm-webapp</module>
+    </modules>
 
     <properties>
         <springframework.version>1.2.8</springframework.version>
         <securityapi.version>1.05</securityapi.version>
         <spring.webflow.version>1.0-ea</spring.webflow.version>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.4</source>
+                    <target>1.4</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
