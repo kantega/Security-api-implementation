@@ -49,7 +49,19 @@ public class NtlmIdentityResolver implements IdentityResolver {
     }
 
     public void initiateLogout(LogoutContext logoutContext) {
-        throw new IllegalStateException("NTLM logout is not supported");
+        logoutContext.getRequest().getSession().removeAttribute(NTML_REQUEST_ATTR);
+        String targetUrl = "/";
+        if (logoutContext.getTargetUri() != null) {
+            targetUrl = logoutContext.getTargetUri().toASCIIString();
+            targetUrl = targetUrl.replaceAll("<", "");
+            targetUrl = targetUrl.replaceAll(">", "");
+        }
+
+        try {
+            logoutContext.getResponse().sendRedirect(targetUrl);
+        } catch (IOException e) {
+
+        }
     }
 
     public String getAuthenticationContext() {
@@ -99,7 +111,7 @@ public class NtlmIdentityResolver implements IdentityResolver {
         }
 
         public String getDomain() {
-            return ntlmAuthentication.getDomain();
+            return resolver.getAuthenticationContext();
         }
     }
 }
