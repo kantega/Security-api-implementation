@@ -1,14 +1,15 @@
 package no.kantega.security.api.impl.ldap.password;
 
-import no.kantega.security.api.password.PasswordManager;
-import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.identity.DefaultIdentity;
-import no.kantega.security.api.impl.ldap.LdapConfigurable;
-import no.kantega.security.api.common.SystemException;
 import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPReferralException;
+import com.novell.ldap.LDAPSearchResults;
+import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.identity.DefaultIdentity;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.impl.ldap.LdapConfigurable;
+import no.kantega.security.api.password.PasswordManager;
+import org.apache.log4j.Logger;
 
 /**
  * User: Anders Skar, Kantega AS
@@ -17,6 +18,7 @@ import com.novell.ldap.LDAPReferralException;
  */
 public class LdapPasswordManager extends LdapConfigurable implements PasswordManager {
     private String domain;
+    private Logger log = Logger.getLogger(getClass());
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
         if (password == null || password.length() == 0) {
@@ -46,13 +48,16 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
                     c.bind(LDAPConnection.LDAP_V3, userDN, password.getBytes());
 
                     // Bind OK - login OK
+                    log.debug("Password verified for userid:" + identity.getUserId());                    
                     return true;
                 } catch (LDAPReferralException l) {
                     // Do nothing
                 } catch (LDAPException e) {
                     if (e.getResultCode() == LDAPException.CONSTRAINT_VIOLATION) {
+                        log.debug("Password verification failed for userid:" + identity.getUserId() + " (CONSTRAINT_VIOLATION)");
                         return false;
                     } else if (e.getResultCode() == LDAPException.INVALID_CREDENTIALS) {
+                        log.debug("Password verification failed for userid:" + identity.getUserId() + " (INVALID_CREDENTIALS)");
                         return false;
                     } else {
                         throw new SystemException("Feil ved verifisering av passord", e);
