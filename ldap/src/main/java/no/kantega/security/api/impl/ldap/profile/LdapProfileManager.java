@@ -58,9 +58,11 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
                 name2 = escapeChars(name2);
 
                 if (name2.length() > 0) {
+                    // Search for givenname = name1* and surname = name2*
                     filter += "(" + givenNameAttribute + "=" + name1 + "*)(" + surnameAttribute + "=" + name2 + "*)";
                 } else {
-                    filter += "(|(" + givenNameAttribute + "=" + name1 + "*)(" + surnameAttribute + "=" + name1 + "*))";
+                    // Search for givenname = name1* or surname = name1* or username = name1
+                    filter += "(|(" + givenNameAttribute + "=" + name1 + "*)(" + surnameAttribute + "=" + name1 + "*)(" + usernameAttribute + "=" + name1 + "))";
                 }
             }
 
