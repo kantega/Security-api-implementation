@@ -77,6 +77,7 @@ public class  FeideIdentityResolver implements IdentityResolver {
                         identity = new DefaultAuthenticatedIdentity(this);
                         identity.setRawAttributes(rawAttributes);
                         identity.setUserId(userId);
+                        identity.setDomain(authenticationContext);
                     } else {
                         System.err.println(SOURCE + ": UserId attribute :" + userId + " not found in data sent from Feide. Check config and contact Feide.");
                     }
