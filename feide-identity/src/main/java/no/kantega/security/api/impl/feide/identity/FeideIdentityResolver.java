@@ -28,7 +28,7 @@ public class  FeideIdentityResolver implements IdentityResolver {
     private String authenticationContextDescription = "FeideID";
     private String authenticationContextIconUrl = "";
     private String loginPageUrl = "";
-    private String logoutPageUrl = "https://sam.feide.no/amserver/saml2/jsp/idpSingleLogoutInit.jsp?binding=urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect";
+    private String logoutPageUrl = "https://sam.feide.no/amserver/IDPSloInit?binding=urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect";
     private String cookieName = "iPlanetDirectoryPro";
     private String usernameAttribute = "eduPersonPrincipalName";
 
@@ -112,19 +112,37 @@ public class  FeideIdentityResolver implements IdentityResolver {
         try {
             loginContext.getResponse().sendRedirect(redirectUrl + URLEncoder.encode(targetUrl, "UTF-8"));
         } catch (IOException e) {
-            //
+            //  Do nothing
         }
     }
 
 
     public void initiateLogout(LogoutContext logoutContext) {
+        String redirectUrl = logoutPageUrl;
+
+        if (logoutContext.getTargetUri() != null && logoutPageUrl.indexOf("RelayState") == -1) {
+            String targetUrl = logoutContext.getTargetUri().toASCIIString();
+            targetUrl = targetUrl.replaceAll("<", "");
+            targetUrl = targetUrl.replaceAll(">", "");
+            try {
+                if (logoutPageUrl.indexOf("?") > 0) {
+                    redirectUrl = logoutPageUrl + "&RelayState=" + URLEncoder.encode(targetUrl, "UTF-8");
+                } else {
+                    redirectUrl = logoutPageUrl + "?RelayState=" + URLEncoder.encode(targetUrl, "UTF-8");
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+        }
+
+
         HttpSession session = logoutContext.getRequest().getSession();
         if (session != null) {
             session.removeAttribute(authenticationContext + SESSION_IDENTITY_NAME);
         }
 
         try {
-            logoutContext.getResponse().sendRedirect(logoutPageUrl);
+            logoutContext.getResponse().sendRedirect(redirectUrl);
         } catch (IOException e) {
             //
         }
