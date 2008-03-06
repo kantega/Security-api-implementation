@@ -8,7 +8,7 @@
     <name>Implementation of security-api</name>
     <url>http://kantega.no</url>
     <scm>
-        <connection>scm:svn:https://subversion.mogul.no/svn/aksess/projects/security-api-impl/trunk/</connection>
+        <connection>scm:svn:https://subversion.kantega.no/svn/aksess/projects/security-api-impl/trunk/</connection>
     </scm>
 
     <dependencies>
@@ -58,8 +58,8 @@
     <distributionManagement>
         <repository>
             <id>subversion</id>
-            <name>subversion.mogul.no</name>
-            <url>scpexe://subversion.mogul.no/var/www/html/maven2/internal/</url>
+            <name>subversion.kantega.no</name>
+            <url>scpexe://subversion.kantega.no/var/www/html/maven2/internal/</url>
         </repository>
 
     </distributionManagement>
@@ -70,8 +70,8 @@
             <distributionManagement>
                 <repository>
                     <id>subversion</id>
-                    <name>subversion.mogul.no</name>
-                    <url>scpexe://subversion.mogul.no/var/www/html/maven/</url>
+                    <name>subversion.kantega.no</name>
+                    <url>scpexe://subversion.kantega.no/var/www/html/maven/</url>
                     <layout>legacy</layout>
                 </repository>
             </distributionManagement>
@@ -92,7 +92,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>subversion</id>
-            <url>http://subversion.mogul.no/maven2/external</url>
+            <url>http://subversion.kantega.no/maven2/external</url>
         </pluginRepository>
     </pluginRepositories>
 
