@@ -4,8 +4,6 @@ import no.kantega.security.api.password.PasswordManager;
 import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.common.SystemException;
 
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.apache.log4j.Logger;
@@ -22,6 +20,7 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
 
     private String domain;
     private Logger log = Logger.getLogger(getClass());
+    private PasswordCrypt passwordCrypt;
 
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
@@ -35,7 +34,7 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
         String cryptPW = null;
         try {
             // supply dbPassword to get correct salt
-            cryptPW = MD5Crypt.crypt(password, dbPassword);
+            cryptPW = passwordCrypt.crypt(password, dbPassword);
         } catch (NoSuchAlgorithmException e) {
             throw new SystemException(SOURCE, e);
         }
@@ -53,10 +52,10 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
     public void setPassword(Identity identity, String password, String password2) throws SystemException {
         if (!password.equals(password2)) return;
 
-        // crypt the password - salt is autogenereated
+        // passwordCrypt the password - salt is autogenereated
         String cryptPW = null;
         try {
-            cryptPW = MD5Crypt.crypt(password);
+            cryptPW = passwordCrypt.crypt(password);
         } catch (NoSuchAlgorithmException e) {
             throw new SystemException(SOURCE, e);
         }
@@ -81,5 +80,9 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
 
     public boolean supportsPasswordChange() {
         return true;
+    }
+
+    public void setPasswordCrypt(PasswordCrypt passwordCrypt) {
+        this.passwordCrypt = passwordCrypt;
     }
 }

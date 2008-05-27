@@ -1,6 +1,5 @@
 package no.kantega.security.api.impl.dbuser.password;
 
-import java.security.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
 
@@ -20,7 +19,7 @@ import java.security.MessageDigest;
  *      - Code cleanup
  */
 
-public class MD5Crypt {
+public class MD5Crypt implements PasswordCrypt {
     // Character set allowed for the salt string
     static private final String SALTCHARS
         = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -70,7 +69,7 @@ public class MD5Crypt {
      * @return The encrypted password as an MD5 hash
      * @param password Password to be encrypted
      */
-    static public final String crypt(String password) throws NoSuchAlgorithmException {
+     public String crypt(String password) throws NoSuchAlgorithmException {
         StringBuffer salt = new StringBuffer();
         java.util.Random rnd = new java.util.Random();
 
@@ -91,7 +90,7 @@ public class MD5Crypt {
      * @param salt Random string used to initialize the MD5 engine
      * @param password Password to be encrypted
      */
-    static public final String crypt(String password, String salt) throws NoSuchAlgorithmException {
+     public String crypt(String password, String salt) throws NoSuchAlgorithmException {
         return crypt(password, salt, "$1$");
     }
 
@@ -265,6 +264,7 @@ public class MD5Crypt {
         return result.toString();
     }
 
+    /*
     public static void main(String[] args) {
         try {
             String cryptPW = MD5Crypt.crypt("herrnilsson");
@@ -274,4 +274,5 @@ public class MD5Crypt {
         }
 
     }
+    */
 }

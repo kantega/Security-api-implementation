@@ -46,8 +46,13 @@
         </property>
         <property name="domain">
             <value>${security.dbuser.domain}</value>
-        </property>        
+        </property>
+        <property name="passwordCrypt">
+            <ref bean="passwordCrypt"/>
+        </property>
     </bean>
+
+    <bean id="passwordCrypt" class="no.kantega.security.api.impl.dbuser.password.MD5Crypt"/>
 
     <bean id="dbuserIdentityResolver" class="no.kantega.security.api.identity.DefaultIdentityResolver">
         <property name="authenticationContext">
