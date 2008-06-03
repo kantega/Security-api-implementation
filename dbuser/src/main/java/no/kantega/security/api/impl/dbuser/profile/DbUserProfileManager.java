@@ -35,7 +35,7 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
     public SearchResult searchProfiles(String name) throws SystemException {
         // TODO: Strip illegal chars
 
-        String query = " (GivenName LIKE '%" + name + "%' OR Surname LIKE '%" + name + "%')";
+        String query = " (GivenName LIKE '%" + name + "%' OR Surname LIKE '%" + name + "%' OR UserId LIKE '%" + name + "%')";
 
         // Dersom brukeren har tastet inn flere navn antar vi at det siste er etternavn
         if (name.indexOf(' ') != -1) {
@@ -70,7 +70,7 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
 
             // Hent extended properties
             UserAttributesCallbackHandler callback = new UserAttributesCallbackHandler();
-            getJdbcTemplate().query("SELECT * from dbuserattributes WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()}, new UserAttributesCallbackHandler());
+            getJdbcTemplate().query("SELECT * from dbuserattributes WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()}, callback);
             p.setRawAttributes(callback.getAttributes());
             return p;
         }
