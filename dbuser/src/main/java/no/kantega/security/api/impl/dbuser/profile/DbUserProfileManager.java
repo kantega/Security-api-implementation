@@ -1,20 +1,20 @@
 package no.kantega.security.api.impl.dbuser.profile;
 
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowCallbackHandler;
-import no.kantega.security.api.profile.ProfileManager;
-import no.kantega.security.api.profile.Profile;
-import no.kantega.security.api.profile.DefaultProfile;
-import no.kantega.security.api.search.SearchResult;
-import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.common.SystemException;
-import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.identity.DefaultIdentity;
-import no.kantega.security.api.role.DefaultRole;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.profile.DefaultProfile;
+import no.kantega.security.api.profile.Profile;
+import no.kantega.security.api.profile.ProfileManager;
+import no.kantega.security.api.search.DefaultSearchResult;
+import no.kantega.security.api.search.SearchResult;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -33,20 +33,25 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
      * @throws SystemException
      */
     public SearchResult searchProfiles(String name) throws SystemException {
-        // TODO: Strip illegal chars
+        List param  =  new ArrayList();
 
-        String query = " (GivenName LIKE '%" + name + "%' OR Surname LIKE '%" + name + "%' OR UserId LIKE '%" + name + "%')";
+        String query = " (GivenName LIKE ? OR Surname LIKE ? OR UserId LIKE ?)";
+        param.add("%" + name + "%");
+        param.add("%" + name + "%");
+        param.add("%" + name + "%");
 
         // Dersom brukeren har tastet inn flere navn antar vi at det siste er etternavn
         if (name.indexOf(' ') != -1) {
             String givenName = name.substring(0, name.lastIndexOf(' ')).trim();
             String surname = name.substring(name.lastIndexOf(' '), name.length()).trim();
-            query += " OR (GivenName LIKE '%" + givenName + "%' AND Surname LIKE '%" + surname + "%')";
+            query += " OR (GivenName LIKE ? AND Surname LIKE ?)";
+            param.add("%" + givenName + "%");
+            param.add("%" + surname + "%");
         }
         query += " AND Domain = '" + domain + "'";
 
         String sql = "SELECT * from dbuserprofile WHERE " + query + " ORDER BY GivenName, Surname";
-        List results = getJdbcTemplate().query(sql, new UserProfileRowMapper());
+        List results = getJdbcTemplate().query(sql, param.toArray(), new UserProfileRowMapper());
 
         DefaultSearchResult result = new DefaultSearchResult();
         result.setResults(results);

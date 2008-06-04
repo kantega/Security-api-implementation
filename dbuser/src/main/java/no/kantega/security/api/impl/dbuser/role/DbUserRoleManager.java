@@ -1,22 +1,22 @@
 package no.kantega.security.api.impl.dbuser.role;
 
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.jdbc.core.RowMapper;
-import no.kantega.security.api.role.RoleManager;
+import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.identity.DefaultIdentity;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.role.DefaultRole;
 import no.kantega.security.api.role.Role;
 import no.kantega.security.api.role.RoleId;
-import no.kantega.security.api.role.DefaultRole;
-import no.kantega.security.api.common.SystemException;
-import no.kantega.security.api.search.SearchResult;
+import no.kantega.security.api.role.RoleManager;
 import no.kantega.security.api.search.DefaultSearchResult;
-import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.identity.DefaultIdentity;
-import no.kantega.security.api.profile.DefaultProfile;
+import no.kantega.security.api.search.SearchResult;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
-import java.util.Iterator;
-import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * User: Anders Skar, Kantega AS
@@ -32,12 +32,14 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
     }
 
     public SearchResult searchRoles(String name) throws SystemException {
-        // TODO: Strip illegal chars
+        List params = new ArrayList();
 
-        String query = "RoleName LIKE '" + name + "%' AND Domain = '" + domain + "'";
+        String query = "RoleName LIKE ? AND Domain = ?";
+        params.add(name + "%");
+        params.add(domain);
 
         String sql = "SELECT * from dbuserrole WHERE " + query + " ORDER BY Domain, RoleName";
-        List results = getJdbcTemplate().query(sql, new RoleRowMapper());
+        List results = getJdbcTemplate().query(sql, params.toArray(), new RoleRowMapper());
 
         DefaultSearchResult result = new DefaultSearchResult();
         result.setResults(results);
