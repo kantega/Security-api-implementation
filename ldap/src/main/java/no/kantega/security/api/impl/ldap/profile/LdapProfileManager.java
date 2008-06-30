@@ -1,16 +1,17 @@
 package no.kantega.security.api.impl.ldap.profile;
 
-import no.kantega.security.api.profile.ProfileManager;
-import no.kantega.security.api.profile.Profile;
-import no.kantega.security.api.profile.DefaultProfile;
-import no.kantega.security.api.profile.ProfileComparator;
-import no.kantega.security.api.search.SearchResult;
-import no.kantega.security.api.search.DefaultSearchResult;
-import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.identity.DefaultIdentity;
-import no.kantega.security.api.impl.ldap.LdapConfigurable;
-import no.kantega.security.api.common.SystemException;
 import com.novell.ldap.*;
+import com.novell.ldap.util.Base64;
+import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.identity.DefaultIdentity;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.impl.ldap.LdapConfigurable;
+import no.kantega.security.api.profile.DefaultProfile;
+import no.kantega.security.api.profile.Profile;
+import no.kantega.security.api.profile.ProfileComparator;
+import no.kantega.security.api.profile.ProfileManager;
+import no.kantega.security.api.search.DefaultSearchResult;
+import no.kantega.security.api.search.SearchResult;
 
 import java.util.*;
 
@@ -190,7 +191,13 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
                 Iterator i = entry.getAttributeSet().iterator();
                 while (i.hasNext()) {
                     LDAPAttribute a = (LDAPAttribute) i.next();
-                    p.setProperty(a.getName(), a.getStringValue());
+                    String name = a.getName();
+                    String value = "";
+                    if ("photo".equalsIgnoreCase(name) || "jpegPhoto".equalsIgnoreCase(name)) {
+                        value = Base64.encode(a.getByteValue());
+                    }
+                    p.setProperty(a.getName(), value);
+
                 }
                 profile.setRawAttributes(p);
             }
@@ -212,7 +219,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             manager.setObjectClassUsers("person");
             manager.setDepartmentAttribute("ou");
 
-            SearchResult result = manager.searchProfiles("Ingrid");
+            SearchResult result = manager.searchProfiles("Anders");
             System.out.println("Found " + result.getSize() + " userprofiles");
             Iterator profiles = result.getAllResults();
 
@@ -223,7 +230,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
                 count++;
             }
 
-            /*
+
             DefaultIdentity andska = new DefaultIdentity();
             andska.setUserId("andska");
             andska.setDomain("mogul");
@@ -231,7 +238,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             Profile profile = manager.getProfileForUser(andska);
             if (profile != null) {
                 System.out.println("Found userprofile:" + profile.getGivenName() + " " + profile.getSurname() + " - " + profile.getDepartment());
-            }*/
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
