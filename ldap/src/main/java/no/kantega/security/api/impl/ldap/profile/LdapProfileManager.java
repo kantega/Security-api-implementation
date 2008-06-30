@@ -195,6 +195,8 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
                     String value = "";
                     if ("photo".equalsIgnoreCase(name) || "jpegPhoto".equalsIgnoreCase(name)) {
                         value = Base64.encode(a.getByteValue());
+                    } else {
+                        value = a.getStringValue();
                     }
                     p.setProperty(a.getName(), value);
 
