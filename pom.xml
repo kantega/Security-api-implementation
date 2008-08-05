@@ -111,7 +111,7 @@
     </modules>
 
     <properties>
-        <springframework.version>1.2.8</springframework.version>
+        <springframework.version>2.5.5</springframework.version>
         <securityapi.version>1.07</securityapi.version>
         <spring.webflow.version>1.0-ea</spring.webflow.version>
     </properties>
