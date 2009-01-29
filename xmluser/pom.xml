@@ -13,11 +13,6 @@
     <name>Security-impl xmluser</name>
 
     <dependencies>       
-    	<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring</artifactId>
-            <version>${springframework.version}</version>
-        </dependency>
         <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
