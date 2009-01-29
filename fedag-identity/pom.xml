@@ -7,7 +7,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.kantega.security.api.impl</groupId>
-    <artifactId>fedagidentity</artifactId>
+    <artifactId>securityapi-fedagidentity</artifactId>
     <packaging>jar</packaging>
 
     <name>Security-impl identity</name>
