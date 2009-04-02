@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2009 Kantega AS
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.kantega.opensource-parent</groupId>
+        <artifactId>opensource-parent</artifactId>
+        <version>1.1</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.kantega.security-api</groupId>
+    <artifactId>security-api-impl</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>Open Source implementations of Kantega security API : Parent pom</name>
+    <url>http://kantega.no</url>
+
+    <scm>
+        <connection>scm:svn:http://opensource.kantega.no/svn/security-api-impl/trunk</connection>
+    </scm>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.kantega.security-api</groupId>
+            <artifactId>security-api</artifactId>
+            <version>${securityapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.1</version>
+	    <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <module>common</module>
+        <module>dbuser</module>
+    </modules>
+
+    <properties>
+        <springframework.version>2.5.5</springframework.version>
+        <securityapi.version>1.9</securityapi.version>
+    </properties>
+
+</project>
