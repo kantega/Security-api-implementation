@@ -14,7 +14,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>no.kantega.security-api</groupId>
+            <groupId>org.kantega.security-api</groupId>
             <artifactId>security-api</artifactId>
             <version>${securityapi.version}</version>
         </dependency>
@@ -96,7 +96,7 @@
 
     <properties>
         <springframework.version>2.5.5</springframework.version>
-        <securityapi.version>1.8</securityapi.version>
+        <securityapi.version>1.9</securityapi.version>
         <aksess.version>5.17pre1</aksess.version>
     </properties>
 
