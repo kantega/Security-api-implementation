@@ -83,8 +83,6 @@
     </pluginRepositories>
 
     <modules>
-        <module>common</module>
-        <module>dbuser</module>
         <module>fedag-identity</module>
         <module>feide-identity</module>
         <module>ksi-signature</module>
