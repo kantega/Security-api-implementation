@@ -22,5 +22,11 @@
             <artifactId>jcifs</artifactId>
             <version>1.2.24</version>
         </dependency>
+        <dependency>
+            <groupId>no.kantega.publishing</groupId>
+            <artifactId>aksess-core</artifactId>
+            <version>${aksess.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
