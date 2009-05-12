@@ -92,7 +92,8 @@
         <module>ntlm-identity</module>
         <module>dbsession-identity</module>
         <module>securityapi-ntlm-webapp</module>
-    </modules>
+    <module>securityapi-kerberos</module>
+  </modules>
 
     <properties>
         <springframework.version>2.5.5</springframework.version>
