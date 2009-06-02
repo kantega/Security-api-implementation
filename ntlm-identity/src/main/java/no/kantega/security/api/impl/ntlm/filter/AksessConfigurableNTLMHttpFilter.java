@@ -21,16 +21,12 @@ public class AksessConfigurableNTLMHttpFilter extends NtlmHttpFilter {
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
 
-        final Properties prop = new Properties();
+        final Properties prop;
 
-        File confFile = null;
         try {
-            confFile = new File(Configuration.getConfigDirectory(), "aksess.conf");
-            prop.load(new FileSystemResource(confFile).getInputStream());
-        } catch (IOException e) {
-            throw new ServletException("Can't read configuration properties from aksess.conf" + confFile, e);
+            prop = Aksess.getConfiguration().getProperties();
         } catch (ConfigurationException e) {
-            throw new ServletException("Can't read configuration properties from aksess.conf" + confFile, e);
+            throw new ServletException("Can't read configuration properties from aksess", e);
         }
 
         FilterConfig wrapper = new FilterConfig() {
