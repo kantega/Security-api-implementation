@@ -21,7 +21,9 @@ import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.common.SystemException;
 
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.apache.log4j.Logger;
 
 import java.security.NoSuchAlgorithmException;
@@ -36,13 +38,22 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
 
     private String domain;
     private Logger log = Logger.getLogger(getClass());
-    private PasswordCrypt passwordCrypt;
+    private PasswordCryptManager passwordCryptManager;
+    private String defaultCreateHash;
 
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
         String dbPassword = null;
+        String dbHash = null;
+
         try {
             dbPassword = (String) getJdbcTemplate().queryForObject("SELECT Password FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
+            try {
+                dbHash = (String) getJdbcTemplate().queryForObject("SELECT HashMech FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
+            } catch (BadSqlGrammarException e) {
+                // HashMech field does not exist, so defalt will be used
+                dbHash = null;
+            }
         } catch (IncorrectResultSizeDataAccessException e) {
             return false;
         }
@@ -50,6 +61,7 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
         String cryptPW = null;
         try {
             // supply dbPassword to get correct salt
+            PasswordCrypt passwordCrypt = passwordCryptManager.getPasswordCrypt(dbHash);
             cryptPW = passwordCrypt.crypt(password, dbPassword);
         } catch (NoSuchAlgorithmException e) {
             throw new SystemException(SOURCE, e);
@@ -68,9 +80,22 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
     public void setPassword(Identity identity, String password, String password2) throws SystemException {
         if (!password.equals(password2)) return;
 
-        // passwordCrypt the password - salt is autogenereated
+        // passwordCryptManager the password - salt is autogenereated
         String cryptPW = null;
+        boolean supportsMech = true;
+        PasswordCrypt passwordCrypt = null;
         try {
+            passwordCrypt = passwordCryptManager.getPasswordCrypt(defaultCreateHash);
+
+            try {
+                getJdbcTemplate().queryForInt("select count(HashMech) from dbuserpassword");
+            } catch (BadSqlGrammarException e) {
+                // Use default/fallback mechanism
+                supportsMech = false;
+                passwordCrypt = passwordCryptManager.getPasswordCrypt(null);
+            }
+
+
             cryptPW = passwordCrypt.crypt(password);
         } catch (NoSuchAlgorithmException e) {
             throw new SystemException(SOURCE, e);
@@ -79,10 +104,15 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
         int count = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() });
         if (count == 0) {
             // New user, without password
-            getJdbcTemplate().update("INSERT INTO dbuserpassword VALUES (?, ?, ?)", new Object[] { identity.getDomain(), identity.getUserId(), cryptPW });
+            getJdbcTemplate().update("INSERT INTO dbuserpassword (Domain, UserId, Password) VALUES (?, ?, ?)", new Object[] { identity.getDomain(), identity.getUserId(), cryptPW});
         } else {
             getJdbcTemplate().update("UPDATE dbuserpassword SET Password = ? WHERE Domain = ? AND UserId = ?", new Object[] { cryptPW, identity.getDomain(), identity.getUserId() });
         }
+
+        if(supportsMech) {
+            getJdbcTemplate().update("UPDATE dbuserpassword SET HashMech = ? WHERE Domain = ? AND UserId = ?", new Object[] { passwordCrypt.getId(), identity.getDomain(), identity.getUserId() });
+        }
+
         log.debug("Password set for userid:" + identity.getUserId());
     }
 
@@ -98,7 +128,11 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
         return true;
     }
 
-    public void setPasswordCrypt(PasswordCrypt passwordCrypt) {
-        this.passwordCrypt = passwordCrypt;
+    public void setPasswordCryptManager(PasswordCryptManager passwordCryptManager) {
+        this.passwordCryptManager = passwordCryptManager;
+    }
+
+    public void setDefaultCreateHash(String defaultCreateHash) {
+        this.defaultCreateHash = defaultCreateHash;
     }
 }

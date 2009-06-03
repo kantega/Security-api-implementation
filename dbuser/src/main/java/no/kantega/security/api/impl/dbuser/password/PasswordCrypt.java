@@ -29,4 +29,6 @@ public interface PasswordCrypt {
 
     public String crypt(String password, String salt) throws NoSuchAlgorithmException;
 
+    String getId();
+
 }

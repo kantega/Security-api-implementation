@@ -15,9 +15,9 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
     <!-- DBUSER configuration -->
     <bean id="dbuserProfileManager" class="no.kantega.security.api.impl.dbuser.profile.DbUserProfileManager">
@@ -63,12 +63,18 @@
         <property name="domain">
             <value>${security.dbuser.domain}</value>
         </property>
-        <property name="passwordCrypt">
-            <ref bean="passwordCrypt"/>
+        <property name="passwordCryptManager">
+            <ref bean="passwordCryptManager"/>
         </property>
+        <property name="defaultCreateHash" value="SHA-256"/>
     </bean>
 
-    <bean id="passwordCrypt" class="no.kantega.security.api.impl.dbuser.password.MD5Crypt"/>
+
+    <bean id="sha256PasswordCrypt" class="no.kantega.security.api.impl.dbuser.password.JdkDigestCrypt">
+        <property name="algorithm" value="SHA-256"/>
+    </bean>
+
+    <bean id="passwordCryptManager" class="no.kantega.security.api.impl.dbuser.password.DefaultPasswordCryptManager"/>
 
     <bean id="dbuserIdentityResolver" class="no.kantega.security.api.identity.DefaultIdentityResolver">
         <property name="authenticationContext">
