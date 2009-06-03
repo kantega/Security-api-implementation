@@ -93,11 +93,13 @@
         <module>dbsession-identity</module>
         <module>securityapi-ntlm-webapp</module>
     <module>securityapi-kerberos</module>
+    <module>securityapi-m5dcrypt</module>
   </modules>
 
     <properties>
         <springframework.version>2.5.5</springframework.version>
         <securityapi.version>1.10</securityapi.version>
+        <securityapi.openimpl.version>1.1-SNAPSHOT</securityapi.openimpl.version>
         <aksess.version>5.17pre2</aksess.version>
     </properties>
 

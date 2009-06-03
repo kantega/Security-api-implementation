@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>securityapi-impl</artifactId>
+    <groupId>no.kantega.security.api.impl</groupId>
+    <version>2.6-SNAPSHOT</version>
+  </parent>
+  <artifactId>securityapi-m5dcrypt</artifactId>
+  <name>securityapi-m5dcrypt</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.kantega.security-api</groupId>
+            <artifactId>securityapi-dbuser</artifactId>
+            <version>${securityapi.openimpl.version}</version>
+        </dependency>
+    </dependencies>
+</project>
