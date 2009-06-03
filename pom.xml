@@ -99,7 +99,7 @@
     <properties>
         <springframework.version>2.5.5</springframework.version>
         <securityapi.version>1.10</securityapi.version>
-        <securityapi.openimpl.version>1.1-SNAPSHOT</securityapi.openimpl.version>
+        <securityapi.openimpl.version>1.1</securityapi.openimpl.version>
         <aksess.version>5.17pre2</aksess.version>
     </properties>
 
