@@ -6,8 +6,8 @@
     <groupId>no.kantega.security.api.impl</groupId>
     <version>2.7-SNAPSHOT</version>
   </parent>
-  <artifactId>securityapi-m5dcrypt</artifactId>
-  <name>securityapi-m5dcrypt</name>
+  <artifactId>securityapi-md5crypt</artifactId>
+  <name>securityapi-md5crypt</name>
 
     <dependencies>
         <dependency>

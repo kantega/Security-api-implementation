@@ -93,7 +93,7 @@
         <module>dbsession-identity</module>
         <module>securityapi-ntlm-webapp</module>
     <module>securityapi-kerberos</module>
-    <module>securityapi-m5dcrypt</module>
+    <module>securityapi-md5crypt</module>
   </modules>
 
     <properties>
