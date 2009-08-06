@@ -1,11 +1,9 @@
 package no.kantega.security.api.impl.kerberos;
 
-import org.simplericity.serberuhs.KerberosSubjectConfiguration;
 import org.simplericity.serberuhs.filter.KerberosFilterConfiguration;
 
 import javax.servlet.FilterConfig;
 
-import no.kantega.publishing.common.Aksess;
 import static no.kantega.publishing.common.Aksess.*;
 import no.kantega.commons.configuration.Configuration;
 import no.kantega.commons.exception.ConfigurationException;
@@ -24,14 +22,12 @@ public class AksessKerberosConfiguration implements KerberosFilterConfiguration 
     private static final String KEYTAB_FILE_PROP = "kerberos.keytabFile";
     private static final String PRINCIPAL_PROP = "kerberos.principal";
     private static final String PASSWORD_PROP = "kerberos.password";
-    private static final String REALM_PROP = "kerberos.realm";
-    private static final String KDC_PROP = "kerberos.kdc";
+    private static final String FALLBACK_PROP = "kerberos.fallback";
     private final Configuration configuration;
     private File keytabFile;
     private String principal;
     private String password;
-    private String realm;
-    private String kdc;
+    private String fallback;
 
 
     public AksessKerberosConfiguration(FilterConfig filterrConfig) {
@@ -48,8 +44,7 @@ public class AksessKerberosConfiguration implements KerberosFilterConfiguration 
             }
             principal = configuration.getString(PRINCIPAL_PROP);
             password = configuration.getString(PASSWORD_PROP);
-            realm = configuration.getString(REALM_PROP);
-            kdc = configuration.getString(KDC_PROP);
+            fallback = configuration.getString(FALLBACK_PROP);
 
         } catch (ConfigurationException e) {
             throw new IllegalArgumentException("Exception reading configuration", e);
@@ -76,17 +71,13 @@ public class AksessKerberosConfiguration implements KerberosFilterConfiguration 
         return password;
     }
 
-    public String getRealm() {
-        return realm;
-    }
-
-    public String getKdc() {
-        return kdc;
+    public String getFallback() {
+        return fallback;
     }
 
     private void verifyConfigurationPresent(Configuration config) throws ConfigurationException {
 
-        String[] props = new String[]{PRINCIPAL_PROP, PASSWORD_PROP, REALM_PROP, KDC_PROP};
+        String[] props = new String[]{PRINCIPAL_PROP, PASSWORD_PROP};
 
         for (String prop : props) {
             if (config.getString(prop) == null) {
@@ -96,6 +87,6 @@ public class AksessKerberosConfiguration implements KerberosFilterConfiguration 
     }
 
     public String getFallbackLoginPath() {
-        return "/Login.action";
+        return getFallback() == null ? "/Login.action" : getFallback();
     }
 }
