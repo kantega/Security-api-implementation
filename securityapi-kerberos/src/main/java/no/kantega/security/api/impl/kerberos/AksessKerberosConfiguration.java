@@ -23,28 +23,34 @@ public class AksessKerberosConfiguration implements KerberosFilterConfiguration 
     private static final String PRINCIPAL_PROP = "kerberos.principal";
     private static final String PASSWORD_PROP = "kerberos.password";
     private static final String FALLBACK_PROP = "kerberos.fallback";
+    private static final String ENABLED_PROP = "kerberos.enabled";
     private final Configuration configuration;
     private File keytabFile;
     private String principal;
     private String password;
     private String fallback;
+    private boolean enabled = true;
 
 
     public AksessKerberosConfiguration(FilterConfig filterrConfig) {
         try {
+
             configuration = getConfiguration();
-            verifyConfigurationPresent(configuration);
-            String keyTab = configuration.getString(KEYTAB_FILE_PROP);
-            if(keyTab == null) {
-                keyTab = getDefaultKeyTab();
+            enabled = !"false".equals(ENABLED_PROP);
+            if(enabled) {
+                verifyConfigurationPresent(configuration);
+                String keyTab = configuration.getString(KEYTAB_FILE_PROP);
+                if(keyTab == null) {
+                    keyTab = getDefaultKeyTab();
+                }
+                keytabFile = new File(keyTab);
+                if(!keytabFile.exists()) {
+                    throw new IllegalArgumentException(KEYTAB_FILE_PROP + " does not exist: " + keytabFile.getAbsolutePath());
+                }
+                principal = configuration.getString(PRINCIPAL_PROP);
+                password = configuration.getString(PASSWORD_PROP);
+                fallback = configuration.getString(FALLBACK_PROP);
             }
-            keytabFile = new File(keyTab);
-            if(!keytabFile.exists()) {
-                throw new IllegalArgumentException(KEYTAB_FILE_PROP + " does not exist: " + keytabFile.getAbsolutePath());
-            }
-            principal = configuration.getString(PRINCIPAL_PROP);
-            password = configuration.getString(PASSWORD_PROP);
-            fallback = configuration.getString(FALLBACK_PROP);
 
         } catch (ConfigurationException e) {
             throw new IllegalArgumentException("Exception reading configuration", e);
@@ -88,5 +94,9 @@ public class AksessKerberosConfiguration implements KerberosFilterConfiguration 
 
     public String getFallbackLoginPath() {
         return getFallback() == null ? "/Login.action" : getFallback();
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }
