@@ -36,7 +36,7 @@ public class AksessKerberosConfiguration implements KerberosFilterConfiguration 
         try {
 
             configuration = getConfiguration();
-            enabled = !"false".equals(ENABLED_PROP);
+            enabled = !"false".equals(configuration.getString(ENABLED_PROP));
             if(enabled) {
                 verifyConfigurationPresent(configuration);
                 String keyTab = configuration.getString(KEYTAB_FILE_PROP);
