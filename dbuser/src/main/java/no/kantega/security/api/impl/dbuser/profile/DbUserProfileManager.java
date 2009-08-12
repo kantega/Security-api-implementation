@@ -51,6 +51,8 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
     public SearchResult searchProfiles(String name) throws SystemException {
         List param  =  new ArrayList();
 
+        if(name == null) name = "";
+
         String query = " (GivenName LIKE ? OR Surname LIKE ? OR UserId LIKE ?)";
         param.add("%" + name + "%");
         param.add("%" + name + "%");
