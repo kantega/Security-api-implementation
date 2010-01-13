@@ -18,10 +18,12 @@ import org.simplericity.serberuhs.filter.KerberosFilter;
  */
 public class KerberosIdentityResolver implements IdentityResolver {
 
-    private static final String TARGET_URI_PARAM = "targetUri";
+    private static final String DEFAULT_TARGET_URI_PARAM = "targetUri";
 
     private String authenticationContext = "kerberos";
     private String kerberosUrl;
+
+    private String targetUrlParam = DEFAULT_TARGET_URI_PARAM;
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
 
@@ -39,7 +41,7 @@ public class KerberosIdentityResolver implements IdentityResolver {
 
         String redirectUrl = null;
         try {
-            redirectUrl = authenticationService +"?" + TARGET_URI_PARAM +"=" + URLEncoder.encode(targetUri, "utf-8");
+            redirectUrl = authenticationService +"?" + targetUrlParam +"=" + URLEncoder.encode(targetUri, "utf-8");
             loginContext.getResponse().sendRedirect(redirectUrl);
         } catch (IOException e) {
             throw new RuntimeException("Exception redirecting to uri " + redirectUrl, e);
@@ -80,6 +82,10 @@ public class KerberosIdentityResolver implements IdentityResolver {
 
     public void setKerberosUrl(String kerberosUrl) {
         this.kerberosUrl = kerberosUrl;
+    }
+
+    public void setTargetUrlParam(String targetUrlParam) {
+        this.targetUrlParam = targetUrlParam;
     }
 
     private class KerberosIdentity implements AuthenticatedIdentity {
