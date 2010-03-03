@@ -46,18 +46,18 @@
         <repository>
             <id>subversion</id>
             <name>Kantega Maven Repository</name>
-            <url>http://maven.kantega.lan/maven2/external</url>
+            <url>http://maven.mogul.no/maven2/external</url>
         </repository>
         <repository>
             <id>subversioninternal</id>
             <name>Kantega Internal Maven Repository</name>
-            <url>http://maven.kantega.lan/maven2/internal</url>
+            <url>http://maven.mogul.no/maven2/internal</url>
         </repository>
 
         <repository>
             <id>subversion2</id>
             <name>Kantega Maven Legacy Repository</name>
-            <url>http://maven.kantega.lan/maven/</url>
+            <url>http://maven.mogul.no/maven/</url>
             <layout>legacy</layout>
         </repository>
 
@@ -102,7 +102,7 @@
         <springframework.version>2.5.5</springframework.version>
         <securityapi.version>1.10</securityapi.version>
         <securityapi.openimpl.version>1.1</securityapi.openimpl.version>
-        <aksess.version>5.17pre2</aksess.version>
+        <aksess.version>6.1.11</aksess.version>
     </properties>
 
     <build>
@@ -112,15 +112,6 @@
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.0-beta-9</version>
-                <configuration>
-                    <remoteTagging>true</remoteTagging>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <goals>deploy</goals>
                 </configuration>
             </plugin>
         </plugins>

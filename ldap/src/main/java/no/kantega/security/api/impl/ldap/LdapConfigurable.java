@@ -56,8 +56,6 @@ public class LdapConfigurable {
         str = str.replaceAll("\\(", "\\\\28");
         str = str.replaceAll("\\)", "\\\\29");
         str = str.replaceAll("\\*", "\\\\*");
-        str = str.replaceAll("\\&", "\\\\&");
-        str = str.replaceAll("\\!", "\\\\!");
         return str;
     }
 
