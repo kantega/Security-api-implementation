@@ -4,7 +4,7 @@
   <parent>
     <artifactId>securityapi-impl</artifactId>
     <groupId>no.kantega.security.api.impl</groupId>
-    <version>2.93-SNAPSHOT</version>
+    <version>2.93</version>
   </parent>
   <artifactId>securityapi-md5crypt</artifactId>
   <name>securityapi-md5crypt</name>
