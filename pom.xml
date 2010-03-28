@@ -4,12 +4,12 @@
     <groupId>no.kantega.security.api.impl</groupId>
     <artifactId>securityapi-impl</artifactId>
     <packaging>pom</packaging>
-    <version>2.105</version>
+    <version>2.106-SNAPSHOT</version>
     <name>Implementation of security-api</name>
     <url>http://kantega.no</url>
 
     <scm>
-        <connection>scm:svn:https://subversion.kantega.no/svn/aksess/projects/security-api-impl/tags/securityapi-impl-2.105</connection>
+        <connection>scm:svn:https://subversion.kantega.no/svn/aksess/projects/security-api-impl/trunk/</connection>
     </scm>
 
     <dependencies>
