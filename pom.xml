@@ -94,9 +94,10 @@
         <module>ntlm-identity</module>
         <module>dbsession-identity</module>
         <module>securityapi-ntlm-webapp</module>
-    <module>securityapi-kerberos</module>
-    <module>securityapi-md5crypt</module>
-  </modules>
+        <module>securityapi-kerberos</module>
+        <module>securityapi-md5crypt</module>
+        <module>securityapi-signicat</module>
+    </modules>
 
     <properties>
         <springframework.version>2.5.5</springframework.version>
@@ -124,7 +125,7 @@
                     <username>hudson</username>
                     <password>${hudson.password}</password>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
 
