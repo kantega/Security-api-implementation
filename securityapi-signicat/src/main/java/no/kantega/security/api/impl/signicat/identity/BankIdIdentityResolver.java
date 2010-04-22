@@ -25,7 +25,7 @@ import java.util.Properties;
 public class BankIdIdentityResolver implements IdentityResolver {
 
     private static final String SOURCE = BankIdIdentityResolver.class.getSimpleName();
-    private static final String IDENTITY = "identity";
+    private static final String SESSION_PARAM_IDENTITY = "identity";
     private static final String TRUSTED_CERTIFICATE_NAME = "asserting.party.certificate.subject.dn";
 
     private String authenticationContext;
@@ -39,14 +39,14 @@ public class BankIdIdentityResolver implements IdentityResolver {
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
         HttpSession session = request.getSession();
-        AuthenticatedIdentity identity = (AuthenticatedIdentity)session.getAttribute(IDENTITY);
+        AuthenticatedIdentity identity = (AuthenticatedIdentity)session.getAttribute(SESSION_PARAM_IDENTITY);
         if (identity == null) {
             // Identity was not stored in session. See if the request contains a valid SAMLResponse.
             String assertion = request.getParameter("SAMLResponse");
             if (assertion != null && assertion.length() > 0) {
                 try {
                     identity = parseAssertion(assertion, request);
-                    session.setAttribute(IDENTITY, identity);
+                    session.setAttribute(SESSION_PARAM_IDENTITY, identity);
                 } catch (ScResponseException e) {
                     Log.error(SOURCE, e, null, null);
                     throw new IdentificationFailedException(SOURCE, "ERROR: The user was not authenticated.");
@@ -94,7 +94,7 @@ public class BankIdIdentityResolver implements IdentityResolver {
     }
 
     public void initiateLogout(LogoutContext logoutContext) {
-        logoutContext.getRequest().getSession().removeAttribute(IDENTITY);
+        logoutContext.getRequest().getSession().removeAttribute(SESSION_PARAM_IDENTITY);
         if (logoutContext.getTargetUri() != null) {
             try {
                 logoutContext.getResponse().sendRedirect(logoutContext.getTargetUri().toString());
