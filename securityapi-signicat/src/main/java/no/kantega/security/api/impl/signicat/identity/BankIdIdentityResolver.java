@@ -25,28 +25,28 @@ import java.util.Properties;
 public class BankIdIdentityResolver implements IdentityResolver {
 
     private static final String SOURCE = BankIdIdentityResolver.class.getSimpleName();
-
+    private static final String IDENTITY = "identity";
     private static final String TRUSTED_CERTIFICATE_NAME = "asserting.party.certificate.subject.dn";
 
-    private String authenticationContext = "BankId";
-    private String authenticationContextDescription = "BankId";
-    private String authenticationContextIconUrl = null;
+    private String authenticationContext;
+    private String authenticationContextDescription;
+    private String authenticationContextIconUrl;
     private String loginUrl;
+    private String userIdAttribute = "saml.attribute.bankid.certificate.subject-dn";
     /* The name of the certificate we trust. */
     private String trustedCertificate;
-    private String userIdAttribute = "saml.attribute.bankid.certificate.subject-dn";
 
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
         HttpSession session = request.getSession();
-        AuthenticatedIdentity identity = (AuthenticatedIdentity)session.getAttribute("identity");
+        AuthenticatedIdentity identity = (AuthenticatedIdentity)session.getAttribute(IDENTITY);
         if (identity == null) {
             // Identity was not stored in session. See if the request contains a valid SAMLResponse.
             String assertion = request.getParameter("SAMLResponse");
             if (assertion != null && assertion.length() > 0) {
                 try {
                     identity = parseAssertion(assertion, request);
-                    session.setAttribute("identity", identity);
+                    session.setAttribute(IDENTITY, identity);
                 } catch (ScResponseException e) {
                     Log.error(SOURCE, e, null, null);
                     throw new IdentificationFailedException(SOURCE, "ERROR: The user was not authenticated.");
@@ -70,13 +70,10 @@ public class BankIdIdentityResolver implements IdentityResolver {
 
         SamlFacadeFactory factory = new SamlFacadeFactory(configuration);
         SamlFacade samlFacade = factory.createSamlFacade();
-        URL url = new URL(request.getRequestURL().toString());
-        Log.debug("no.kantega.security.api.impl.bankid.identity.BankIdIdentityResolver", "Calling Signicat SamlFacade.readAssertion() with url: "+ url + " and assertion "+assertion, null, null);
-        Map attributes = samlFacade.readAssertion(assertion, url);
+        Map attributes = samlFacade.readAssertion(assertion, getRequestUrl(request));
 
         DefaultAuthenticatedIdentity identity = new DefaultAuthenticatedIdentity(this);
-//        identity.setDomain("");
-//        identity.setLanguage("");
+        identity.setDomain(authenticationContext);
         List userIdList = (List)attributes.get(userIdAttribute);
         if (userIdList != null && userIdList.size() > 0) {
             identity.setUserId((String)userIdList.get(0));
@@ -97,7 +94,7 @@ public class BankIdIdentityResolver implements IdentityResolver {
     }
 
     public void initiateLogout(LogoutContext logoutContext) {
-        logoutContext.getRequest().getSession().removeAttribute("identity");
+        logoutContext.getRequest().getSession().removeAttribute(IDENTITY);
         if (logoutContext.getTargetUri() != null) {
             try {
                 logoutContext.getResponse().sendRedirect(logoutContext.getTargetUri().toString());
@@ -111,12 +108,24 @@ public class BankIdIdentityResolver implements IdentityResolver {
         return authenticationContext;
     }
 
+    public void setAuthenticationContext(String authenticationContext) {
+        this.authenticationContext = authenticationContext;
+    }
+
     public String getAuthenticationContextDescription() {
         return authenticationContextDescription;
     }
 
+    public void setAuthenticationContextDescription(String authenticationContextDescription) {
+        this.authenticationContextDescription = authenticationContextDescription;
+    }
+
     public String getAuthenticationContextIconUrl() {
         return authenticationContextIconUrl;
+    }
+
+    public void setAuthenticationContextIconUrl(String authenticationContextIconUrl) {
+        this.authenticationContextIconUrl = authenticationContextIconUrl;
     }
 
     public void setLoginUrl(String loginUrl) {
@@ -125,6 +134,27 @@ public class BankIdIdentityResolver implements IdentityResolver {
 
     public void setTrustedCertificate(String trustedCertificate) {
         this.trustedCertificate = trustedCertificate;
+    }
+
+    private URL getRequestUrl(HttpServletRequest request) throws MalformedURLException {
+        String url = request.getRequestURL().toString();
+        String originalUri = (String)request.getAttribute("javax.servlet.error.request_uri");
+        if (originalUri != null) {
+            // Call via 404
+            int port = request.getServerPort();
+            String scheme = request.getScheme();
+            String portStr = "";
+            if (("http".equals(scheme) && port != 80) || ("https".equals(scheme) && port != 443)) {
+                portStr = ":" + port;
+            }
+            url = scheme + "://" + request.getServerName() + portStr + originalUri;
+        }
+
+        String query = request.getQueryString();
+        if (query != null && query.length() > 0) {
+            url += "?" + query;
+        }
+        return new URL(url);
     }
 
 }
