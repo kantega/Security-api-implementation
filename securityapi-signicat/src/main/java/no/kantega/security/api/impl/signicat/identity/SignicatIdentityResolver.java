@@ -6,6 +6,7 @@ import com.signicat.services.client.saml.SamlFacade;
 import com.signicat.services.client.saml.SamlFacadeFactory;
 import no.kantega.commons.log.Log;
 import no.kantega.security.api.identity.*;
+import no.kantega.security.api.impl.signicat.SignicatConfiguration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,31 +23,30 @@ import java.util.Properties;
  *
  * @author Tarje Killingberg
  */
-public class BankIdIdentityResolver implements IdentityResolver {
+public class SignicatIdentityResolver implements IdentityResolver {
 
-    private static final String SOURCE = BankIdIdentityResolver.class.getSimpleName();
-    private static final String SESSION_PARAM_IDENTITY = "identity";
-    private static final String TRUSTED_CERTIFICATE_NAME = "asserting.party.certificate.subject.dn";
+    private static final String SOURCE = SignicatIdentityResolver.class.getSimpleName();
+    private static final String SESSION_ATTR_IDENTITY = "identity";
+    private static final String SIGNICAT_PARAM_DEBUG = "debug";
+    private static final String SIGNICAT_PARAM_TRUSTED_CERTIFICATE = "asserting.party.certificate.subject.dn";
+    private static final String SIGNICAT_PARAM_TIME_SKEW = "time.skew";
 
     private String authenticationContext;
     private String authenticationContextDescription;
     private String authenticationContextIconUrl;
-    private String loginUrl;
-    private String userIdAttribute = "saml.attribute.bankid.certificate.subject-dn";
-    /* The name of the certificate we trust. */
-    private String trustedCertificate;
+    private SignicatConfiguration configuration;
 
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
         HttpSession session = request.getSession();
-        AuthenticatedIdentity identity = (AuthenticatedIdentity)session.getAttribute(SESSION_PARAM_IDENTITY);
+        AuthenticatedIdentity identity = (AuthenticatedIdentity)session.getAttribute(SESSION_ATTR_IDENTITY);
         if (identity == null) {
             // Identity was not stored in session. See if the request contains a valid SAMLResponse.
             String assertion = request.getParameter("SAMLResponse");
             if (assertion != null && assertion.length() > 0) {
                 try {
                     identity = parseAssertion(assertion, request);
-                    session.setAttribute(SESSION_PARAM_IDENTITY, identity);
+                    session.setAttribute(SESSION_ATTR_IDENTITY, identity);
                 } catch (ScResponseException e) {
                     Log.error(SOURCE, e, null, null);
                     throw new IdentificationFailedException(SOURCE, "ERROR: The user was not authenticated.");
@@ -64,17 +64,20 @@ public class BankIdIdentityResolver implements IdentityResolver {
 
     @SuppressWarnings("unchecked")
     private AuthenticatedIdentity parseAssertion(String assertion, HttpServletRequest request) throws ScResponseException, ScSecurityException, MalformedURLException {
-        Properties configuration = new Properties();
-        configuration.setProperty("debug", "false");
-        configuration.setProperty(TRUSTED_CERTIFICATE_NAME, trustedCertificate);
+        Properties props = new Properties();
+        props.setProperty(SIGNICAT_PARAM_DEBUG, Boolean.toString(configuration.isDebug()));
+        props.setProperty(SIGNICAT_PARAM_TRUSTED_CERTIFICATE, configuration.getTrustedCertificate());
+        if (configuration.getTimeSkew() != 0) {
+            props.setProperty(SIGNICAT_PARAM_TIME_SKEW, Integer.toString(configuration.getTimeSkew()));
+        }
 
-        SamlFacadeFactory factory = new SamlFacadeFactory(configuration);
+        SamlFacadeFactory factory = new SamlFacadeFactory(props);
         SamlFacade samlFacade = factory.createSamlFacade();
         Map attributes = samlFacade.readAssertion(assertion, getRequestUrl(request));
 
         DefaultAuthenticatedIdentity identity = new DefaultAuthenticatedIdentity(this);
         identity.setDomain(authenticationContext);
-        List userIdList = (List)attributes.get(userIdAttribute);
+        List userIdList = (List)attributes.get(configuration.getUserIdAttribute());
         if (userIdList != null && userIdList.size() > 0) {
             identity.setUserId((String)userIdList.get(0));
         }
@@ -87,14 +90,14 @@ public class BankIdIdentityResolver implements IdentityResolver {
     public void initateLogin(LoginContext loginContext) {
         String targetUrl = loginContext.getTargetUri().toString();
         try {
-            loginContext.getResponse().sendRedirect(loginUrl + targetUrl);
+            loginContext.getResponse().sendRedirect(configuration.getLoginUrl() + targetUrl);
         } catch (IOException e) {
             Log.error(SOURCE, e, null, null);
         }
     }
 
     public void initiateLogout(LogoutContext logoutContext) {
-        logoutContext.getRequest().getSession().removeAttribute(SESSION_PARAM_IDENTITY);
+        logoutContext.getRequest().getSession().removeAttribute(SESSION_ATTR_IDENTITY);
         if (logoutContext.getTargetUri() != null) {
             try {
                 logoutContext.getResponse().sendRedirect(logoutContext.getTargetUri().toString());
@@ -128,12 +131,8 @@ public class BankIdIdentityResolver implements IdentityResolver {
         this.authenticationContextIconUrl = authenticationContextIconUrl;
     }
 
-    public void setLoginUrl(String loginUrl) {
-        this.loginUrl = loginUrl;
-    }
-
-    public void setTrustedCertificate(String trustedCertificate) {
-        this.trustedCertificate = trustedCertificate;
+    public void setConfiguration(SignicatConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     private URL getRequestUrl(HttpServletRequest request) throws MalformedURLException {
