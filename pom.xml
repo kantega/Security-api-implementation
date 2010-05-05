@@ -102,7 +102,7 @@
     <properties>
         <springframework.version>2.5.5</springframework.version>
         <securityapi.version>2.0</securityapi.version>
-        <securityapi.openimpl.version>2.0</securityapi.openimpl.version>
+        <securityapi.openimpl.version>2.1</securityapi.openimpl.version>
         <aksess.version>7.0ea-SNAPSHOT</aksess.version>
     </properties>
 
