@@ -23,9 +23,12 @@ import no.kantega.security.api.role.DefaultRole;
 import no.kantega.security.api.role.Role;
 import no.kantega.security.api.role.RoleId;
 import no.kantega.security.api.role.RoleManager;
+import no.kantega.security.api.search.DefaultRoleSearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
@@ -39,25 +42,25 @@ import java.util.List;
  * Date: Jan 15, 2007
  * Time: 6:49:35 PM
  */
-public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
+public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManager  {
     private String domain;
 
-    public Iterator getAllRoles() throws SystemException {
-        List results = getJdbcTemplate().query("SELECT * from dbuserrole ORDER BY Domain, RoleName", new RoleRowMapper());
+    public Iterator<Role> getAllRoles() throws SystemException {
+        List<Role> results = getSimpleJdbcTemplate().query("SELECT * from dbuserrole ORDER BY Domain, RoleName", new RoleRowMapper());
         return results.iterator();
     }
 
-    public SearchResult searchRoles(String name) throws SystemException {
-        List params = new ArrayList();
+    public SearchResult<Role> searchRoles(String name) throws SystemException {
+        List<String> params = new ArrayList<String>();
 
         String query = "RoleName LIKE ? AND Domain = ?";
         params.add(name + "%");
         params.add(domain);
 
         String sql = "SELECT * from dbuserrole WHERE " + query + " ORDER BY Domain, RoleName";
-        List results = getJdbcTemplate().query(sql, params.toArray(), new RoleRowMapper());
+        List<Role> results = getSimpleJdbcTemplate().query(sql, new RoleRowMapper(), params.toArray());
 
-        DefaultSearchResult result = new DefaultSearchResult();
+        DefaultRoleSearchResult result = new DefaultRoleSearchResult();
         result.setResults(results);
         return result;
 
@@ -76,19 +79,19 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
         }
     }
 
-    public Iterator getRolesForUser(Identity identity) throws SystemException {
-        List results = getJdbcTemplate().query("SELECT dbuserrole.* FROM dbuserrole, dbuserrole2user WHERE " +
+    public Iterator<Role> getRolesForUser(Identity identity) throws SystemException {
+        List<Role> results = getSimpleJdbcTemplate().query("SELECT dbuserrole.* FROM dbuserrole, dbuserrole2user WHERE " +
                 "dbuserrole.Domain = dbuserrole2user.RoleDomain AND " +
                 "dbuserrole.RoleId = dbuserrole2user.RoleId AND " +
-                "dbuserrole2user.UserDomain = ? AND dbuserrole2user.UserId = ?",
-                new Object[] {identity.getDomain(), identity.getUserId()}, new RoleRowMapper());
+                "dbuserrole2user.UserDomain = ? AND dbuserrole2user.UserId = ?", new RoleRowMapper(),
+                identity.getDomain(), identity.getUserId());
         return results.iterator();
     }
 
-    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
-        List results = getJdbcTemplate().query("SELECT * FROM dbuserrole2user WHERE " +
-                "dbuserrole2user.RoleDomain = ? AND dbuserrole2user.RoleId = ?",
-                new Object[] {roleId.getDomain(), roleId.getId()}, new IdentityRowMapper());
+    public Iterator<Identity> getUsersWithRole(RoleId roleId) throws SystemException {
+        List<Identity> results = getSimpleJdbcTemplate().query("SELECT * FROM dbuserrole2user WHERE " +
+                "dbuserrole2user.RoleDomain = ? AND dbuserrole2user.RoleId = ?", new IdentityRowMapper(),
+                roleId.getDomain(), roleId.getId());
         return results.iterator();
     }
 
@@ -104,9 +107,9 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
         this.domain = domain;
     }
 
-    private class RoleRowMapper implements RowMapper {
+    private class RoleRowMapper implements ParameterizedRowMapper<Role> {
 
-        public Object mapRow(ResultSet rs, int i) throws SQLException {
+        public Role mapRow(ResultSet rs, int i) throws SQLException {
             DefaultRole role = new DefaultRole();
             role.setId(rs.getString("RoleId"));
             role.setDomain(rs.getString("Domain"));
@@ -117,9 +120,9 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
 
     }
 
-    private class IdentityRowMapper implements RowMapper {
+    private class IdentityRowMapper implements ParameterizedRowMapper<Identity> {
 
-        public Object mapRow(ResultSet rs, int i) throws SQLException {
+        public Identity mapRow(ResultSet rs, int i) throws SQLException {
             DefaultIdentity identity = new DefaultIdentity();
             identity.setUserId(rs.getString("UserId"));
             identity.setDomain(rs.getString("UserDomain"));

@@ -22,6 +22,7 @@ import no.kantega.security.api.role.RoleId;
 import no.kantega.security.api.role.RoleComparator;
 import no.kantega.security.api.impl.common.CompoundManagerConfigurable;
 import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.search.DefaultRoleSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
@@ -35,11 +36,11 @@ import java.util.*;
  */
 public class CompoundRoleManager extends CompoundManagerConfigurable implements RoleManager {
 
-    public Iterator getAllRoles() throws SystemException {
-        List totalResult = new ArrayList();
-        for (int i = 0; i < managers.size(); i++) {
-            RoleManager rm = (RoleManager)managers.get(i);
-            Iterator it = rm.getAllRoles();
+    public Iterator<Role> getAllRoles() throws SystemException {
+        List<Role> totalResult = new ArrayList<Role>();
+        for (Object manager : managers) {
+            RoleManager rm = (RoleManager) manager;
+            Iterator<Role> it = rm.getAllRoles();
             if (it != null) {
                 while (it.hasNext()) {
                     totalResult.add(it.next());
@@ -48,19 +49,18 @@ public class CompoundRoleManager extends CompoundManagerConfigurable implements 
         }
 
         // Sorter lista basert på navn på rolle
-        Comparator comparator = new RoleComparator();
-        Collections.sort(totalResult, comparator);
+        Collections.sort(totalResult, new RoleComparator());
 
         return totalResult.iterator();
     }
 
-    public SearchResult searchRoles(String searchphrase) throws SystemException {
-        List totalResult = new ArrayList();
-        for (int i = 0; i < managers.size(); i++) {
-            RoleManager rm = (RoleManager)managers.get(i);
-            SearchResult result = rm.searchRoles(searchphrase);
+    public SearchResult<Role> searchRoles(String searchphrase) throws SystemException {
+        List<Role> totalResult = new ArrayList<Role>();
+        for (Object manager : managers) {
+            RoleManager rm = (RoleManager) manager;
+            SearchResult<Role> result = rm.searchRoles(searchphrase);
             if (result != null) {
-                Iterator it = result.getAllResults();
+                Iterator<Role> it = result.getAllResults();
                 while (it.hasNext()) {
                     totalResult.add(it.next());
                 }
@@ -68,18 +68,17 @@ public class CompoundRoleManager extends CompoundManagerConfigurable implements 
         }
 
         // Sorter lista basert på navn på rolle
-        Comparator comparator = new RoleComparator();
-        Collections.sort(totalResult, comparator);
+        Collections.sort(totalResult, new RoleComparator());
 
-        DefaultSearchResult searchResult = new DefaultSearchResult();
+        DefaultRoleSearchResult searchResult = new DefaultRoleSearchResult();
         searchResult.setResults(totalResult);
 
         return searchResult;
     }
 
     public Role getRoleById(RoleId roleId) throws SystemException {
-        for (int i = 0; i < managers.size(); i++) {
-            RoleManager rm = (RoleManager)managers.get(i);
+        for (Object manager : managers) {
+            RoleManager rm = (RoleManager) manager;
             Role role = rm.getRoleById(roleId);
             if (role != null) {
                 return role;
@@ -89,11 +88,11 @@ public class CompoundRoleManager extends CompoundManagerConfigurable implements 
 
     }
 
-    public Iterator getRolesForUser(Identity identity) throws SystemException {
-        List totalResult = new ArrayList();
-        for (int i = 0; i < managers.size(); i++) {
-            RoleManager rm = (RoleManager)managers.get(i);
-            Iterator it = rm.getRolesForUser(identity);
+    public Iterator<Role> getRolesForUser(Identity identity) throws SystemException {
+        List<Role> totalResult = new ArrayList<Role>();
+        for (Object manager : managers) {
+            RoleManager rm = (RoleManager) manager;
+            Iterator<Role> it = rm.getRolesForUser(identity);
             if (it != null) {
                 while (it.hasNext()) {
                     totalResult.add(it.next());
@@ -102,17 +101,16 @@ public class CompoundRoleManager extends CompoundManagerConfigurable implements 
         }
 
         // Sorter lista basert på navn på rolle
-        Comparator comparator = new RoleComparator();
-        Collections.sort(totalResult, comparator);
+        Collections.sort(totalResult, new RoleComparator());
 
         return totalResult.iterator();
     }
 
-    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
-        List totalResult = new ArrayList();
-        for (int i = 0; i < managers.size(); i++) {
-            RoleManager rm = (RoleManager)managers.get(i);
-            Iterator it = rm.getUsersWithRole(roleId);
+    public Iterator<Identity> getUsersWithRole(RoleId roleId) throws SystemException {
+        List<Identity> totalResult = new ArrayList<Identity>();
+        for (Object manager : managers) {
+            RoleManager rm = (RoleManager) manager;
+            Iterator<Identity> it = rm.getUsersWithRole(roleId);
             if (it != null) {
                 while (it.hasNext()) {
                     totalResult.add(it.next());
@@ -126,8 +124,8 @@ public class CompoundRoleManager extends CompoundManagerConfigurable implements 
     }
 
     public boolean userHasRole(Identity identity, String role) throws SystemException {
-        for (int i = 0; i < managers.size(); i++) {
-            RoleManager rm = (RoleManager)managers.get(i);
+        for (Object manager : managers) {
+            RoleManager rm = (RoleManager) manager;
             if (rm.userHasRole(identity, role)) {
                 return true;
             }

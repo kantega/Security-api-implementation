@@ -20,6 +20,7 @@ import no.kantega.security.api.impl.common.CompoundManagerConfigurable;
 import no.kantega.security.api.profile.ProfileManager;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.ProfileComparator;
+import no.kantega.security.api.search.DefaultProfileSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.common.SystemException;
@@ -33,13 +34,14 @@ import java.util.*;
  * Time: 10:34:39 AM
  */
 public class CompoundUserProfileManager extends CompoundManagerConfigurable implements ProfileManager {
-    public SearchResult searchProfiles(String searchphrase) throws SystemException {
-        List totalResult = new ArrayList();
-        for (int i = 0; i < managers.size(); i++) {
-            ProfileManager pm = (ProfileManager)managers.get(i);
-            SearchResult result = pm.searchProfiles(searchphrase);
+
+    public SearchResult<Profile> searchProfiles(String searchphrase) throws SystemException {
+        List<Profile> totalResult = new ArrayList<Profile>();
+        for (Object manager : managers) {
+            ProfileManager pm = (ProfileManager) manager;
+            SearchResult<Profile> result = pm.searchProfiles(searchphrase);
             if (result != null) {
-                Iterator it = result.getAllResults();
+                Iterator<Profile> it = result.getAllResults();
                 while (it.hasNext()) {
                     totalResult.add(it.next());
                 }
@@ -47,18 +49,17 @@ public class CompoundUserProfileManager extends CompoundManagerConfigurable impl
         }
 
         // Sorter lista basert på navn på brukere
-        Comparator comparator = new ProfileComparator();
-        Collections.sort(totalResult, comparator);
+        Collections.sort(totalResult, new ProfileComparator());
 
-        DefaultSearchResult searchResult = new DefaultSearchResult();
+        DefaultProfileSearchResult searchResult = new DefaultProfileSearchResult();
         searchResult.setResults(totalResult);
 
         return searchResult;
     }
 
     public Profile getProfileForUser(Identity identity) throws SystemException {
-        for (int i = 0; i < managers.size(); i++) {
-            ProfileManager pm = (ProfileManager)managers.get(i);
+        for (Object manager : managers) {
+            ProfileManager pm = (ProfileManager) manager;
             Profile profile = pm.getProfileForUser(identity);
             if (profile != null) {
                 return profile;
@@ -68,8 +69,8 @@ public class CompoundUserProfileManager extends CompoundManagerConfigurable impl
     }
 
     public boolean userHasProfile(Identity identity) throws SystemException {
-        for (int i = 0; i < managers.size(); i++) {
-            ProfileManager pm = (ProfileManager)managers.get(i);
+        for (Object manager : managers) {
+            ProfileManager pm = (ProfileManager) manager;
             if (pm.userHasProfile(identity)) {
                 return true;
             }

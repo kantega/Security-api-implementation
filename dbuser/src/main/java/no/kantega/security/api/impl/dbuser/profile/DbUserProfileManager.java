@@ -22,10 +22,14 @@ import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.profile.DefaultProfile;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.ProfileManager;
+import no.kantega.security.api.search.DefaultIdentitySearchResult;
+import no.kantega.security.api.search.DefaultProfileSearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
@@ -39,7 +43,7 @@ import java.util.Properties;
  * Date: Jan 15, 2007
  * Time: 6:48:38 PM
  */
-public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManager {
+public class DbUserProfileManager extends SimpleJdbcDaoSupport implements ProfileManager {
     private String domain;
 
     /**
@@ -48,8 +52,8 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
      * @return
      * @throws SystemException
      */
-    public SearchResult searchProfiles(String name) throws SystemException {
-        List param  =  new ArrayList();
+    public SearchResult<Profile> searchProfiles(String name) throws SystemException {
+        List<String> param  =  new ArrayList<String>();
 
         if(name == null) name = "";
 
@@ -69,9 +73,9 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
         query += " AND Domain = '" + domain + "'";
 
         String sql = "SELECT * from dbuserprofile WHERE " + query + " ORDER BY GivenName, Surname";
-        List results = getJdbcTemplate().query(sql, param.toArray(), new UserProfileRowMapper());
+        List<Profile> results = getSimpleJdbcTemplate().query(sql, new UserProfileRowMapper(), param.toArray());
 
-        DefaultSearchResult result = new DefaultSearchResult();
+        DefaultProfileSearchResult result = new DefaultProfileSearchResult();
         result.setResults(results);
         return result;
     }
@@ -115,9 +119,9 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
         this.domain = domain;
     }
 
-    private class UserProfileRowMapper implements RowMapper {
+    private class UserProfileRowMapper implements ParameterizedRowMapper<Profile> {
 
-        public Object mapRow(ResultSet rs, int i) throws SQLException {
+        public Profile mapRow(ResultSet rs, int i) throws SQLException {
             DefaultProfile profile = new DefaultProfile();
 
             DefaultIdentity identity = new DefaultIdentity();
