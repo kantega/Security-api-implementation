@@ -4,7 +4,7 @@
     <groupId>no.kantega.security.api.impl</groupId>
     <artifactId>securityapi-impl</artifactId>
     <packaging>pom</packaging>
-    <version>2.165-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <name>Implementation of security-api</name>
     <url>http://kantega.no</url>
 
@@ -101,9 +101,9 @@
 
     <properties>
         <springframework.version>2.5.5</springframework.version>
-        <securityapi.version>1.10</securityapi.version>
-        <securityapi.openimpl.version>1.1</securityapi.openimpl.version>
-        <aksess.version>6.1.11</aksess.version>
+        <securityapi.version>2.0-SNAPSHOT</securityapi.version>
+        <securityapi.openimpl.version>2.0-SNAPSHOT</securityapi.openimpl.version>
+        <aksess.version>7.0ea-SNAPSHOT</aksess.version>
     </properties>
 
     <build>

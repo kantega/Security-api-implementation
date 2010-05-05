@@ -4,6 +4,7 @@ import no.kantega.security.api.profile.ProfileManager;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.DefaultProfile;
 import no.kantega.security.api.profile.ProfileComparator;
+import no.kantega.security.api.search.DefaultProfileSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.common.SystemException;
@@ -30,10 +31,10 @@ public class XMLUserProfileManager extends XMLUserManagerConfigurable implements
     private static final String EMAIL_ATTRIBUTE = "email";
     private static final String DEPARTMENT_ATTRIBUTE = "department";
 
-    public SearchResult searchProfiles(String name) throws SystemException {
-        DefaultSearchResult searchResult = new DefaultSearchResult();
+    public SearchResult<Profile> searchProfiles(String name) throws SystemException {
+        DefaultProfileSearchResult searchResult = new DefaultProfileSearchResult();
 
-        List users = new ArrayList();
+        List<Profile> users = new ArrayList<Profile>();
 
         if (name == null || name.length() < 3) {
             return searchResult;
@@ -72,8 +73,7 @@ public class XMLUserProfileManager extends XMLUserManagerConfigurable implements
         }
 
         // Sorter lista basert på navn på bruker
-        Comparator comparator = new ProfileComparator();
-        Collections.sort(users, comparator);
+        Collections.sort(users, new ProfileComparator());
 
         searchResult.setResults(users);
 

@@ -10,6 +10,7 @@ import no.kantega.security.api.profile.DefaultProfile;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.ProfileComparator;
 import no.kantega.security.api.profile.ProfileManager;
+import no.kantega.security.api.search.DefaultProfileSearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.search.SearchResult;
 
@@ -25,8 +26,8 @@ import java.util.*;
 public class LdapProfileManager extends LdapConfigurable implements ProfileManager {
     private String domain = "";
 
-    public SearchResult searchProfiles(String name) throws SystemException {
-        DefaultSearchResult searchResult = new DefaultSearchResult();
+    public SearchResult<Profile> searchProfiles(String name) throws SystemException {
+        DefaultProfileSearchResult searchResult = new DefaultProfileSearchResult();
 
         if (name == null) name = "";
 
@@ -79,7 +80,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             ldapConstraints.setMaxResults(maxSearchResults);
             c.setConstraints(ldapConstraints);
             LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, searchAttributes, false);
-            List profiles = new ArrayList();
+            List<Profile> profiles = new ArrayList<Profile>();
 
             while (results.hasMore()) {
                 try {

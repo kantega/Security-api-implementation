@@ -22,7 +22,7 @@ public class FeideProfileManager implements ProfileManager {
     protected String departmentAttribute = "o";
     protected String emailAttribute = "mail";
 
-    public SearchResult searchProfiles(String string) throws SystemException {
+    public SearchResult<Profile> searchProfiles(String string) throws SystemException {
         return null;
     }
 

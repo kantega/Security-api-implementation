@@ -3,6 +3,7 @@
 import no.kantega.security.api.impl.xmluser.XMLUserManagerConfigurable;
 import no.kantega.security.api.role.*;
 import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.search.DefaultRoleSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
@@ -28,15 +29,15 @@ public class XMLUserRoleManager extends XMLUserManagerConfigurable implements Ro
     private static final String ROLEID_ATTRIBUTE = "rolename";
     private static final String ROLENAME_ATTRIBUTE = "description";
 
-    public Iterator getAllRoles() throws SystemException {
+    public Iterator<Role> getAllRoles() throws SystemException {
         return searchRoles(null).getAllResults();
     }
 
 
-    public SearchResult searchRoles(String name) throws SystemException {
-        DefaultSearchResult searchResult = new DefaultSearchResult();
+    public SearchResult<Role> searchRoles(String name) throws SystemException {
+        DefaultRoleSearchResult searchResult = new DefaultRoleSearchResult();
 
-        List roles = new ArrayList();
+        List<Role> roles = new ArrayList<Role>();
 
         Document usersdoc = null;
         try {
@@ -69,8 +70,7 @@ public class XMLUserRoleManager extends XMLUserManagerConfigurable implements Ro
         }
 
         // Sorter lista basert på navn på rolle
-        Comparator comparator = new RoleComparator();
-        Collections.sort(roles, comparator);
+        Collections.sort(roles, new RoleComparator());
 
         searchResult.setResults(roles);
 
@@ -91,8 +91,8 @@ public class XMLUserRoleManager extends XMLUserManagerConfigurable implements Ro
     }
 
 
-    public Iterator getRolesForUser(Identity identity) throws SystemException {
-        List roles = new ArrayList();
+    public Iterator<Role> getRolesForUser(Identity identity) throws SystemException {
+        List<Role> roles = new ArrayList<Role>();
 
         if (identity == null) {
             return roles.iterator();
@@ -132,8 +132,8 @@ public class XMLUserRoleManager extends XMLUserManagerConfigurable implements Ro
         return roles.iterator();
     }
 
-    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
-        List users = new ArrayList();
+    public Iterator<Identity> getUsersWithRole(RoleId roleId) throws SystemException {
+        List<Identity> users = new ArrayList<Identity>();
 
         if (!roleId.getDomain().equalsIgnoreCase(domain)) {
             return users.iterator();
