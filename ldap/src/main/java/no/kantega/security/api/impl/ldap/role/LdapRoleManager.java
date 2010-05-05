@@ -1,13 +1,12 @@
 package no.kantega.security.api.impl.ldap.role;
 
 import no.kantega.security.api.role.*;
+import no.kantega.security.api.search.DefaultRoleSearchResult;
 import no.kantega.security.api.search.SearchResult;
-import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.identity.DefaultIdentity;
 import no.kantega.security.api.impl.ldap.LdapConfigurable;
 import no.kantega.security.api.common.SystemException;
-import no.kantega.security.api.profile.ProfileComparator;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +25,8 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
         return searchRoles(null).getAllResults();
     }
 
-    public SearchResult searchRoles(String rolename) throws SystemException {
-        DefaultSearchResult searchResult = new DefaultSearchResult();
+    public SearchResult<Role> searchRoles(String rolename) throws SystemException {
+        DefaultRoleSearchResult searchResult = new DefaultRoleSearchResult();
         LDAPConnection c = new LDAPConnection();
 
         String filter = "";
@@ -142,9 +141,9 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
     }
 
 
-    public Iterator getRolesForUser(Identity identity) throws SystemException {
+    public Iterator<Role> getRolesForUser(Identity identity) throws SystemException {
 
-        List roles = new ArrayList();
+        List<Role> roles = new ArrayList<Role>();
         if (!identity.getDomain().equals(domain)) {
             return roles.iterator();
         }
@@ -183,7 +182,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
                     rolesFilter = "(" + roleMemberAttribute + "=" + key + ")";
                 }
 
-                List rolesDN = new ArrayList();
+                List<String> rolesDN = new ArrayList<String>();
 
                 // Finn roller som brukeren er gitt direkte tilgang til
                 String base = searchBaseAllRoles;
@@ -234,8 +233,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
                             LDAPEntry entry = resultsRoleRoles.next();
                             Role role = getRoleFromLDAPEntry(entry);
                             boolean userHasRole = false;
-                            for (int i = 0; i < roles.size(); i++) {
-                                Role tmp = (Role)roles.get(i);
+                            for (Role tmp : roles) {
                                 if (role.getId().equals(tmp.getId())) {
                                     userHasRole = true;
                                     break;
@@ -267,8 +265,8 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
         return roles.iterator();
     }
 
-    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
-        List users = new ArrayList();
+    public Iterator<Identity> getUsersWithRole(RoleId roleId) throws SystemException {
+        List<Identity> users = new ArrayList<Identity>();
 
         if (!roleId.getDomain().equals(domain)) {
             return users.iterator();
