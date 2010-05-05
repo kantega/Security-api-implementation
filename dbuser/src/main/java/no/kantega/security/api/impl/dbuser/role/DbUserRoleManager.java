@@ -24,12 +24,9 @@ import no.kantega.security.api.role.Role;
 import no.kantega.security.api.role.RoleId;
 import no.kantega.security.api.role.RoleManager;
 import no.kantega.security.api.search.DefaultRoleSearchResult;
-import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.search.SearchResult;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -116,8 +113,6 @@ public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManag
             role.setName(rs.getString("RoleName"));
             return role;
         }
-
-
     }
 
     private class IdentityRowMapper implements ParameterizedRowMapper<Identity> {
@@ -128,7 +123,5 @@ public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManag
             identity.setDomain(rs.getString("UserDomain"));
             return identity;
         }
-
-
     }
 }

@@ -22,15 +22,11 @@ import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.profile.DefaultProfile;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.ProfileManager;
-import no.kantega.security.api.search.DefaultIdentitySearchResult;
 import no.kantega.security.api.search.DefaultProfileSearchResult;
-import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
