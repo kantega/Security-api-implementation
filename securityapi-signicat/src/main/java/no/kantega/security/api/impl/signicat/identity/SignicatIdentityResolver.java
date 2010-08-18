@@ -30,6 +30,7 @@ public class SignicatIdentityResolver implements IdentityResolver {
     private static final String SIGNICAT_PARAM_DEBUG = "debug";
     private static final String SIGNICAT_PARAM_TRUSTED_CERTIFICATE = "asserting.party.certificate.subject.dn";
     private static final String SIGNICAT_PARAM_TIME_SKEW = "time.skew";
+    public static final String REQUEST_URL = "SignicatIdentityResolver_RequestUrl";
 
     private String authenticationContext;
     private String authenticationContextDescription;
@@ -135,7 +136,26 @@ public class SignicatIdentityResolver implements IdentityResolver {
         this.configuration = configuration;
     }
 
+    /**
+     * Returns the URL of the requested service. If the application requires a specific request
+     * URL this may be set in the defined attribute SignicatIdentityResolver.REQUEST_URL in the request.
+     * @param request
+     * @return
+     * @throws MalformedURLException
+     */
     private URL getRequestUrl(HttpServletRequest request) throws MalformedURLException {
+        URL specificRequestUrl = null;
+        try{
+            specificRequestUrl = (URL) request.getAttribute(REQUEST_URL);
+        }
+        catch(Exception e){
+
+        }
+
+        if (specificRequestUrl!=null){
+            return specificRequestUrl;
+        }
+
         String url = request.getRequestURL().toString();
         String originalUri = (String)request.getAttribute("javax.servlet.error.request_uri");
         if (originalUri != null) {
