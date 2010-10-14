@@ -1,0 +1,1 @@
+CREATE TABLE dbuserpasswordresettoken (domain varchar(255), userid varchar(255), token varchar(255), expiredate datetime);

@@ -69,6 +69,11 @@
         <property name="defaultCreateHash" value="SHA-256"/>
     </bean>
 
+    <bean id="dbUserResetPasswordTokenManager" class="no.kantega.security.api.impl.dbuser.password.DbUserResetPasswordTokenManager">
+        <property name="dataSource">
+            <ref bean="aksessDataSource"/>
+        </property>
+    </bean>    
 
     <bean id="sha256PasswordCrypt" class="no.kantega.security.api.impl.dbuser.password.JdkDigestCrypt">
         <property name="algorithm" value="SHA-256"/>
