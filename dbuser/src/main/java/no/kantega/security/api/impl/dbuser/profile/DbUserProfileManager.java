@@ -53,20 +53,26 @@ public class DbUserProfileManager extends SimpleJdbcDaoSupport implements Profil
 
         if(name == null) name = "";
 
-        String query = " (GivenName LIKE ? OR Surname LIKE ? OR UserId LIKE ?)";
-        param.add("%" + name + "%");
-        param.add("%" + name + "%");
-        param.add("%" + name + "%");
+        String query = "";
 
-        // Dersom brukeren har tastet inn flere navn antar vi at det siste er etternavn
-        if (name.indexOf(' ') != -1) {
-            String givenName = name.substring(0, name.lastIndexOf(' ')).trim();
-            String surname = name.substring(name.lastIndexOf(' '), name.length()).trim();
-            query += " OR (GivenName LIKE ? AND Surname LIKE ?)";
-            param.add("%" + givenName + "%");
-            param.add("%" + surname + "%");
+        if (name.length() > 0) {
+            query = " (GivenName LIKE ? OR Surname LIKE ? OR UserId LIKE ?)";
+            param.add("%" + name + "%");
+            param.add("%" + name + "%");
+            param.add("%" + name + "%");
+
+            // Dersom brukeren har tastet inn flere navn antar vi at det siste er etternavn
+            if (name.indexOf(' ') != -1) {
+                String givenName = name.substring(0, name.lastIndexOf(' ')).trim();
+                String surname = name.substring(name.lastIndexOf(' '), name.length()).trim();
+                query += " OR (GivenName LIKE ? AND Surname LIKE ?)";
+                param.add("%" + givenName + "%");
+                param.add("%" + surname + "%");
+            }
+            query += " AND ";
         }
-        query += " AND Domain = '" + domain + "'";
+
+        query += " Domain = '" + domain + "'";
 
         String sql = "SELECT * from dbuserprofile WHERE " + query + " ORDER BY GivenName, Surname";
         List<Profile> results = getSimpleJdbcTemplate().query(sql, new UserProfileRowMapper(), param.toArray());
