@@ -38,43 +38,11 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>maven.org</id>
-            <url>http://repo1.maven.org/maven/</url>
-        </repository>
-        <repository>
-            <id>subversion</id>
-            <name>Kantega Maven Repository</name>
-            <url>http://maven.kantega.lan/maven2/external</url>
-        </repository>
-        <repository>
-            <id>subversioninternal</id>
-            <name>Kantega Internal Maven Repository</name>
-            <url>http://maven.kantega.lan/maven2/internal</url>
-        </repository>
-
-        <repository>
-            <id>subversion2</id>
-            <name>Kantega Maven Legacy Repository</name>
-            <url>http://maven.kantega.lan/maven/</url>
-            <layout>legacy</layout>
-        </repository>
-
-    </repositories>
-
     <distributionManagement>
         <repository>
-            <id>subversion</id>
-            <name>subversion.kantega.no</name>
-            <url>scpexe://subversion.kantega.no/var/www/html/maven2/internal/</url>
+            <id>kantega-releases</id>
+            <url>http://nexus.kantega.lan/content/repositories/releases/</url>
         </repository>
-
-        <site>
-            <id>maven</id>
-            <name>Aksess website</name>
-            <url>scpexe://subversion.kantega.no/var/www/html/aksess/security-api-impl</url>
-        </site>
     </distributionManagement>
 
     <pluginRepositories>
@@ -110,6 +78,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
