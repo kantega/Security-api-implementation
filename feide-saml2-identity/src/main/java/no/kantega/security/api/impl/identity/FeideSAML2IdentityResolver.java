@@ -127,10 +127,8 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
 
             request.getSession().invalidate();
             response.sendRedirect(logoutUrl);
-        } catch (SAML2Exception e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("Error logging out", e);
         }
     }
 
@@ -140,7 +138,7 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
         String logoutResponseStr = request.getParameter(Constants.PARAMETER_SAMLRESPONSE);
         String relayState = request.getParameter(Constants.PARAMETER_RELAYSTATE);
 
-        String logoutUrl = null;
+        String logoutUrl;
         if (logoutRequestStr != null) {
             /********************************************
              * There has been a LogoutRequest from IDP.
