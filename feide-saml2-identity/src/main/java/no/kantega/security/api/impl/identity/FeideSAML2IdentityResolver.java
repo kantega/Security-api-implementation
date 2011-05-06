@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.higgins.saml2idp.saml2.SAMLAssertion;
 import org.eclipse.higgins.saml2idp.saml2.SAMLConstants;
 import org.eclipse.higgins.saml2idp.saml2.SAMLResponse;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,10 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
     private String authenticationContextDescription = "FeideID";
     private String authenticationContextIconUrl = "";
 
+    private String spConfFilePath;
+
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
+        init(request.getSession());
         DefaultAuthenticatedIdentity identity = null;
 
         HttpSession session = request.getSession(false);
@@ -46,7 +50,8 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
         EduPerson eduPerson;
         boolean sessionExist = session != null;
         boolean eduPersonExist = (eduPerson = Common.getEduPerson(session)) != null;
-        if (sessionExist && eduPersonExist){
+        boolean isAuthenticated = sessionExist && eduPersonExist;
+        if (isAuthenticated){
             /**********************************************************
              * The user is logged on.
              * ********************************************************/
@@ -56,6 +61,40 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
 
         }
         return identity;
+    }
+
+    private void init(HttpSession session) {
+        if(session == null){
+            throw new IllegalArgumentException("Session was null");
+        }
+        ServletContext servletContext = session.getServletContext();
+        try {
+            String fullspConfFilePath = checkContextPath(spConfFilePath, servletContext);
+            SPConf spConf =  new SPConf(fullspConfFilePath);
+
+            String idpConfFile = checkContextPath(spConf.getIdpConfFile(), servletContext);
+
+            IDPConf idpConf = new IDPConf(idpConfFile);
+
+            Common.setConfigIDP(servletContext, idpConf);
+            Common.setConfigSP(servletContext, spConf);
+        } catch (ConfigurationException e) {
+            log.error("Error when initializing", e);
+        }
+    }
+
+    /**
+     * If the path starts with /WEB-INF/ it is asumed that the file is in the context and
+     * the real context path is returned.
+     * @param path Path of the file - can not be null.
+     * @return Return File path string
+     * @throws ConfigurationException If init param is null or an empty string
+     */
+    private String checkContextPath(String path, ServletContext servletContext){
+        if (path.startsWith("/WEB-INF/")){
+            path = servletContext.getRealPath(path);
+        }
+        return path;
     }
 
     private void createEduPerson(HttpSession session, String samlResponseArg) {
@@ -95,19 +134,95 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
     }
 
     public void initateLogin(LoginContext loginContext) {
-        String relayState = loginContext.getRequest().getParameter(Constants.PARAMETER_RELAYSTATE);
+        HttpServletResponse response = loginContext.getResponse();
+        HttpServletRequest request = loginContext.getRequest();
+        HttpSession session = request.getSession();
+        init(session);
 
-        ServletContext servletContext = loginContext.getRequest().getSession().getServletContext();
-        IDPConf idpConfig = Common.getConfigIDP(servletContext);
-        SPConf spConfig = Common.getConfigSP(servletContext);
-
+        avoidCaching(response);
         try {
-            String url = SAML2Util.createSAMLAuthnRequest(idpConfig, spConfig, relayState);
-            loginContext.getResponse().sendRedirect(url);
+
+            String relayState = loginContext.getTargetUri().toString();
+            String samlResponseArg = request.getParameter(Constants.PARAMETER_SAMLRESPONSE);
+
+            ServletContext servletContext = request.getSession().getServletContext();
+            IDPConf idpConfig = Common.getConfigIDP(servletContext);
+            SPConf spConfig = Common.getConfigSP(servletContext);
+
+            String loginUrl;
+
+            boolean sessionExist = session != null;
+            boolean eduPersonExist = Common.getEduPerson(session) != null;
+            boolean isAuthenticated = sessionExist && eduPersonExist;
+            if (isAuthenticated){
+                /**********************************************************
+                 * The user is logged on. Just let it pass through.
+                 * ********************************************************/
+                 loginUrl = loginContext.getTargetUri().toString();
+
+            } else if (samlResponseArg != null) {
+                /**********************************************************
+                 * Handle a authn. response from the IDP
+                 * ********************************************************/
+
+                log.debug("LoginServlet: handle response from IDP. Relaystate is: " + relayState);
+
+                SAMLResponse samlResponse = SAML2Util.parseSAMLResponse(samlResponseArg);
+
+                if (spConfig.getWantSignedAssertions()){
+                    SAML2Util.verifySignature(samlResponse, idpConfig.getPublicKey());
+                }
+
+                log.debug(SAML2Util.dom2String(samlResponse.getDocument()));
+
+                String statusCodeValue = samlResponse.getStatusCodeValue();
+
+                if (! statusCodeValue.equals(SAMLConstants.STATUSCODE_SUCCESS)) {
+                    throw new IllegalStateException("User NOT successfully logged in. SAMLResponseStatusCode:" + statusCodeValue);
+                }
+
+                createAndSetEduPerson(session, relayState, idpConfig, samlResponse);
+
+                loginUrl = loginContext.getTargetUri().toString();
+
+            }else{
+                /***********************************************
+                 * Start a login procedure and redirect to IdP
+                 **********************************************/
+                log.debug("Starting a logon procedure");
+
+                loginUrl = SAML2Util.createSAMLAuthnRequest(idpConfig, spConfig, relayState);
+            }
+
+            log.debug("Redirect to: " + loginUrl + ".");
+            response.sendRedirect(loginUrl);
 
         } catch (Exception e) {
-            log.error("Error sending redirect to login", e);
+            try {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Ikke autentisert - SAMLResponseStatusCode:");
+            } catch (IOException e1) {
+                log.error("error", e1);
+            }
         }
+    }
+
+    private void createAndSetEduPerson(HttpSession session, String relayState, IDPConf idpConfig, SAMLResponse samlResponse) throws SAML2Exception {
+        SAMLAssertion samlAssertion = samlResponse.getSAMLAssertion();
+
+        // Save nameID & sessionIndex in session, to be used in logout
+        String nameId = samlAssertion.getSubject().getNameID();
+        String sessionIndex = SAML2Util.parseSessionIndex(samlAssertion);
+        Common.setNameID(session, nameId);
+        Common.setSessionIndex(session, sessionIndex);
+
+        // Build the internal user-data from the asserion
+        EduPerson eduPerson = SAML2Util.createEduPerson(samlAssertion, idpConfig.isAttribValuesBase64Encoded(), idpConfig.getFeideSplitChar());
+
+        // Set the internal user-data in the session
+        Common.setEduPerson(session, eduPerson);
+
+        log.debug(eduPerson.dump());
+        log.debug("SAML2Util.handleSAMLResponse: redirecting to: " + relayState);
     }
 
     public void initiateLogout(LogoutContext logoutContext) {
@@ -198,5 +313,10 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
 
     public String getAuthenticationContextIconUrl() {
         return authenticationContextIconUrl;
+    }
+
+    @Required
+    public void setSpConfFilePath(String spConfFilePath) {
+        this.spConfFilePath = spConfFilePath;
     }
 }
