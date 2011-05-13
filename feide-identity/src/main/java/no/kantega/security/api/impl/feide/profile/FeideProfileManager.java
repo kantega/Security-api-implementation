@@ -1,12 +1,12 @@
 package no.kantega.security.api.impl.feide.profile;
 
-import no.kantega.security.api.profile.ProfileManager;
-import no.kantega.security.api.profile.Profile;
-import no.kantega.security.api.profile.DefaultProfile;
-import no.kantega.security.api.search.SearchResult;
 import no.kantega.security.api.common.SystemException;
-import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.identity.AuthenticatedIdentity;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.profile.DefaultProfile;
+import no.kantega.security.api.profile.Profile;
+import no.kantega.security.api.profile.ProfileManager;
+import no.kantega.security.api.search.SearchResult;
 
 import java.util.Properties;
 
@@ -72,10 +72,7 @@ public class FeideProfileManager implements ProfileManager {
     }
 
     public boolean userHasProfile(Identity identity) throws SystemException {
-        if (identity instanceof AuthenticatedIdentity) {
-            return true;
-        }
-        return false;
+        return identity instanceof AuthenticatedIdentity;
     }
 
     public void setDisplayNameAttribute(String displayNameAttribute) {

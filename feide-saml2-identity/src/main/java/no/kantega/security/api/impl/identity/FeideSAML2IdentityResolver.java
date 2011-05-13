@@ -38,7 +38,6 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
         String samlResponseArg = request.getParameter(Constants.PARAMETER_SAMLRESPONSE);
         if(samlResponseArg != null ){
             createEduPerson(session, samlResponseArg);
-
         }
 
         EduPerson eduPerson;
@@ -52,7 +51,6 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
             identity = new DefaultAuthenticatedIdentity(this);
             identity.setUserId(eduPerson.getUsername());
             identity.setDomain(authenticationContext);
-
         }
         return identity;
     }
