@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * @author marlil marlil@kantega.no
@@ -39,13 +40,6 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
             createEduPerson(session, samlResponseArg);
 
         }
-        String relayState = request.getParameter(Constants.PARAMETER_RELAYSTATE);
-
-        if (relayState == null) {
-            log.error("Required parameter " + Constants.PARAMETER_RELAYSTATE + " not found.");
-            return null;
-        }
-
 
         EduPerson eduPerson;
         boolean sessionExist = session != null;
@@ -88,7 +82,6 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
      * the real context path is returned.
      * @param path Path of the file - can not be null.
      * @return Return File path string
-     * @throws ConfigurationException If init param is null or an empty string
      */
     private String checkContextPath(String path, ServletContext servletContext){
         if (path.startsWith("/WEB-INF/")){
@@ -141,8 +134,10 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
 
         avoidCaching(response);
         try {
-
-            String relayState = loginContext.getTargetUri().toString();
+            String relayState = null;
+            if (loginContext.getTargetUri() != null) {
+                relayState = loginContext.getTargetUri().toString();
+            }
             String samlResponseArg = request.getParameter(Constants.PARAMETER_SAMLRESPONSE);
 
             ServletContext servletContext = request.getSession().getServletContext();
@@ -151,16 +146,7 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
 
             String loginUrl;
 
-            boolean sessionExist = session != null;
-            boolean eduPersonExist = Common.getEduPerson(session) != null;
-            boolean isAuthenticated = sessionExist && eduPersonExist;
-            if (isAuthenticated){
-                /**********************************************************
-                 * The user is logged on. Just let it pass through.
-                 * ********************************************************/
-                 loginUrl = loginContext.getTargetUri().toString();
-
-            } else if (samlResponseArg != null) {
+            if (samlResponseArg != null) {
                 /**********************************************************
                  * Handle a authn. response from the IDP
                  * ********************************************************/
@@ -263,7 +249,9 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
                     logoutRequestStr,
                     relayState);
 
-            log.debug("Send LogoutResponse, Redirect to: " + logoutUrl + ".");
+            if (log.isDebugEnabled()) {
+                log.debug("Send LogoutResponse, Redirect to: " + logoutUrl + ".");
+            }
         } else if (logoutResponseStr != null) {
             /********************************************
              * We have got a LogoutResponse from IDP.
@@ -272,7 +260,9 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
             // Parse the response fra IDP
             SAMLLogoutResponse samlLogoutResponse = SAML2Util.parseSAMLogoutResponse(logoutResponseStr);
 
-            log.debug("Parsed LogoutResponse:" + SAML2Util.dom2String(samlLogoutResponse.getDocument()));
+            if (log.isDebugEnabled()) {
+                log.debug("Parsed LogoutResponse:" + SAML2Util.dom2String(samlLogoutResponse.getDocument()));
+            }
 
             logoutUrl = relayState;
         } else {
@@ -281,7 +271,7 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
              ****************************************************************/
 
             // Use a predefined page as RelayState
-            String logoutPage = logoutContext.getTargetUri().toASCIIString();
+            String logoutPage = getLogoutPage(logoutContext);
 
             // Retrieve the namID & sessionIndex from the session.
             HttpSession session = request.getSession();
@@ -291,9 +281,29 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
             // Create the URL to redirect to
             logoutUrl = SAML2Util.createSAMLLogoutRequest(idpConfig, spConfig, nameID, sessionIndex, logoutPage);
 
-            log.debug("Redirect to: " + logoutUrl + ".");
+            if (log.isDebugEnabled()) {
+                log.debug("Redirect to: " + logoutUrl + ".");
+            }
         }
         return logoutUrl;
+    }
+
+    private String getLogoutPage(LogoutContext logoutContext) {
+        URI targetUri = logoutContext.getTargetUri();
+        String targetUrl;
+        if(targetUri == null){
+            targetUrl = getUrlBase(logoutContext);
+        }else {
+            targetUrl = targetUri.toString();
+        }
+        return targetUrl;
+    }
+
+    private String getUrlBase(LogoutContext logoutContext) {
+        String targetUrl;
+        StringBuffer requestURL = logoutContext.getRequest().getRequestURL();
+        targetUrl = requestURL.substring(0, requestURL.lastIndexOf("/"));
+        return targetUrl;
     }
 
     private void avoidCaching(HttpServletResponse response) {
