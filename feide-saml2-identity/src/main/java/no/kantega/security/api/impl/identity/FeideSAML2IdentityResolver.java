@@ -121,6 +121,8 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
 
         EduPerson eduPerson = SAML2Util.createEduPerson(samlAssertion, idpConfig.isAttribValuesBase64Encoded(), idpConfig.getFeideSplitChar());
 
+        log.info("Authenticated as " + eduPerson.getUsername());
+
         Common.setEduPerson(session, eduPerson);
     }
 
@@ -315,12 +317,25 @@ public class FeideSAML2IdentityResolver implements IdentityResolver {
         return authenticationContext;
     }
 
+    @Required
+    public void setAuthenticationContext(String authenticationContext) {
+        this.authenticationContext = authenticationContext;
+    }
+
     public String getAuthenticationContextDescription() {
         return authenticationContextDescription;
     }
 
+    public void setAuthenticationContextDescription(String authenticationContextDescription) {
+        this.authenticationContextDescription = authenticationContextDescription;
+    }
+
     public String getAuthenticationContextIconUrl() {
         return authenticationContextIconUrl;
+    }
+
+    public void setAuthenticationContextIconUrl(String authenticationContextIconUrl) {
+        this.authenticationContextIconUrl = authenticationContextIconUrl;
     }
 
     @Required
