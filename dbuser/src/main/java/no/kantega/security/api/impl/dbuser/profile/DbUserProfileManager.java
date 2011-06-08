@@ -107,6 +107,44 @@ public class DbUserProfileManager extends SimpleJdbcDaoSupport implements Profil
         return null;
     }
 
+    SearchResult<Profile> getProfileForUsers(List<Identity> identities) throws SystemException {
+        if (identities == null) {
+            return new DefaultProfileSearchResult();
+        }
+
+        List<String> param  =  new ArrayList<String>();
+
+
+        String query = "(";
+
+        boolean identitiesWithThisDomainFound = false;
+        for (Identity identity : identities) {
+            if (identity.getDomain().equalsIgnoreCase(domain)) {
+                if (identitiesWithThisDomainFound) {
+                    query += " OR ";
+                }
+                query += "UserId = ?";
+                param.add(identity.getUserId());
+                identitiesWithThisDomainFound = true;
+            }
+        }
+        query += ")";
+
+        if (!identitiesWithThisDomainFound) {
+            return new DefaultProfileSearchResult();
+        }
+
+        query += " AND Domain = ?";
+        param.add(domain);
+
+        String sql = "SELECT * from dbuserprofile WHERE " + query + " ORDER BY GivenName, Surname";
+        List<Profile> results = getSimpleJdbcTemplate().query(sql, new UserProfileRowMapper(), param.toArray());
+
+        DefaultProfileSearchResult result = new DefaultProfileSearchResult();
+        result.setResults(results);
+        return result;
+    }
+
     public boolean userHasProfile(Identity identity) throws SystemException {
         if (!identity.getDomain().equalsIgnoreCase(domain)) {
             return false;
