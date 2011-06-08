@@ -158,6 +158,19 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
         return profile;
     }
 
+    public SearchResult<Profile> getProfileForUsers(List<Identity> identities) throws SystemException {
+        List<Profile> profiles = new ArrayList<Profile>();
+        for (Identity identity : identities) {
+            Profile profile = getProfileForUser(identity);
+            if (profile != null) {
+                profiles.add(profile);
+            }
+        }
+        DefaultProfileSearchResult searchResult = new DefaultProfileSearchResult();
+        searchResult.setResults(profiles);
+        return searchResult;
+    }
+
     public boolean userHasProfile(Identity identity) throws SystemException {
         return getProfileForUser(identity) != null;
     }

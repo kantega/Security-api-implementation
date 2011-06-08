@@ -8,6 +8,7 @@ import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.ProfileManager;
 import no.kantega.security.api.search.SearchResult;
 
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -23,6 +24,10 @@ public class FeideProfileManager implements ProfileManager {
     protected String emailAttribute = "mail";
 
     public SearchResult<Profile> searchProfiles(String string) throws SystemException {
+        return null;
+    }
+
+    public SearchResult<Profile> getProfileForUsers(List<Identity> identities) throws SystemException {
         return null;
     }
 
