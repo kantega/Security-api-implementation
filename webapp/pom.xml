@@ -3,7 +3,7 @@
     <parent>
         <groupId>no.kantega.security.api.impl</groupId>
         <artifactId>securityapi-impl</artifactId>
-        <version>3.4-SNAPSHOT</version>
+        <version>3.4</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
