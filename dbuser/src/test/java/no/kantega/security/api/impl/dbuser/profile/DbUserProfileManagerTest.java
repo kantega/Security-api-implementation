@@ -7,6 +7,7 @@ import no.kantega.security.api.impl.dbuser.util.HSQLDBDatabaseCreator;
 import no.kantega.security.api.profile.DefaultProfile;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.search.SearchResult;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -17,31 +18,57 @@ import static org.junit.Assert.assertEquals;
 
 public class DbUserProfileManagerTest {
     private final static String DOMAIN = "mydomain";
+    private Profile donald;
+    private Profile dolly;
+    private Profile threeNames;
+    private DbUserProfileManager profileManager;
 
-    @Test
-    public void testCreateAndGetUsers() throws SystemException {
+
+    @Before
+    public void setUp() throws SystemException {
         DataSource dataSource = new HSQLDBDatabaseCreator("dbuser", getClass().getClassLoader().getResourceAsStream("dbuser.sql")).createDatabase();
-        DbUserProfileManager profileManager = new DbUserProfileManager();
+        profileManager = new DbUserProfileManager();
         profileManager.setDomain(DOMAIN);
         profileManager.setDataSource(dataSource);
+        profileManager.setNameQuerier(new DbNameAndUserIdQuerier());
 
         DbUserProfileUpdateManager profileUpdateManager = new DbUserProfileUpdateManager();
         profileUpdateManager.setDomain(DOMAIN);
         profileUpdateManager.setDataSource(dataSource);
 
 
-        Profile donald = createUserProfile("Donald", "Duck");
+        donald = createUserProfile("Donald", "Duck");
         profileUpdateManager.saveOrUpdateProfile(donald);
 
-        Profile dolly = createUserProfile("Dolly", "Duck");
+        dolly = createUserProfile("Dolly", "Duck");
         profileUpdateManager.saveOrUpdateProfile(dolly);
 
+        threeNames = createUserProfile("Skrue", "Mc Duck");
+        profileUpdateManager.saveOrUpdateProfile(threeNames);
+
+    }
+
+    @Test
+    public void testCreateAndGetUsers() throws SystemException {
         List<Identity> identities = new ArrayList<Identity>();
         identities.add(donald.getIdentity());
         identities.add(dolly.getIdentity());
 
         SearchResult<Profile> profiles = profileManager.getProfileForUsers(identities);
-        assertEquals(profiles.getSize(), 2);
+        assertEquals(2, profiles.getSize());
+
+    }
+
+    @Test
+    public void shouldFindUsersFromSurname() throws SystemException {
+        SearchResult<Profile> profiles = profileManager.searchProfiles("Duck");
+        assertEquals(3, profiles.getSize());
+    }
+
+    @Test
+    public void shouldFindUsersWithDoubleSurname() throws SystemException {
+        SearchResult<Profile> profiles = profileManager.searchProfiles("Skrue Mc Duck");
+        assertEquals(1, profiles.getSize());
     }
 
     private Profile createUserProfile(String givenName, String surname) {

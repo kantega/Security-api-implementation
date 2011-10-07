@@ -39,43 +39,33 @@ import java.util.Properties;
  * Date: Jan 15, 2007
  * Time: 6:48:38 PM
  */
-public class DbUserProfileManager extends SimpleJdbcDaoSupport implements ProfileManager {
+public class
+        DbUserProfileManager extends SimpleJdbcDaoSupport implements ProfileManager {
     private String domain;
 
+
+
+    private AbstractDbNameQuerier querier;
+
     /**
-     * Søker etter en profil.  Søkes i både fornavn og etternavn.
-     * @param name - Navn som skal søkes etter
+     * Sï¿½ker etter en profil.  Sï¿½kes i bï¿½de fornavn og etternavn.
+     * @param name - Navn som skal sï¿½kes etter
      * @return
      * @throws SystemException
      */
     public SearchResult<Profile> searchProfiles(String name) throws SystemException {
-        List<String> param  =  new ArrayList<String>();
+        String query;
 
-        if(name == null) name = "";
-
-        String query = "";
-
-        if (name.length() > 0) {
-            query = " (GivenName LIKE ? OR Surname LIKE ? OR UserId LIKE ?)";
-            param.add("%" + name + "%");
-            param.add("%" + name + "%");
-            param.add("%" + name + "%");
-
-            // Dersom brukeren har tastet inn flere navn antar vi at det siste er etternavn
-            if (name.indexOf(' ') != -1) {
-                String givenName = name.substring(0, name.lastIndexOf(' ')).trim();
-                String surname = name.substring(name.lastIndexOf(' '), name.length()).trim();
-                query += " OR (GivenName LIKE ? AND Surname LIKE ?)";
-                param.add("%" + givenName + "%");
-                param.add("%" + surname + "%");
-            }
+        WhereClause clause = querier.getQuery(name);
+        query = clause.getWherePart();
+        if(query.length() > 0) {
             query += " AND ";
         }
 
         query += " Domain = '" + domain + "'";
 
         String sql = "SELECT * from dbuserprofile WHERE " + query + " ORDER BY GivenName, Surname";
-        List<Profile> results = getSimpleJdbcTemplate().query(sql, new UserProfileRowMapper(), param.toArray());
+        List<Profile> results = getSimpleJdbcTemplate().query(sql, new UserProfileRowMapper(), clause.getParams().toArray());
 
         DefaultProfileSearchResult result = new DefaultProfileSearchResult();
         result.setResults(results);
@@ -157,6 +147,10 @@ public class DbUserProfileManager extends SimpleJdbcDaoSupport implements Profil
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public void setNameQuerier(AbstractDbNameQuerier querier) {
+        this.querier = querier;
     }
 
     private class UserProfileRowMapper implements ParameterizedRowMapper<Profile> {

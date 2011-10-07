@@ -19,6 +19,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+    <bean id="defaultQuerier" class="no.kantega.security.api.impl.dbuser.profile.DbNameAndUserIdQuerier"/>
+
+
     <!-- DBUSER configuration -->
     <bean id="dbuserProfileManager" class="no.kantega.security.api.impl.dbuser.profile.DbUserProfileManager">
         <property name="dataSource">
@@ -27,7 +30,11 @@
         <property name="domain">
             <value>${security.dbuser.domain}</value>
         </property>
+        <property name="nameQuerier">
+            <ref bean="defaultQuerier"/>
+        </property>
     </bean>
+
 
     <bean id="dbuserProfileUpdateManager" class="no.kantega.security.api.impl.dbuser.profile.DbUserProfileUpdateManager">
         <property name="dataSource">
@@ -73,7 +80,7 @@
         <property name="dataSource">
             <ref bean="aksessDataSource"/>
         </property>
-    </bean>    
+    </bean>
 
     <bean id="sha256PasswordCrypt" class="no.kantega.security.api.impl.dbuser.password.JdkDigestCrypt">
         <property name="algorithm" value="SHA-256"/>
@@ -90,7 +97,7 @@
         </property>
         <property name="useTransportSecurity">
             <value>${security.login.usessl}</value>
-        </property>        
+        </property>
     </bean>
 
     <!-- Sikkerhetsrealm for Aksess -->
