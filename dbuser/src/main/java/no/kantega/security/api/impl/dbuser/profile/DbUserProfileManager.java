@@ -140,7 +140,7 @@ public class
             return false;
         }
 
-        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()});
+        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new Object[]{identity.getDomain(), identity.getUserId()});
         return antall > 0;
 
     }
@@ -187,6 +187,18 @@ public class
 
         public Properties getAttributes() {
             return p;
+        }
+    }
+
+    /**
+     * Ensure that querier is defined after the ProfileManager has been initialized.
+     * @throws Exception
+     */
+    @Override
+    protected void initDao() throws Exception {
+        super.initDao();
+        if (querier == null) {
+            querier = new DbNameAndUserIdQuerier();
         }
     }
 }
