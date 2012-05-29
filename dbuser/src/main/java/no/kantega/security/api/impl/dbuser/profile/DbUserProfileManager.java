@@ -182,6 +182,8 @@ public class
         public void processRow(ResultSet rs) throws SQLException {
             String name = rs.getString("Name");
             String value = rs.getString("Value");
+            if (value == null) value = "";
+
             p.setProperty(name, value);
         }
 
