@@ -1,22 +1,18 @@
 package no.kantega.security.api.impl.identity;
 
 import no.kantega.security.api.identity.*;
-import no.ntnu.it.fw.saml2api.*;
-import no.ntnu.it.fw.saml2api.exthiggins.SAMLLogoutResponse;
+import no.ntnu.it.fw.saml2api.IDPConf;
+import no.ntnu.it.fw.saml2api.SAML2Util;
+import no.ntnu.it.fw.saml2api.SPConf;
 import no.ntnu.it.fw.saml2api.http.Common;
 import org.apache.log4j.Logger;
-import org.eclipse.higgins.saml2idp.saml2.SAMLAssertion;
-import org.eclipse.higgins.saml2idp.saml2.SAMLConstants;
-import org.eclipse.higgins.saml2idp.saml2.SAMLResponse;
 import org.springframework.beans.factory.annotation.Required;
-import sun.rmi.runtime.Log;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.net.URI;
 
 /**
  * @author marlil marlil@kantega.no
