@@ -48,7 +48,7 @@ public class CompoundUserProfileManager extends CompoundManagerConfigurable impl
             }
         }
 
-        // Sorter lista basert på navn på brukere
+        // Sorter lista basert pï¿½ navn pï¿½ brukere
         Collections.sort(totalResult, new ProfileComparator());
 
         DefaultProfileSearchResult searchResult = new DefaultProfileSearchResult();
@@ -66,6 +66,19 @@ public class CompoundUserProfileManager extends CompoundManagerConfigurable impl
             }
         }
         return null;
+    }
+
+    public SearchResult<Profile> getProfileForUsers(List<Identity> identities) throws SystemException {
+        List<Profile> profiles = new ArrayList<Profile>();
+        for (Identity identity : identities) {
+            Profile profile = getProfileForUser(identity);
+            if (profile != null) {
+                profiles.add(profile);
+            }
+        }
+        DefaultProfileSearchResult searchResult = new DefaultProfileSearchResult();
+        searchResult.setResults(profiles);
+        return searchResult;
     }
 
     public boolean userHasProfile(Identity identity) throws SystemException {

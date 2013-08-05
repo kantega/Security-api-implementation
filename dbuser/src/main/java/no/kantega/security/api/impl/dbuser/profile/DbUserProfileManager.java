@@ -97,7 +97,7 @@ public class
         return null;
     }
 
-    SearchResult<Profile> getProfileForUsers(List<Identity> identities) throws SystemException {
+    public SearchResult<Profile> getProfileForUsers(List<Identity> identities) throws SystemException {
         if (identities == null) {
             return new DefaultProfileSearchResult();
         }
