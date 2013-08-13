@@ -119,13 +119,15 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
 
         LDAPConnection c = new LDAPConnection();
 
+        final String userId = escapeChars( identity.getUserId() );
+
         try {
             c.connect(host, port);
             String filter;
             if (objectClassUsers.length() > 0) {
                 filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
             } else {
-                filter = "(" + usernameAttribute + "=" + identity.getUserId() + ")";
+                filter = "(" + usernameAttribute + "=" + userId + ")";
             }
 
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
