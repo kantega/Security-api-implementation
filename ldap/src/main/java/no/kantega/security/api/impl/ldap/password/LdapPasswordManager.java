@@ -27,15 +27,17 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
 
         LDAPConnection c = new LDAPConnection();
 
+        final String userId = escapeChars( identity.getUserId() );
+
         try {
 
-            // Kople opp som admin bruker for å finne DN for bruker
+            // Kople opp som admin bruker for ï¿½ finne DN for bruker
             c.connect(host, port);
             String filter = "";
             if (objectClassUsers.length() > 0) {
-                filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
+                filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + userId + "))";
             } else {
-                filter = "(" + usernameAttribute + "=" + identity.getUserId() + ")";
+                filter = "(" + usernameAttribute + "=" + userId + ")";
             }
 
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
@@ -48,7 +50,7 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
                     c.bind(LDAPConnection.LDAP_V3, userDN, password.getBytes());
 
                     // Bind OK - login OK
-                    log.debug("Password verified for userid:" + identity.getUserId());                    
+                    log.debug("Password verified for userid:" + identity.getUserId());
                     return true;
                 } catch (LDAPReferralException l) {
                     // Do nothing
