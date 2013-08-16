@@ -125,7 +125,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             c.connect(host, port);
             String filter;
             if (objectClassUsers.length() > 0) {
-                filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
+                filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + userId + "))";
             } else {
                 filter = "(" + usernameAttribute + "=" + userId + ")";
             }
