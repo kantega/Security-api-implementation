@@ -47,7 +47,7 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
                 try {
                     String userDN = results.next().getDN();
 
-                    c.bind(LDAPConnection.LDAP_V3, userDN, password.getBytes());
+                    c.bind(LDAPConnection.LDAP_V3, userDN, password.getBytes("utf-8"));
 
                     // Bind OK - login OK
                     log.debug("Password verified for userid:" + identity.getUserId());
