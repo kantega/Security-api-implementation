@@ -64,6 +64,7 @@
     <modules>
         <module>common</module>
         <module>dbuser</module>
+        <module>ldap</module>
     </modules>
 
     <properties>
