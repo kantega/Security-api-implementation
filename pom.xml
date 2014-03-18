@@ -54,7 +54,6 @@
 
     <modules>
         <module>fedag-identity</module>
-        <module>feide-identity</module>
         <module>feide-saml2-identity</module>
         <module>ksi-signature</module>
         <module>webapp</module>
@@ -71,7 +70,7 @@
         <springframework.version>2.5.5</springframework.version>
         <securityapi.version>2.6</securityapi.version>
         <securityapi.openimpl.version>2.11</securityapi.openimpl.version>
-        <aksess.version>7.0.0</aksess.version>
+        <aksess.version>7.8.2</aksess.version>
     </properties>
 
     <build>

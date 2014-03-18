@@ -1,19 +1,13 @@
 package no.kantega.security.api.impl.ntlm.filter;
 
 import jcifs.http.NtlmHttpFilter;
+import no.kantega.publishing.common.Aksess;
 
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.io.IOException;
-import java.io.File;
-
-import no.kantega.commons.configuration.Configuration;
-import no.kantega.commons.exception.ConfigurationException;
-import no.kantega.publishing.common.Aksess;
-import org.springframework.core.io.FileSystemResource;
 
 
 public class AksessConfigurableNTLMHttpFilter extends NtlmHttpFilter {
@@ -23,11 +17,7 @@ public class AksessConfigurableNTLMHttpFilter extends NtlmHttpFilter {
 
         final Properties prop;
 
-        try {
-            prop = Aksess.getConfiguration().getProperties();
-        } catch (ConfigurationException e) {
-            throw new ServletException("Can't read configuration properties from aksess", e);
-        }
+        prop = Aksess.getConfiguration().getProperties();
 
         FilterConfig wrapper = new FilterConfig() {
             public String getFilterName() {

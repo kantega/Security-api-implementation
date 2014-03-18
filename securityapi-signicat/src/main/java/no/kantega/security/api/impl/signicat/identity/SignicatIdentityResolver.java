@@ -4,9 +4,15 @@ import com.signicat.services.client.ScResponseException;
 import com.signicat.services.client.ScSecurityException;
 import com.signicat.services.client.saml.SamlFacade;
 import com.signicat.services.client.saml.SamlFacadeFactory;
-import no.kantega.commons.log.Log;
-import no.kantega.security.api.identity.*;
+import no.kantega.security.api.identity.AuthenticatedIdentity;
+import no.kantega.security.api.identity.DefaultAuthenticatedIdentity;
+import no.kantega.security.api.identity.IdentificationFailedException;
+import no.kantega.security.api.identity.IdentityResolver;
+import no.kantega.security.api.identity.LoginContext;
+import no.kantega.security.api.identity.LogoutContext;
 import no.kantega.security.api.impl.signicat.SignicatConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -36,6 +42,7 @@ public class SignicatIdentityResolver implements IdentityResolver {
     private String authenticationContextDescription;
     private String authenticationContextIconUrl;
     private SignicatConfiguration configuration;
+    private Logger log = LoggerFactory.getLogger(getClass());
 
 
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
@@ -49,13 +56,13 @@ public class SignicatIdentityResolver implements IdentityResolver {
                     identity = parseAssertion(assertion, request);
                     session.setAttribute(SESSION_ATTR_IDENTITY, identity);
                 } catch (ScResponseException e) {
-                    Log.error(SOURCE, e, null, null);
+                    log.error(SOURCE, e, null, null);
                     throw new IdentificationFailedException(SOURCE, "ERROR: The user was not authenticated.");
                 } catch (ScSecurityException e) {
-                    Log.error(SOURCE, e, null, null);
+                    log.error(SOURCE, e, null, null);
                     throw new IdentificationFailedException(SOURCE, "ERROR: The login was aborted.");
                 } catch (MalformedURLException e) {
-                    Log.error(SOURCE, e, null, null);
+                    log.error(SOURCE, e, null, null);
                     throw new IdentificationFailedException(SOURCE, "ERROR: The login failed.");
                 }
             }
@@ -93,7 +100,7 @@ public class SignicatIdentityResolver implements IdentityResolver {
         try {
             loginContext.getResponse().sendRedirect(configuration.getLoginUrl() + targetUrl);
         } catch (IOException e) {
-            Log.error(SOURCE, e, null, null);
+            log.error(SOURCE, e, null, null);
         }
     }
 
