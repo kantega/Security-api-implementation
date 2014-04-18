@@ -1,12 +1,13 @@
 package no.kantega.security.api.impl.identity;
 
 import no.kantega.security.api.identity.Identity;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
 public class UserSession {
-    private static Logger log = Logger.getLogger(UserSession.class);
+    private static Logger log = LoggerFactory.getLogger(UserSession.class);
     private Identity identity;
     private String samlNameId;
     private String samlSessionIndex;

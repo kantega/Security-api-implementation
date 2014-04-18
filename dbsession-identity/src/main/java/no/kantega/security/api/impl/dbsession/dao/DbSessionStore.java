@@ -1,9 +1,10 @@
 package no.kantega.security.api.impl.dbsession.dao;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.beans.factory.InitializingBean;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class DbSessionStore extends AbstractSessionStore implements InitializingBean{
     private DataSource dataSource;
-    private Logger log = Logger.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
     private boolean createTables;
 
     public String storeSession( String username) {

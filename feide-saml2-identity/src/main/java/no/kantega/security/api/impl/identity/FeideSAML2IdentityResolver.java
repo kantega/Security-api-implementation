@@ -5,7 +5,8 @@ import no.ntnu.it.fw.saml2api.IDPConf;
 import no.ntnu.it.fw.saml2api.SAML2Util;
 import no.ntnu.it.fw.saml2api.SPConf;
 import no.ntnu.it.fw.saml2api.http.Common;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.ServletContext;
@@ -19,7 +20,7 @@ import java.io.IOException;
  * Based on code in no.ntnu.it.fw.saml2api.http.LoginContext, no.ntnu.it.fw.saml2api.http.LoginContext, no.ntnu.it.fw.saml2api.http.AuthFilter
  */
 public class FeideSAML2IdentityResolver extends AbstractFeideConfigurable implements IdentityResolver  {
-    private static Logger log = Logger.getLogger(FeideSAML2IdentityResolver.class);
+    private static Logger log = LoggerFactory.getLogger(FeideSAML2IdentityResolver.class);
     private String authenticationContext = "Feide";
     private String authenticationContextDescription = "FeideID";
     private String authenticationContextIconUrl = "";

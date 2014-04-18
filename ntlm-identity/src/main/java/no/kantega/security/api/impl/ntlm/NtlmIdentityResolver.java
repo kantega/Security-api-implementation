@@ -2,19 +2,20 @@ package no.kantega.security.api.impl.ntlm;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import no.kantega.security.api.identity.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Properties;
-import java.net.URLEncoder;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Properties;
 
 
 public class NtlmIdentityResolver implements IdentityResolver {
 
     private static final String NTML_REQUEST_ATTR = "NtlmHttpAuth";
     private String authenticationContext = "ntlm";
-    private Logger log = Logger.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
     private static final String TARGET_URI_PARAM = "targetUri";
     private String ntlmUrl;
 

@@ -1,14 +1,14 @@
 package no.kantega.security.api.impl.xmluser.password;
 
-import no.kantega.security.api.password.PasswordManager;
-import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.impl.xmluser.XMLUserManagerConfigurable;
-
+import no.kantega.security.api.password.PasswordManager;
+import org.apache.xpath.XPathAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.apache.xpath.XPathAPI;
-import org.apache.log4j.Logger;
 
 import javax.xml.transform.TransformerException;
 
@@ -19,7 +19,7 @@ import javax.xml.transform.TransformerException;
  */
 public class XMLUserPasswordManager extends XMLUserManagerConfigurable implements PasswordManager {
 
-    private Logger log = Logger.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
         if (!identity.getDomain().equalsIgnoreCase(domain)) {

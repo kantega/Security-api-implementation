@@ -3,7 +3,8 @@ package no.kantega.security.api.impl.dbsession;
 import no.kantega.security.api.identity.*;
 import no.kantega.security.api.impl.dbsession.dao.Session;
 import no.kantega.security.api.impl.dbsession.dao.SessionStore;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class DbSessionIdentityResolver implements IdentityResolver {
     private String identityKeyParam = "identityKey";
     private SessionStore store;
     private String domain = "dbsession";
-    private Logger log = Logger.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
     private String redirectAfterLogoutUrl;
     private String authenticationContext = "dbsession";
     private String authenticationService;

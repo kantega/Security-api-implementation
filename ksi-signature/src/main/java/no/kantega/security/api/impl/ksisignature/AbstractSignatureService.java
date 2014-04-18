@@ -1,9 +1,12 @@
 package no.kantega.security.api.impl.ksisignature;
 
-import no.kantega.security.api.signature.*;
+import ksi.client.signatureservice.SignatureEndpoint;
+import ksi.client.signatureservice.SignatureEndpointServiceLocator;
 import no.kantega.security.api.impl.ksisignature.config.Config;
-import org.apache.log4j.Logger;
+import no.kantega.security.api.signature.*;
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.xml.rpc.ServiceException;
@@ -12,16 +15,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import ksi.client.signatureservice.SignatureEndpointServiceLocator;
-import ksi.client.signatureservice.SignatureEndpoint;
-
 /**
  * User: stelin
  * Date: 10.nov.2006
  * Time: 09:46:28
  */
 public abstract class AbstractSignatureService implements SignatureService, InitializingBean {
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private String signportalUrl;
     private String signportalWebServiceEndpoint;
     private static final String TARGET_PARAMETER_NAME = "target";

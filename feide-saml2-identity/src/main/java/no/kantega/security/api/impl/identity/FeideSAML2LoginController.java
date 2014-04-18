@@ -3,10 +3,11 @@ package no.kantega.security.api.impl.identity;
 import no.kantega.security.api.identity.DefaultIdentity;
 import no.ntnu.it.fw.saml2api.*;
 import no.ntnu.it.fw.saml2api.http.Common;
-import org.apache.log4j.Logger;
 import org.eclipse.higgins.saml2idp.saml2.SAMLAssertion;
 import org.eclipse.higgins.saml2idp.saml2.SAMLConstants;
 import org.eclipse.higgins.saml2idp.saml2.SAMLResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class FeideSAML2LoginController extends AbstractFeideConfigurable implements Controller {
-    private static Logger log = Logger.getLogger(FeideSAML2LoginController.class);
+    private static Logger log = LoggerFactory.getLogger(FeideSAML2LoginController.class);
 
     private String authenticationContext;
     private String defaultUnAuthenticatedUrl;

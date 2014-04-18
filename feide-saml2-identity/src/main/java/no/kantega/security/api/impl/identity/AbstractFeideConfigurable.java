@@ -4,14 +4,15 @@ import no.ntnu.it.fw.saml2api.ConfigurationException;
 import no.ntnu.it.fw.saml2api.IDPConf;
 import no.ntnu.it.fw.saml2api.SPConf;
 import no.ntnu.it.fw.saml2api.http.Common;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 public abstract class AbstractFeideConfigurable {
-    private static Logger log = Logger.getLogger(AbstractFeideConfigurable.class);
+    private static Logger log = LoggerFactory.getLogger(AbstractFeideConfigurable.class);
 
     private String spConfFilePath;
     private boolean isConfigured = false;
