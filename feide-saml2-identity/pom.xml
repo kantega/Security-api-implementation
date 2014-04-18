@@ -7,7 +7,6 @@
         <version>3.12-SNAPSHOT</version>
     </parent>
 
-    <groupId>no.kantega.security.api.impl</groupId>
     <artifactId>feide-saml2-identity</artifactId>
     <name>Feide saml2 identity</name>
 
