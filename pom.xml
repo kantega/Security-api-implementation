@@ -53,7 +53,6 @@
 
     <modules>
         <module>feide-saml2-identity</module>
-        <module>ksi-signature</module>
         <module>ntlm-identity</module>
         <module>securityapi-kerberos</module>
         <module>securityapi-signicat</module>
