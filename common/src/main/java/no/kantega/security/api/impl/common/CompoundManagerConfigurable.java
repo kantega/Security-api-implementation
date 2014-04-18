@@ -23,9 +23,9 @@ import java.util.List;
  * Date: Jun 7, 2007
  * Time: 10:32:40 AM
  */
-public abstract class CompoundManagerConfigurable {
+public abstract class CompoundManagerConfigurable<T> {
     protected String domain;
-    protected List managers;
+    protected List<T> managers;
 
     public String getDomain() {
         return domain;
@@ -35,7 +35,7 @@ public abstract class CompoundManagerConfigurable {
         this.domain = domain;
     }
 
-    public void setManagers(List managers) {
+    public void setManagers(List<T> managers) {
         this.managers = managers;
     }
 }

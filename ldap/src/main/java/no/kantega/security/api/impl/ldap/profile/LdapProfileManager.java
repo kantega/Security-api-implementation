@@ -11,10 +11,12 @@ import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.ProfileComparator;
 import no.kantega.security.api.profile.ProfileManager;
 import no.kantega.security.api.search.DefaultProfileSearchResult;
-import no.kantega.security.api.search.DefaultSearchResult;
 import no.kantega.security.api.search.SearchResult;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,7 +53,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             if (name.length() > 0) {
                 String name1 = name;
                 String name2 = "";
-                if (name.indexOf(" ") != -1) {
+                if (name.contains(" ")) {
                     name1 = name.substring(0, name.lastIndexOf(" ")).trim();
                     name2 = name.substring(name.lastIndexOf(" "), name.length()).trim();
                 }
@@ -161,7 +163,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
     }
 
     public SearchResult<Profile> getProfileForUsers(List<Identity> identities) throws SystemException {
-        List<Profile> profiles = new ArrayList<Profile>();
+        List<Profile> profiles = new ArrayList<>();
         for (Identity identity : identities) {
             Profile profile = getProfileForUser(identity);
             if (profile != null) {
@@ -204,9 +206,8 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             if (getRawAttributes) {
                 Properties p = new Properties();
 
-                Iterator i = entry.getAttributeSet().iterator();
-                while (i.hasNext()) {
-                    LDAPAttribute a = (LDAPAttribute) i.next();
+                for (Object o : entry.getAttributeSet()) {
+                    LDAPAttribute a = (LDAPAttribute) o;
                     String name = a.getName();
                     String value = "";
                     if ("photo".equalsIgnoreCase(name) || "jpegPhoto".equalsIgnoreCase(name)) {
@@ -221,44 +222,5 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             }
         }
         return profile;
-    }
-
-    public static void main(String[] args) {
-        try {
-            LdapProfileManager manager = new LdapProfileManager();
-            manager.setAdminUser("");
-            manager.setAdminPassword("");
-            manager.setDomain("mogul");
-            manager.setHost("ldap.uninett.no");
-            manager.setSearchBaseUsers("dc=uninett,dc=no");
-            manager.setSearchBaseRoles("dc=uninett,dc=no");
-            manager.setUsernameAttribute("uid");
-
-            manager.setObjectClassUsers("person");
-            manager.setDepartmentAttribute("ou");
-
-            SearchResult result = manager.searchProfiles("Anders");
-            System.out.println("Found " + result.getSize() + " userprofiles");
-            Iterator profiles = result.getAllResults();
-
-            int count = 1;
-            while (profiles.hasNext()) {
-                Profile profile =  (Profile)profiles.next();
-                System.out.println(count + ": Name:" + profile.getGivenName() + " " + profile.getSurname() + "(" + profile.getEmail() + ")");
-                count++;
-            }
-
-
-            DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("andska");
-            andska.setDomain("mogul");
-
-            Profile profile = manager.getProfileForUser(andska);
-            if (profile != null) {
-                System.out.println("Found userprofile:" + profile.getGivenName() + " " + profile.getSurname() + " - " + profile.getDepartment());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

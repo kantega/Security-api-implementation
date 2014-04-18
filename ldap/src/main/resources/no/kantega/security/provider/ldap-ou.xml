@@ -1,27 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- LDAP OU configuration -->
     <bean id="ldapConfigurable" abstract="true">
-        <property name="adminUser">
-            <value>${security.ldap.adminuser}</value>
-        </property>
-        <property name="adminPassword">
-            <value>${security.ldap.adminpassword}</value>
-        </property>
-        <property name="host">
-            <value>${security.ldap.host}</value>
-        </property>
-        <property name="searchBaseUsers">
-            <value>${security.ldap.users.searchbase}</value>
-        </property>
-        <property name="searchBaseRoles">
-            <value>${security.ldap.roles.searchbase}</value>
-        </property>
-        <property name="domain">
-            <value>${security.ldap.domain}</value>
-        </property>
+        <property name="adminUser" value="${security.ldap.adminuser}"/>
+        <property name="adminPassword" value="${security.ldap.adminpassword}"/>
+        <property name="host" value="${security.ldap.host}"/>
+        <property name="searchBaseUsers" value="${security.ldap.users.searchbase}"/>
+        <property name="searchBaseRoles" value="${security.ldap.roles.searchbase}"/>
+        <property name="domain" value="${security.ldap.domain}"/>
     </bean>
 
     <bean id="ldapProfileManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.profile.LdapProfileManager">
@@ -34,9 +22,7 @@
     </bean>
 
     <bean id="ldapCompoundManager" class="no.kantega.security.api.impl.common.role.CompoundRoleManager">
-        <property name="domain">
-            <value>${security.ldap.domain}</value>
-        </property>
+        <property name="domain" value="${security.ldap.domain}"/>
         <property name="managers">
             <list>
                 <ref bean="ldapRoleManager"/>

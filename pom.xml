@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.kantega.opensource-parent</groupId>
         <artifactId>opensource-parent</artifactId>
-        <version>1.1</version>
+        <version>1.4</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -28,7 +28,7 @@
     <artifactId>security-api-impl</artifactId>
     <packaging>pom</packaging>
     <version>2.13-SNAPSHOT</version>
-    <name>Open Source implementations of Kantega security API : Parent pom</name>
+    <name>Security API Implementation : Parent pom</name>
     <url>http://kantega.no</url>
 
     <scm>
@@ -44,15 +44,17 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.12</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -68,8 +70,8 @@
     </modules>
 
     <properties>
-        <springframework.version>2.5.5</springframework.version>
-        <securityapi.version>2.6</securityapi.version>
+        <springframework.version>3.2.4.RELEASE</springframework.version>
+        <securityapi.version>2.8-SNAPSHOT</securityapi.version>
     </properties>
 
 </project>

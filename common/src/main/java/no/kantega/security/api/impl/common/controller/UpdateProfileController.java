@@ -16,25 +16,23 @@ package no.kantega.security.api.impl.common.controller;
  * limitations under the License.
  */
 
-import org.springframework.web.servlet.mvc.Controller;
+import no.kantega.security.api.identity.DefaultIdentity;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.identity.IdentityResolver;
+import no.kantega.security.api.password.PasswordManager;
+import no.kantega.security.api.profile.DefaultProfile;
+import no.kantega.security.api.profile.Profile;
+import no.kantega.security.api.profile.ProfileManager;
+import no.kantega.security.api.profile.ProfileUpdateManager;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Map;
 import java.util.HashMap;
-
-import no.kantega.security.api.profile.ProfileUpdateManager;
-import no.kantega.security.api.profile.ProfileManager;
-import no.kantega.security.api.profile.DefaultProfile;
-import no.kantega.security.api.profile.Profile;
-import no.kantega.security.api.identity.IdentityResolver;
-import no.kantega.security.api.identity.AuthenticatedIdentity;
-import no.kantega.security.api.identity.DefaultIdentity;
-import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.password.PasswordManager;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * User: Anders Skar, Kantega AS
@@ -62,7 +60,7 @@ public class UpdateProfileController implements Controller {
 
         Profile existingProfile = null;
 
-        Map model = new HashMap();
+        Map<String, Object> model = new HashMap<>();
 
         Identity identity = identityResolver.getIdentity(request);
         if (identity != null) {
@@ -90,7 +88,7 @@ public class UpdateProfileController implements Controller {
                 newIdentity.setDomain(domain);
                 newIdentity.setUserId(request.getParameter("userid"));
 
-                // Finnes profilen fra før ?
+                // Finnes profilen fra fï¿½r ?
                 if (profileManager.getProfileForUser(newIdentity) != null) {
                     identityAlreadyInUse = true;
                 }
@@ -134,11 +132,11 @@ public class UpdateProfileController implements Controller {
             model.put("profile", profile);
 
             if (identityAlreadyInUse) {
-                // Finnes fra før
+                // Finnes fra fï¿½r
                 model.put("error", "IDENTITY_ALREADY_IN_USE");
                 return new ModelAndView(editView, model);
             } else if (passwordMismatch) {
-                // Finnes fra før
+                // Finnes fra fï¿½r
                 model.put("error", "PASSWORD_MISMATCH");
                 return new ModelAndView(editView, model);
             } else {

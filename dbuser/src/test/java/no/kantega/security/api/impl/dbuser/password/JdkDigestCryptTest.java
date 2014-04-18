@@ -16,9 +16,11 @@ package no.kantega.security.api.impl.dbuser.password;
  * limitations under the License.
  */
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+
 import java.security.NoSuchAlgorithmException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  */
@@ -29,7 +31,6 @@ public class JdkDigestCryptTest {
         JdkDigestCrypt crypt = new JdkDigestCrypt();
         crypt.setAlgorithm("SHA-256");
 
-        System.out.println("5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8".length());
         assertEquals("5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8", crypt.crypt("password"));
 
     }

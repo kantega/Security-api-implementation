@@ -9,7 +9,7 @@
     <artifactId>securityapi-ldap</artifactId>
     <packaging>jar</packaging>
 
-    <name>Security-impl ldap</name>
+    <name>Security API Implementation : LDAP backed</name>
 
     <dependencies>       
 		<dependency>

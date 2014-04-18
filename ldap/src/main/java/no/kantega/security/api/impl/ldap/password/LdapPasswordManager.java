@@ -5,11 +5,11 @@ import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPSearchResults;
 import no.kantega.security.api.common.SystemException;
-import no.kantega.security.api.identity.DefaultIdentity;
 import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.impl.ldap.LdapConfigurable;
 import no.kantega.security.api.password.PasswordManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * User: Anders Skar, Kantega AS
@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class LdapPasswordManager extends LdapConfigurable implements PasswordManager {
     private String domain;
-    private Logger log = Logger.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
         if (password == null || password.length() == 0) {
@@ -50,16 +50,16 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
                     c.bind(LDAPConnection.LDAP_V3, userDN, password.getBytes("utf-8"));
 
                     // Bind OK - login OK
-                    log.debug("Password verified for userid:" + identity.getUserId());
+                    log.debug("Password verified for userid: {}", identity.getUserId());
                     return true;
                 } catch (LDAPReferralException l) {
                     // Do nothing
                 } catch (LDAPException e) {
                     if (e.getResultCode() == LDAPException.CONSTRAINT_VIOLATION) {
-                        log.debug("Password verification failed for userid:" + identity.getUserId() + " (CONSTRAINT_VIOLATION)");
+                        log.debug("Password verification failed for userid: {} (CONSTRAINT_VIOLATION)", identity.getUserId() );
                         return false;
                     } else if (e.getResultCode() == LDAPException.INVALID_CREDENTIALS) {
-                        log.debug("Password verification failed for userid:" + identity.getUserId() + " (INVALID_CREDENTIALS)");
+                        log.debug("Password verification failed for userid: {} (INVALID_CREDENTIALS)", identity.getUserId() );
                         return false;
                     } else {
                         throw new SystemException("Feil ved verifisering av passord", e);
@@ -99,27 +99,4 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
         this.domain = domain;
     }
 
-
-    public static void main(String[] args) {
-        try {
-            LdapPasswordManager manager = new LdapPasswordManager();
-            manager.setAdminUser("ad@mogul.no");
-            manager.setAdminPassword("Tzg5hh4Vf");
-            manager.setDomain("mogul");
-            manager.setHost("tom.mogul.no");
-            manager.setSearchBaseUsers("ou=Norway,dc=mogul,dc=no");
-            manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
-
-            DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("andska");
-            if (manager.verifyPassword(andska, "********")) {
-                System.out.println("Passord er korrekt");
-            } else {
-                System.out.println("Passord er feil");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

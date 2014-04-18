@@ -26,7 +26,7 @@ import no.kantega.security.api.role.RoleManager;
 import no.kantega.security.api.search.DefaultRoleSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,23 +39,23 @@ import java.util.List;
  * Date: Jan 15, 2007
  * Time: 6:49:35 PM
  */
-public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManager  {
+public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
     private String domain;
 
     public Iterator<Role> getAllRoles() throws SystemException {
-        List<Role> results = getSimpleJdbcTemplate().query("SELECT * from dbuserrole ORDER BY Domain, RoleName", new RoleRowMapper());
+        List<Role> results = getJdbcTemplate().query("SELECT * from dbuserrole ORDER BY Domain, RoleName", new RoleRowMapper());
         return results.iterator();
     }
 
     public SearchResult<Role> searchRoles(String name) throws SystemException {
-        List<String> params = new ArrayList<String>();
+        List<String> params = new ArrayList<>();
 
         String query = "RoleName LIKE ? AND Domain = ?";
         params.add(name + "%");
         params.add(domain);
 
         String sql = "SELECT * from dbuserrole WHERE " + query + " ORDER BY Domain, RoleName";
-        List<Role> results = getSimpleJdbcTemplate().query(sql, new RoleRowMapper(), params.toArray());
+        List<Role> results = getJdbcTemplate().query(sql, new RoleRowMapper(), params.toArray());
 
         DefaultRoleSearchResult result = new DefaultRoleSearchResult();
         result.setResults(results);
@@ -68,7 +68,8 @@ public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManag
             return null;
         }
 
-        List roles = getJdbcTemplate().query("SELECT * FROM dbuserrole WHERE Domain = ? AND RoleId  = ?", new Object[] {roleId.getDomain(), roleId.getId()}, new RoleRowMapper());
+        List roles = getJdbcTemplate().query("SELECT * FROM dbuserrole WHERE Domain = ? AND RoleId  = ?", new RoleRowMapper(),
+                roleId.getDomain(), roleId.getId());
         if (roles != null && roles.size() == 1) {
             return (Role)roles.get(0);
         } else {
@@ -77,7 +78,7 @@ public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManag
     }
 
     public Iterator<Role> getRolesForUser(Identity identity) throws SystemException {
-        List<Role> results = getSimpleJdbcTemplate().query("SELECT dbuserrole.* FROM dbuserrole, dbuserrole2user WHERE " +
+        List<Role> results = getJdbcTemplate().query("SELECT dbuserrole.* FROM dbuserrole, dbuserrole2user WHERE " +
                 "dbuserrole.Domain = dbuserrole2user.RoleDomain AND " +
                 "dbuserrole.RoleId = dbuserrole2user.RoleId AND " +
                 "dbuserrole2user.UserDomain = ? AND dbuserrole2user.UserId = ?", new RoleRowMapper(),
@@ -86,7 +87,7 @@ public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManag
     }
 
     public Iterator<Identity> getUsersWithRole(RoleId roleId) throws SystemException {
-        List<Identity> results = getSimpleJdbcTemplate().query("SELECT * FROM dbuserrole2user WHERE " +
+        List<Identity> results = getJdbcTemplate().query("SELECT * FROM dbuserrole2user WHERE " +
                 "dbuserrole2user.RoleDomain = ? AND dbuserrole2user.RoleId = ?", new IdentityRowMapper(),
                 roleId.getDomain(), roleId.getId());
         return results.iterator();
@@ -94,8 +95,8 @@ public class DbUserRoleManager extends SimpleJdbcDaoSupport implements RoleManag
 
 
     public boolean userHasRole(Identity identity, String role) throws SystemException {
-        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserrole2user WHERE RoleId IN (SELECT RoleId FROM dbuserrole WHERE RoleName = ?) AND UserId = ? AND UserDomain = ?",
-                new Object[] {role, identity.getUserId(), identity.getDomain()} );
+        int antall = getJdbcTemplate().queryForObject("SELECT COUNT(*) FROM dbuserrole2user WHERE RoleId IN (SELECT RoleId FROM dbuserrole WHERE RoleName = ?) AND UserId = ? AND UserDomain = ?",
+                Integer.class, role, identity.getUserId(), identity.getDomain());
 
         return antall > 0;
     }

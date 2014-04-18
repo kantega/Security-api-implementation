@@ -48,7 +48,7 @@ public class CompoundIdentityResolver implements IdentityResolver {
         return mainResolver.getAuthenticationContextIconUrl();
     }
 
-    public void setResolvers(List resolvers) {
+    public void setResolvers(List<IdentityResolver> resolvers) {
         this.resolvers = resolvers;
     }
 

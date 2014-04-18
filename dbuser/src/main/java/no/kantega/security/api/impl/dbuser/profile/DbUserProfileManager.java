@@ -26,7 +26,7 @@ import no.kantega.security.api.search.DefaultProfileSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,10 +40,8 @@ import java.util.Properties;
  * Time: 6:48:38 PM
  */
 public class
-        DbUserProfileManager extends SimpleJdbcDaoSupport implements ProfileManager {
+        DbUserProfileManager extends JdbcDaoSupport implements ProfileManager {
     private String domain;
-
-
 
     private AbstractDbNameQuerier querier;
 
@@ -65,7 +63,7 @@ public class
         query += " Domain = '" + domain + "'";
 
         String sql = "SELECT * from dbuserprofile WHERE " + query + " ORDER BY GivenName, Surname";
-        List<Profile> results = getSimpleJdbcTemplate().query(sql, new UserProfileRowMapper(), clause.getParams().toArray());
+        List<Profile> results = getJdbcTemplate().query(sql, new UserProfileRowMapper(), clause.getParams().toArray());
 
         DefaultProfileSearchResult result = new DefaultProfileSearchResult();
         result.setResults(results);
@@ -83,13 +81,13 @@ public class
             return null;
         }
 
-        List profiles = getJdbcTemplate().query("SELECT * FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()}, new UserProfileRowMapper());
+        List<Profile> profiles = getJdbcTemplate().query("SELECT * FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new UserProfileRowMapper(), identity.getDomain(), identity.getUserId());
         if (profiles != null && profiles.size() == 1) {
-            DefaultProfile p = (DefaultProfile)profiles.get(0);
+            DefaultProfile p = (DefaultProfile) profiles.get(0);
 
             // Hent extended properties
             UserAttributesCallbackHandler callback = new UserAttributesCallbackHandler();
-            getJdbcTemplate().query("SELECT * from dbuserattributes WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()}, callback);
+            getJdbcTemplate().query("SELECT * from dbuserattributes WHERE Domain = ? AND UserId = ?", callback, identity.getDomain(), identity.getUserId());
             p.setRawAttributes(callback.getAttributes());
             return p;
         }
@@ -102,33 +100,33 @@ public class
             return new DefaultProfileSearchResult();
         }
 
-        List<String> param  =  new ArrayList<String>();
+        List<String> param  =  new ArrayList<>();
 
 
-        String query = "(";
+        StringBuilder query = new StringBuilder("(");
 
         boolean identitiesWithThisDomainFound = false;
         for (Identity identity : identities) {
             if (identity.getDomain().equalsIgnoreCase(domain)) {
                 if (identitiesWithThisDomainFound) {
-                    query += " OR ";
+                    query.append(" OR ");
                 }
-                query += "UserId = ?";
+                query.append("UserId = ?");
                 param.add(identity.getUserId());
                 identitiesWithThisDomainFound = true;
             }
         }
-        query += ")";
+        query.append(")");
 
         if (!identitiesWithThisDomainFound) {
             return new DefaultProfileSearchResult();
         }
 
-        query += " AND Domain = ?";
+        query.append(" AND Domain = ?");
         param.add(domain);
 
         String sql = "SELECT * from dbuserprofile WHERE " + query + " ORDER BY GivenName, Surname";
-        List<Profile> results = getSimpleJdbcTemplate().query(sql, new UserProfileRowMapper(), param.toArray());
+        List<Profile> results = getJdbcTemplate().query(sql, new UserProfileRowMapper(), param.toArray());
 
         DefaultProfileSearchResult result = new DefaultProfileSearchResult();
         result.setResults(results);
@@ -140,7 +138,7 @@ public class
             return false;
         }
 
-        int antall = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new Object[]{identity.getDomain(), identity.getUserId()});
+        int antall = getJdbcTemplate().queryForObject("SELECT COUNT(*) FROM dbuserprofile WHERE Domain = ? AND UserId = ?", Integer.class, identity.getDomain(), identity.getUserId());
         return antall > 0;
 
     }

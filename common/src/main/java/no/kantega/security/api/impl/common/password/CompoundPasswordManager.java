@@ -16,20 +16,19 @@ package no.kantega.security.api.impl.common.password;
  * limitations under the License.
  */
 
-import no.kantega.security.api.password.PasswordManager;
-import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.impl.common.CompoundManagerConfigurable;
+import no.kantega.security.api.password.PasswordManager;
 
 /**
  * User: Anders Skar, Kantega AS
  * Date: Jun 7, 2007
  * Time: 10:25:57 AM
  */
-public class CompoundPasswordManager extends CompoundManagerConfigurable implements PasswordManager {
+public class CompoundPasswordManager extends CompoundManagerConfigurable<PasswordManager> implements PasswordManager {
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
-        for (int i = 0; i < managers.size(); i++) {
-            PasswordManager pm = (PasswordManager)managers.get(i);
+        for (PasswordManager pm : managers) {
             if (identity.getDomain().equalsIgnoreCase(pm.getDomain())) {
                 if (pm.verifyPassword(identity, password)) {
                     return true;

@@ -16,10 +16,9 @@ package no.kantega.security.api.impl.dbuser.password;
  *  limitations under the License.
  */
 
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.Map;
 
@@ -33,8 +32,6 @@ public class DefaultPasswordCryptManager implements PasswordCryptManager, Applic
     public PasswordCrypt getPasswordCrypt(String id) {
         final Map<String, PasswordCrypt> map = applicationContext.getBeansOfType(PasswordCrypt.class);
 
-
-
         for(PasswordCrypt crypt : map.values()) {
             if(crypt.getId().equals(id)) {
                 return crypt;
@@ -46,9 +43,8 @@ public class DefaultPasswordCryptManager implements PasswordCryptManager, Applic
         if(!applicationContext.containsBean(defaultName)) {
             throw new IllegalStateException("No password crypts matched HashMech '" +id +"' and no bean 'defaultPasswordCrypt' is defined. Please configure appropriately");
         } else {
-            PasswordCrypt defaultCrypt = (PasswordCrypt) applicationContext.getBean(defaultName, PasswordCrypt.class);
 
-            return defaultCrypt;
+            return applicationContext.getBean(defaultName, PasswordCrypt.class);
         }
     }
 

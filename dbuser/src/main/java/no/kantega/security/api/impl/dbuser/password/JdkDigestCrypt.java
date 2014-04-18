@@ -16,9 +16,9 @@ package no.kantega.security.api.impl.dbuser.password;
  * limitations under the License.
  */
 
-import java.security.NoSuchAlgorithmException;
-import java.security.MessageDigest;
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * PasswordCrypt implementation using the JDK's MessageDigest API
@@ -41,11 +41,11 @@ public class JdkDigestCrypt implements PasswordCrypt {
         md.update(data);
         final byte[] digest = md.digest();
 
-        StringBuffer format = new StringBuffer();
+        StringBuilder format = new StringBuilder();
 
-        for (int i = 0; i < digest.length; i++) {
-            int  b = ( (int)digest[i]) & 0xff;
-            if(b < 16) {
+        for (byte aByte : digest) {
+            int b = ((int) aByte) & 0xff;
+            if (b < 16) {
                 format.append("0");
             }
             format.append(Integer.toHexString(b).toLowerCase());

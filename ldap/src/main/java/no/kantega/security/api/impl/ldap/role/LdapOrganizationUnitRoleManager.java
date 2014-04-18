@@ -1,19 +1,18 @@
 package no.kantega.security.api.impl.ldap.role;
 
+import com.novell.ldap.*;
+import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.identity.DefaultIdentity;
+import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.impl.ldap.LdapConfigurable;
 import no.kantega.security.api.role.*;
-import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.search.DefaultRoleSearchResult;
 import no.kantega.security.api.search.SearchResult;
-import no.kantega.security.api.search.DefaultSearchResult;
-import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.identity.DefaultIdentity;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import com.novell.ldap.*;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -27,12 +26,12 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
 
     private String domain = "";
 
-    public Iterator getAllRoles() throws SystemException {
+    public Iterator<Role> getAllRoles() throws SystemException {
         return searchRoles(null).getAllResults();
     }
 
-    public SearchResult searchRoles(String rolename) throws SystemException {
-        DefaultSearchResult searchResult = new DefaultSearchResult();
+    public SearchResult<Role> searchRoles(String rolename) throws SystemException {
+        DefaultRoleSearchResult searchResult = new DefaultRoleSearchResult();
         LDAPConnection c = new LDAPConnection();
 
         String filter = "";
@@ -63,8 +62,8 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
             ldapConstraints.setMaxResults(maxSearchResults);
             c.setConstraints(ldapConstraints);
 
-            List roles = new ArrayList();
             LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[]{orgUnitKeyAttribute, orgUnitNameAttribute, "objectClass"}, false);
+            List<Role> roles = new ArrayList<>(results.getCount());
             while (results.hasMore()) {
                 try {
                     roles.add(getRoleFromLDAPEntry(results.next()));
@@ -141,8 +140,8 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
     }
 
 
-    public Iterator getRolesForUser(Identity identity) throws SystemException {
-        List roles = new ArrayList();
+    public Iterator<Role> getRolesForUser(Identity identity) throws SystemException {
+        List<Role> roles = new ArrayList<>();
         if (!identity.getDomain().equals(domain)) {
             return roles.iterator();
         }
@@ -201,8 +200,8 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
     }
 
 
-    public Iterator getUsersWithRole(RoleId roleId) throws SystemException {
-        List users = new ArrayList();
+    public Iterator<Identity> getUsersWithRole(RoleId roleId) throws SystemException {
+        List<Identity> users = new ArrayList<>();
 
         if (!roleId.getDomain().equals(domain)) {
             return users.iterator();
@@ -234,7 +233,7 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
                     LDAPEntry entry = results.next();
                     String dn = entry.getDN();
 
-                    // Søk opp brukere innenfor denne delen av basen
+                    // Sï¿½k opp brukere innenfor denne delen av basen
                     LDAPSearchConstraints ldapConstraints = new LDAPSearchConstraints();
                     ldapConstraints.setMaxResults(maxSearchResults);
                     c.setConstraints(ldapConstraints);
@@ -282,9 +281,9 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
             return false;
         }
 
-        Iterator it = getRolesForUser(identity);
+        Iterator<Role> it = getRolesForUser(identity);
         while (it.hasNext()) {
-            Role role = (Role)it.next();
+            Role role = it.next();
             if (role.getId().equalsIgnoreCase(roleId))
                 return true;
         }
@@ -330,35 +329,5 @@ public class LdapOrganizationUnitRoleManager extends LdapConfigurable implements
         this.domain = domain;
     }
 
-    public static void main(String[] args) {
-        try {
-            LdapOrganizationUnitRoleManager manager = new LdapOrganizationUnitRoleManager();
-            manager.setAdminUser("ad@mogul.no");
-            manager.setAdminPassword("Tzg5hh4Vf");
-            manager.setDomain("mogul");
-            manager.setHost("tom.mogul.no");
-            manager.setSearchBaseUsers("ou=Norway,dc=mogul,dc=no");
-            manager.setSearchBaseRoles("ou=Norway,dc=mogul,dc=no");
-
-            DefaultIdentity andska = new DefaultIdentity();
-            andska.setUserId("aksess1");
-            andska.setDomain("mogul");
-
-            Iterator roles = manager.getRolesForUser(andska);
-            while (roles.hasNext()) {
-                Role role =  (Role)roles.next();
-                System.out.println("Role:" + role.getName() + "," + role.getId());
-            }
-
-
-            DefaultRoleId norway = new DefaultRoleId();
-            norway.setId("OU=Norway,DC=mogul,DC=no");
-            norway.setDomain("mogul");
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
 

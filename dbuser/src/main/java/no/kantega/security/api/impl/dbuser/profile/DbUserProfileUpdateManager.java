@@ -16,14 +16,14 @@ package no.kantega.security.api.impl.dbuser.profile;
  * limitations under the License.
  */
 
-import no.kantega.security.api.profile.ProfileUpdateManager;
-import no.kantega.security.api.profile.Profile;
-import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.common.SystemException;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.profile.Profile;
+import no.kantega.security.api.profile.ProfileUpdateManager;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
-import java.util.Properties;
 import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * User: Anders Skar, Kantega AS
@@ -44,20 +44,24 @@ public class DbUserProfileUpdateManager extends JdbcDaoSupport implements Profil
         }
 
         // Slett brukerprofil
-        getJdbcTemplate().update("DELETE FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()});
+        getJdbcTemplate().update("DELETE FROM dbuserprofile WHERE Domain = ? AND UserId = ?",
+                identity.getDomain(), identity.getUserId());
 
         // Slett attributter
-        getJdbcTemplate().update("DELETE FROM dbuserattributes WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()});
+        getJdbcTemplate().update("DELETE FROM dbuserattributes WHERE Domain = ? AND UserId = ?",
+                identity.getDomain(), identity.getUserId());
 
         // Slett passord
-        getJdbcTemplate().update("DELETE FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()});
+        getJdbcTemplate().update("DELETE FROM dbuserpassword WHERE Domain = ? AND UserId = ?",
+                identity.getDomain(), identity.getUserId());
 
         // Slett roller
-        getJdbcTemplate().update("DELETE FROM dbuserrole2user WHERE UserDomain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()});
+        getJdbcTemplate().update("DELETE FROM dbuserrole2user WHERE UserDomain = ? AND UserId = ?",
+                identity.getDomain(), identity.getUserId());
     }
 
     /**
-     * Lagrer en brukerprofil inkludert RawAttributes i database.  Dersom domain + userid finnes fra før oppdateres profilen
+     * Lagrer en brukerprofil inkludert RawAttributes i database.  Dersom domain + userid finnes fra fï¿½r oppdateres profilen
      * hvis ikke opprettes en ny.  Blanke RawAttributes lagres ikke.
      * @param profile
      * @throws SystemException
@@ -70,19 +74,21 @@ public class DbUserProfileUpdateManager extends JdbcDaoSupport implements Profil
         }
 
         // Sjekk om profil finnes
-        int antallP = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserprofile WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()});
+        int antallP = getJdbcTemplate().queryForObject("SELECT COUNT(*) FROM dbuserprofile WHERE Domain = ? AND UserId = ?", Integer.class,
+                identity.getDomain(), identity.getUserId());
         if (antallP > 0) {
             // Oppdater profil
-            Object[] param = { profile.getGivenName(), profile.getSurname(), profile.getEmail(), profile.getDepartment(), identity.getDomain(), identity.getUserId() };
-            getJdbcTemplate().update("UPDATE dbuserprofile SET GivenName = ?, Surname = ?, Email = ?, Department = ? WHERE Domain = ? AND UserId = ?", param);
+            getJdbcTemplate().update("UPDATE dbuserprofile SET GivenName = ?, Surname = ?, Email = ?, Department = ? WHERE Domain = ? AND UserId = ?",
+                    profile.getGivenName(), profile.getSurname(), profile.getEmail(), profile.getDepartment(), identity.getDomain(), identity.getUserId() );
         } else {
             // Ny profil
-            Object[] param = { identity.getDomain(), identity.getUserId(), profile.getGivenName(), profile.getSurname(), profile.getEmail(), profile.getDepartment() };
-            getJdbcTemplate().update("INSERT INTO dbuserprofile (Domain, UserId, GivenName, Surname, Email, Department) VALUES(?,?,?,?,?,?)", param);
+            getJdbcTemplate().update("INSERT INTO dbuserprofile (Domain, UserId, GivenName, Surname, Email, Department) VALUES(?,?,?,?,?,?)",
+                    identity.getDomain(), identity.getUserId(), profile.getGivenName(), profile.getSurname(), profile.getEmail(), profile.getDepartment() );
         }
 
         //Sletter alle attributter
-        getJdbcTemplate().update("DELETE FROM dbuserattributes WHERE Domain = ? AND UserId = ?", new Object[] {identity.getDomain(), identity.getUserId()});
+        getJdbcTemplate().update("DELETE FROM dbuserattributes WHERE Domain = ? AND UserId = ?",
+                identity.getDomain(), identity.getUserId());
         // og lagrer nye
         Properties p = profile.getRawAttributes();
         if (p != null) {
@@ -90,7 +96,8 @@ public class DbUserProfileUpdateManager extends JdbcDaoSupport implements Profil
             while (propertyNames.hasMoreElements()) {
                 String name =  (String)propertyNames.nextElement();
                 String value = p.getProperty(name);
-                getJdbcTemplate().update("INSERT INTO dbuserattributes (Domain, UserId, Name, Value) VALUES(?,?,?,?)", new Object[]{identity.getDomain(), identity.getUserId(), name, value});
+                getJdbcTemplate().update("INSERT INTO dbuserattributes (Domain, UserId, Name, Value) VALUES(?,?,?,?)",
+                        identity.getDomain(), identity.getUserId(), name, value);
             }
         }
     }

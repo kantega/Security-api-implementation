@@ -16,15 +16,14 @@ package no.kantega.security.api.impl.dbuser.password;
  * limitations under the License.
  */
 
-import no.kantega.security.api.password.PasswordManager;
-import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.common.SystemException;
-
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.jdbc.BadSqlGrammarException;
+import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.password.PasswordManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.dao.DataAccessException;
-import org.apache.log4j.Logger;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -37,7 +36,7 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
     private static final String SOURCE = "security.DbUserPasswordManager";
 
     private String domain;
-    private Logger log = Logger.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(getClass());
     private PasswordCryptManager passwordCryptManager;
     private String defaultCreateHash;
 
@@ -47,9 +46,9 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
         String dbHash = null;
 
         try {
-            dbPassword = (String) getJdbcTemplate().queryForObject("SELECT Password FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
+            dbPassword = getJdbcTemplate().queryForObject("SELECT Password FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
             try {
-                dbHash = (String) getJdbcTemplate().queryForObject("SELECT HashMech FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
+                dbHash = getJdbcTemplate().queryForObject("SELECT HashMech FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
             } catch (BadSqlGrammarException e) {
                 // HashMech field does not exist, so defalt will be used
                 dbHash = null;
@@ -69,9 +68,9 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
 
         boolean correctPassword = dbPassword.equals(cryptPW);
         if (correctPassword) {
-            log.debug("Password verified for userid:" + identity.getUserId());
+            log.debug("Password verified for userid: {}", identity.getUserId());
         } else {
-            log.debug("Password verification failed for userid:" + identity.getUserId());
+            log.debug("Password verification failed for userid: {}", identity.getUserId());
         }
 
         return correctPassword;
@@ -88,7 +87,7 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
             passwordCrypt = passwordCryptManager.getPasswordCrypt(defaultCreateHash);
 
             try {
-                getJdbcTemplate().queryForInt("select count(HashMech) from dbuserpassword");
+                getJdbcTemplate().queryForObject("select count(HashMech) from dbuserpassword", Integer.class);
             } catch (BadSqlGrammarException e) {
                 // Use default/fallback mechanism
                 supportsMech = false;
@@ -101,19 +100,23 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
             throw new SystemException(SOURCE, e);
         }
 
-        int count = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() });
+        int count = getJdbcTemplate().queryForObject("SELECT COUNT(*) FROM dbuserpassword WHERE Domain = ? AND UserId = ?", Integer.class,
+                identity.getDomain(), identity.getUserId());
         if (count == 0) {
             // New user, without password
-            getJdbcTemplate().update("INSERT INTO dbuserpassword (Domain, UserId, Password) VALUES (?, ?, ?)", new Object[] { identity.getDomain(), identity.getUserId(), cryptPW});
+            getJdbcTemplate().update("INSERT INTO dbuserpassword (Domain, UserId, Password) VALUES (?, ?, ?)",
+                    identity.getDomain(), identity.getUserId(), cryptPW);
         } else {
-            getJdbcTemplate().update("UPDATE dbuserpassword SET Password = ? WHERE Domain = ? AND UserId = ?", new Object[] { cryptPW, identity.getDomain(), identity.getUserId() });
+            getJdbcTemplate().update("UPDATE dbuserpassword SET Password = ? WHERE Domain = ? AND UserId = ?",
+                    cryptPW, identity.getDomain(), identity.getUserId());
         }
 
         if(supportsMech) {
-            getJdbcTemplate().update("UPDATE dbuserpassword SET HashMech = ? WHERE Domain = ? AND UserId = ?", new Object[] { passwordCrypt.getId(), identity.getDomain(), identity.getUserId() });
+            getJdbcTemplate().update("UPDATE dbuserpassword SET HashMech = ? WHERE Domain = ? AND UserId = ?",
+                    passwordCrypt.getId(), identity.getDomain(), identity.getUserId());
         }
 
-        log.debug("Password set for userid:" + identity.getUserId());
+        log.debug("Password set for userid: {}", identity.getUserId());
     }
 
     public String getDomain() {

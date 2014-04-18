@@ -1,6 +1,5 @@
 package no.kantega.security.api.impl.dbuser.profile;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import java.util.List;
 public class WhereClause {
     private String query;
     private List<String> param;
-    public static final WhereClause EMPTY = new WhereClause("", Collections.EMPTY_LIST);
+    public static final WhereClause EMPTY = new WhereClause("", Collections.<String>emptyList());
 
     public WhereClause(String query, List<String> param) {
         this.query = query;

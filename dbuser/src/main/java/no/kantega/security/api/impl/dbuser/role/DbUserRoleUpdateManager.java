@@ -16,11 +16,11 @@ package no.kantega.security.api.impl.dbuser.role;
  * limitations under the License.
  */
 
-import no.kantega.security.api.role.RoleUpdateManager;
-import no.kantega.security.api.role.RoleId;
-import no.kantega.security.api.role.Role;
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.role.Role;
+import no.kantega.security.api.role.RoleId;
+import no.kantega.security.api.role.RoleUpdateManager;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 /**
@@ -37,10 +37,12 @@ public class DbUserRoleUpdateManager extends JdbcDaoSupport implements RoleUpdat
         }
 
         // Slett role
-        getJdbcTemplate().update("DELETE FROM dbuserrole WHERE Domain = ? AND RoleId = ?", new Object[] {roleId.getDomain(), roleId.getId()});
+        getJdbcTemplate().update("DELETE FROM dbuserrole WHERE Domain = ? AND RoleId = ?",
+                roleId.getDomain(), roleId.getId());
 
         // Slett rolletilknytning til brukere
-        getJdbcTemplate().update("DELETE FROM dbuserrole2user WHERE RoleDomain = ? AND RoleId = ?", new Object[] {roleId.getDomain(), roleId.getId()});
+        getJdbcTemplate().update("DELETE FROM dbuserrole2user WHERE RoleDomain = ? AND RoleId = ?",
+                roleId.getDomain(), roleId.getId());
     }
 
     public void saveOrUpdateRole(Role role) throws SystemException {
@@ -49,15 +51,16 @@ public class DbUserRoleUpdateManager extends JdbcDaoSupport implements RoleUpdat
         }
 
         // Sjekk om profil finnes
-        int antallP = getJdbcTemplate().queryForInt("SELECT COUNT(*) FROM dbuserrole WHERE Domain = ? AND RoleId = ?", new Object[] {role.getDomain(), role.getId()});
+        int antallP = getJdbcTemplate().queryForObject("SELECT COUNT(*) FROM dbuserrole WHERE Domain = ? AND RoleId = ?", Integer.class,
+                role.getDomain(), role.getId());
         if (antallP > 0) {
             // Oppdater profil
-            Object[] param = { role.getName(), role.getDomain(), role.getId() };
-            getJdbcTemplate().update("UPDATE dbuserrole SET RoleName = ? WHERE Domain = ? AND RoleId = ?", param);
+            getJdbcTemplate().update("UPDATE dbuserrole SET RoleName = ? WHERE Domain = ? AND RoleId = ?",
+                    role.getName(), role.getDomain(), role.getId() );
         } else {
             // Ny profil
-            Object[] param = { role.getDomain(), role.getId(), role.getName() };
-            getJdbcTemplate().update("INSERT INTO dbuserrole (Domain, RoleId, RoleName) VALUES(?,?,?)", param);
+            getJdbcTemplate().update("INSERT INTO dbuserrole (Domain, RoleId, RoleName) VALUES(?,?,?)",
+                    role.getDomain(), role.getId(), role.getName());
         }
 
     }
@@ -67,12 +70,12 @@ public class DbUserRoleUpdateManager extends JdbcDaoSupport implements RoleUpdat
             return;
         }
 
-        // Slett knytningen i tilfelle brukeren har den fra før
+        // Slett knytningen i tilfelle brukeren har den fra fï¿½r
         removeUserFromRole(identity, roleId);
 
         // Legg til knytning
         getJdbcTemplate().update("INSERT INTO dbuserrole2user (RoleDomain, RoleId, UserDomain, UserId) VALUES (?,?,?,?)",
-                new Object[] {roleId.getDomain(), roleId.getId(), identity.getDomain(), identity.getUserId()});
+                roleId.getDomain(), roleId.getId(), identity.getDomain(), identity.getUserId());
 
 
     }
@@ -84,12 +87,13 @@ public class DbUserRoleUpdateManager extends JdbcDaoSupport implements RoleUpdat
 
         // Slett rolletilknytning til brukere
         getJdbcTemplate().update("DELETE FROM dbuserrole2user WHERE RoleDomain = ? AND RoleId = ? AND UserDomain = ? AND UserId = ?",
-                new Object[] {roleId.getDomain(), roleId.getId(), identity.getDomain(), identity.getUserId()});
+                roleId.getDomain(), roleId.getId(), identity.getDomain(), identity.getUserId());
     }
 
     public void removeUserFromAllRoles(Identity identity) throws SystemException {
         // Slett rolletilknytning til brukere
-        getJdbcTemplate().update("DELETE FROM dbuserrole2user WHERE RoleDomain = ? AND UserDomain = ? AND UserId = ?", new Object[] {domain, identity.getDomain(), identity.getUserId()});
+        getJdbcTemplate().update("DELETE FROM dbuserrole2user WHERE RoleDomain = ? AND UserDomain = ? AND UserId = ?",
+                domain, identity.getDomain(), identity.getUserId());
     }
 
     public void setDomain(String domain) {
