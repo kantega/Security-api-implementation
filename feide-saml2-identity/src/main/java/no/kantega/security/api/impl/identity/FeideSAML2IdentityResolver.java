@@ -43,7 +43,7 @@ public class FeideSAML2IdentityResolver extends AbstractFeideConfigurable implem
 
         String jumpToken = request.getParameter(URL_JUMP_TOKEN);
         if (jumpToken != null) {
-            log.debug("Found jumpToken:" + jumpToken);
+            log.debug("Found jumpToken: {}", jumpToken);
             Identity identity = tokenManager.resolveJumpToken(jumpToken);
             if (identity != null) {
                 session.setAttribute(authenticationContext + SESSION_IDENTITY_NAME, identity.getUserId());
@@ -116,7 +116,7 @@ public class FeideSAML2IdentityResolver extends AbstractFeideConfigurable implem
 
             loginUrl = SAML2Util.createSAMLAuthnRequest(idpConfig, spConfig, relayState);
 
-            log.debug("Redirect to: " + loginUrl + ".");
+            log.debug("Redirect to: {}.", loginUrl);
             response.sendRedirect(loginUrl);
 
         } catch (Exception e) {

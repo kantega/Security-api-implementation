@@ -54,9 +54,7 @@
     <modules>
         <module>feide-saml2-identity</module>
         <module>ksi-signature</module>
-        <module>xmluser</module>
         <module>ntlm-identity</module>
-        <module>dbsession-identity</module>
         <module>securityapi-kerberos</module>
         <module>securityapi-signicat</module>
     </modules>
