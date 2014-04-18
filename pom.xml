@@ -58,7 +58,6 @@
         <module>ntlm-identity</module>
         <module>dbsession-identity</module>
         <module>securityapi-kerberos</module>
-        <module>securityapi-md5crypt</module>
         <module>securityapi-signicat</module>
     </modules>
 
