@@ -87,7 +87,7 @@
 
     <bean id="dbuserRoleConfiguration" class="no.kantega.useradmin.model.RoleManagementConfiguration">
         <property name="description" value="DB - Aksess"/>
-        <property name="domain" value="dbuser"/>
+        <property name="domain" value="${security.dbuser.domain}"/>
         <property name="roleManager" ref="dbuserRoleManager"/>
         <property name="roleUpdateManager" ref="dbuserRoleUpdateManager"/>
     </bean>
