@@ -55,6 +55,7 @@
         <module>feide-saml2-identity</module>
         <module>ntlm-identity</module>
         <module>securityapi-kerberos</module>
+        <module>securityapi-md5crypt</module>
         <module>securityapi-signicat</module>
     </modules>
 
