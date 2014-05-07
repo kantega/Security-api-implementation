@@ -27,7 +27,7 @@
     <groupId>org.kantega.security-api</groupId>
     <artifactId>security-api-impl</artifactId>
     <packaging>pom</packaging>
-    <version>2.14-SNAPSHOT</version>
+    <version>2.13-SNAPSHOT</version>
     <name>Security API Implementation : Parent pom</name>
     <url>http://kantega.no</url>
 
