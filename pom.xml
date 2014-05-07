@@ -71,7 +71,7 @@
 
     <properties>
         <springframework.version>3.2.4.RELEASE</springframework.version>
-        <securityapi.version>2.8-SNAPSHOT</securityapi.version>
+        <securityapi.version>2.8</securityapi.version>
     </properties>
 
 </project>
