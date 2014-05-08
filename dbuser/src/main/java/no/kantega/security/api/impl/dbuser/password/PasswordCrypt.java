@@ -18,6 +18,9 @@ package no.kantega.security.api.impl.dbuser.password;
 
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * @deprecated Use PasswordHasher
+ */
 public interface PasswordCrypt {
 
     public String crypt(String password) throws NoSuchAlgorithmException;
