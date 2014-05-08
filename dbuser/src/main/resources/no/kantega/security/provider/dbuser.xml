@@ -46,10 +46,16 @@
     </bean>
 
     <bean id="dbuserPasswordManager" class="no.kantega.security.api.impl.dbuser.password.DbUserPasswordManager">
-        <property name="dataSource" ref="aksessDataSource"/>
+        <property name="passwordDao" ref="passwordDao"/>
         <property name="domain" value="${security.dbuser.domain}"/>
+        <property name="passwordHashManager" ref="passwordHashManager"/>
+    </bean>
+
+    <bean id="dbuserPasswordRehasher" class="no.kantega.security.api.impl.dbuser.password.DbUserPasswordRehasher">
+        <property name="passwordDao" ref="passwordDao"/>
+        <property name="domain" value="${security.dbuser.domain}"/>
+        <property name="passwordHashManager" ref="passwordHashManager"/>
         <property name="passwordCryptManager" ref="passwordCryptManager"/>
-        <property name="defaultCreateHash" value="SHA-256"/>
     </bean>
 
     <bean id="dbUserResetPasswordTokenManager" class="no.kantega.security.api.impl.dbuser.password.DbUserResetPasswordTokenManager">
@@ -61,6 +67,12 @@
     </bean>
 
     <bean id="passwordCryptManager" class="no.kantega.security.api.impl.dbuser.password.DefaultPasswordCryptManager"/>
+
+    <bean id="passwordHashManager" class="no.kantega.security.api.impl.dbuser.password.PasswordHashManager">
+        <property name="passwordCryptManager" ref="passwordCryptManager"/>
+    </bean>
+
+    <bean id="defaultPasswordHasher" class="no.kantega.security.api.impl.dbuser.password.Pbkdf2WithHmacSha1PasswordHasher"/>
 
     <bean id="dbuserIdentityResolver" class="no.kantega.security.api.identity.DefaultIdentityResolver">
         <property name="authenticationContext" value="${security.dbuser.domain}"/>
@@ -90,6 +102,10 @@
         <property name="domain" value="${security.dbuser.domain}"/>
         <property name="roleManager" ref="dbuserRoleManager"/>
         <property name="roleUpdateManager" ref="dbuserRoleUpdateManager"/>
+    </bean>
+
+    <bean id="passwordDao" class="no.kantega.security.api.impl.dbuser.password.PasswordDao">
+        <property name="dataSource" ref="aksessDataSource"/>
     </bean>
 
 </beans>

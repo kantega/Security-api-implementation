@@ -22,6 +22,8 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * PasswordCrypt implementation using the JDK's MessageDigest API
+ *
+ * @deprecated Use Pbkdf2WithHmacSha1PasswordHasher
  */
 public class JdkDigestCrypt implements PasswordCrypt {
 

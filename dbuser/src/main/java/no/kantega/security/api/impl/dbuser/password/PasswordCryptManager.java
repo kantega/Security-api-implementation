@@ -18,6 +18,7 @@ package no.kantega.security.api.impl.dbuser.password;
 
 /**
  * Factory for PasswordCrypt
+ * @deprecated Use PasswordHasher
  */
 public interface PasswordCryptManager {
     PasswordCrypt getPasswordCrypt(String id);

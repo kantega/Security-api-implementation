@@ -25,48 +25,33 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
-import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * User: Anders Skar, Kantega AS
  * Date: Jan 15, 2007
  * Time: 6:33:38 PM
  */
-public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordManager {
-    private static final String SOURCE = "security.DbUserPasswordManager";
+public class DbUserPasswordManager implements PasswordManager {
 
     private String domain;
     private Logger log = LoggerFactory.getLogger(getClass());
-    private PasswordCryptManager passwordCryptManager;
-    private String defaultCreateHash;
-
+    private PasswordHashManager passwordHashManager;
+    private PasswordDao passwordDao;
 
     public boolean verifyPassword(Identity identity, String password) throws SystemException {
-        String dbPassword = null;
-        String dbHash = null;
+        String dbPassword = passwordDao.readPasswordFromDatabase(identity);
+        if (dbPassword == null) return false;
 
-        try {
-            dbPassword = getJdbcTemplate().queryForObject("SELECT Password FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
-            try {
-                dbHash = getJdbcTemplate().queryForObject("SELECT HashMech FROM dbuserpassword WHERE Domain = ? AND UserId = ?", new Object[] { identity.getDomain(), identity.getUserId() }, String.class);
-            } catch (BadSqlGrammarException e) {
-                // HashMech field does not exist, so defalt will be used
-                dbHash = null;
-            }
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return false;
+        PasswordHash hashData = PasswordHashJsonEncoder.decode(dbPassword);
+        String hashedPassword = password;
+        for (Map<String, Object> algorithm : hashData.getAlgorithms()) {
+            String id = (String) algorithm.get("id");
+            PasswordHasher hasher = passwordHashManager.getPasswordHasher(id);
+            hashedPassword = hasher.hashPassword(hashedPassword, algorithm).getHash();
         }
 
-        String cryptPW = null;
-        try {
-            // supply dbPassword to get correct salt
-            PasswordCrypt passwordCrypt = passwordCryptManager.getPasswordCrypt(dbHash);
-            cryptPW = passwordCrypt.crypt(password, dbPassword);
-        } catch (NoSuchAlgorithmException e) {
-            throw new SystemException(SOURCE, e);
-        }
-
-        boolean correctPassword = dbPassword.equals(cryptPW);
+        boolean correctPassword = hashData.getHash().equals(hashedPassword);
         if (correctPassword) {
             log.debug("Password verified for userid: {}", identity.getUserId());
         } else {
@@ -79,42 +64,13 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
     public void setPassword(Identity identity, String password, String password2) throws SystemException {
         if (!password.equals(password2)) return;
 
-        // passwordCryptManager the password - salt is autogenereated
-        String cryptPW = null;
-        boolean supportsMech = true;
-        PasswordCrypt passwordCrypt = null;
-        try {
-            passwordCrypt = passwordCryptManager.getPasswordCrypt(defaultCreateHash);
+        PasswordHasher hasher = passwordHashManager.getDefaultPasswordHasher();
+        PasswordHash hashData = hasher.hashPassword(password);
+        String hashDataAsString = PasswordHashJsonEncoder.encode(hashData);
 
-            try {
-                getJdbcTemplate().queryForObject("select count(HashMech) from dbuserpassword", Integer.class);
-            } catch (BadSqlGrammarException e) {
-                // Use default/fallback mechanism
-                supportsMech = false;
-                passwordCrypt = passwordCryptManager.getPasswordCrypt(null);
-            }
+        passwordDao.updatePasswordInDatabase(identity, hashDataAsString);
 
-
-            cryptPW = passwordCrypt.crypt(password);
-        } catch (NoSuchAlgorithmException e) {
-            throw new SystemException(SOURCE, e);
-        }
-
-        int count = getJdbcTemplate().queryForObject("SELECT COUNT(*) FROM dbuserpassword WHERE Domain = ? AND UserId = ?", Integer.class,
-                identity.getDomain(), identity.getUserId());
-        if (count == 0) {
-            // New user, without password
-            getJdbcTemplate().update("INSERT INTO dbuserpassword (Domain, UserId, Password) VALUES (?, ?, ?)",
-                    identity.getDomain(), identity.getUserId(), cryptPW);
-        } else {
-            getJdbcTemplate().update("UPDATE dbuserpassword SET Password = ? WHERE Domain = ? AND UserId = ?",
-                    cryptPW, identity.getDomain(), identity.getUserId());
-        }
-
-        if(supportsMech) {
-            getJdbcTemplate().update("UPDATE dbuserpassword SET HashMech = ? WHERE Domain = ? AND UserId = ?",
-                    passwordCrypt.getId(), identity.getDomain(), identity.getUserId());
-        }
+        passwordDao.updateMechFieldInDatabase(identity);
 
         log.debug("Password set for userid: {}", identity.getUserId());
     }
@@ -131,11 +87,11 @@ public class DbUserPasswordManager extends JdbcDaoSupport implements PasswordMan
         return true;
     }
 
-    public void setPasswordCryptManager(PasswordCryptManager passwordCryptManager) {
-        this.passwordCryptManager = passwordCryptManager;
+    public void setPasswordHashManager(PasswordHashManager passwordHashManager) {
+        this.passwordHashManager = passwordHashManager;
     }
 
-    public void setDefaultCreateHash(String defaultCreateHash) {
-        this.defaultCreateHash = defaultCreateHash;
+    public void setPasswordDao(PasswordDao passwordDao) {
+        this.passwordDao = passwordDao;
     }
 }

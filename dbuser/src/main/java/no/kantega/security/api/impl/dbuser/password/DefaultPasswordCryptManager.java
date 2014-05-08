@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * Default implementation of PasswordCryptManager
+ * @deprecated Use PasswordHashManager
  */
 public class DefaultPasswordCryptManager implements PasswordCryptManager, ApplicationContextAware {
 
