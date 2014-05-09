@@ -1,5 +1,8 @@
 package no.kantega.security.api.impl.dbuser.password;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 /**
@@ -10,12 +13,16 @@ import java.util.List;
  */
 public class DbUserPasswordRehasher {
 
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     private String domain;
     private PasswordDao passwordDao;
     private PasswordHashManager passwordHashManager;
     private PasswordCryptManager passwordCryptManager;
 
     public void rehashAll() {
+
+        log.info("Looking for passwords that needs re-hashing");
 
         String defaultAlgorithm = passwordHashManager.getDefaultAlgorithm();
         List<String> usersWithPasswords = passwordDao.findUsersWithPasswords(domain);
@@ -35,7 +42,9 @@ public class DbUserPasswordRehasher {
                 hashData = PasswordHashJsonEncoder.decode(hashString);
             }
 
-            if (!hashData.getAlgorithms().get(0).getId().equals(defaultAlgorithm)) {
+            List<PasswordHashAlgorithm> algorithms = hashData.getAlgorithms();
+            if (!algorithms.get(algorithms.size() - 1).getId().equals(defaultAlgorithm)) {
+                log.info("Found a password that needs re-hashing; userId=" + userId + "; previous hash algorithm=" + algorithms.get(0).getId());
                 rehash(hashData);
                 hashDataIsChanged = true;
             }

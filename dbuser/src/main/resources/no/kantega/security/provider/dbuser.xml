@@ -51,7 +51,7 @@
         <property name="passwordHashManager" ref="passwordHashManager"/>
     </bean>
 
-    <bean id="dbuserPasswordRehasher" class="no.kantega.security.api.impl.dbuser.password.DbUserPasswordRehasher">
+    <bean id="dbuserPasswordRehasher" class="no.kantega.security.api.impl.dbuser.password.DbUserPasswordRehasher" init-method="rehashAll">
         <property name="passwordDao" ref="passwordDao"/>
         <property name="domain" value="${security.dbuser.domain}"/>
         <property name="passwordHashManager" ref="passwordHashManager"/>
