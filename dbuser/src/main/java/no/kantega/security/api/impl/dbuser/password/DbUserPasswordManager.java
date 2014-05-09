@@ -21,11 +21,6 @@ import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.password.PasswordManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-
-import java.util.Map;
 
 /**
  * User: Anders Skar, Kantega AS
@@ -45,9 +40,8 @@ public class DbUserPasswordManager implements PasswordManager {
 
         PasswordHash hashData = PasswordHashJsonEncoder.decode(dbPassword);
         String hashedPassword = password;
-        for (Map<String, Object> algorithm : hashData.getAlgorithms()) {
-            String id = (String) algorithm.get("id");
-            PasswordHasher hasher = passwordHashManager.getPasswordHasher(id);
+        for (PasswordHashAlgorithm algorithm : hashData.getAlgorithms()) {
+            PasswordHasher hasher = passwordHashManager.getPasswordHasher(algorithm.getId());
             hashedPassword = hasher.hashPassword(hashedPassword, algorithm).getHash();
         }
 

@@ -1,6 +1,8 @@
 package no.kantega.security.api.impl.dbuser.password;
 
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import no.kantega.security.api.impl.dbuser.password.PasswordHash;
 
 import java.io.IOException;
 
@@ -27,5 +29,6 @@ public class PasswordHashJsonEncoder {
             throw new RuntimeException("Failed to json decode password hash", e);
         }
     }
+
 
 }

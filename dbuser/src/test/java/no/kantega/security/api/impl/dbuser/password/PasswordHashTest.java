@@ -2,9 +2,6 @@ package no.kantega.security.api.impl.dbuser.password;
 
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -19,19 +16,21 @@ public class PasswordHashTest {
 
         PasswordHash hash = new PasswordHash();
         hash.setHash("XYZ");
-        Map<String, Object> algorithm = new HashMap<>();
-        algorithm.put("id", "MYALG");
+        PasswordHashAlgorithm algorithm = new PasswordHashAlgorithm();
+        algorithm.setId("MYALG");
         algorithm.put("some-parameter", "some value");
         algorithm.put("other-parameter", 1);
         hash.addAlgorithm(algorithm);
 
         String encoded = PasswordHashJsonEncoder.encode(hash);
 
+        System.out.println(encoded);
+
         hash = PasswordHashJsonEncoder.decode(encoded);
 
         assertEquals("XYZ", hash.getHash());
         assertEquals(1, hash.getAlgorithms().size());
-        assertEquals("MYALG", hash.getAlgorithms().get(0).get("id"));
+        assertEquals("MYALG", hash.getAlgorithms().get(0).getId());
         assertEquals(1, hash.getAlgorithms().get(0).get("other-parameter"));
     }
 
@@ -45,7 +44,7 @@ public class PasswordHashTest {
 
         assertTrue(hashData.getHash().length() > 0);
         assertEquals(1, hashData.getAlgorithms().size());
-        assertEquals("PBKDF2WithHmacSha1", hashData.getAlgorithms().get(0).get("id"));
+        assertEquals("PBKDF2WithHmacSha1", hashData.getAlgorithms().get(0).getId());
         assertEquals(1000, hashData.getAlgorithms().get(0).get("iterations"));
 
         PasswordHash hashData2 = hasher.hashPassword("my secret", hashData.getAlgorithms().get(0));

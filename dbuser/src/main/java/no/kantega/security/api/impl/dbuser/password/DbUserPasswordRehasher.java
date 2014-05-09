@@ -1,8 +1,6 @@
 package no.kantega.security.api.impl.dbuser.password;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Will rehash all passwords in the database with the current default PasswordHasher
@@ -37,7 +35,7 @@ public class DbUserPasswordRehasher {
                 hashData = PasswordHashJsonEncoder.decode(hashString);
             }
 
-            if (!hashData.getAlgorithms().get(0).get("id").equals(defaultAlgorithm)) {
+            if (!hashData.getAlgorithms().get(0).getId().equals(defaultAlgorithm)) {
                 rehash(hashData);
                 hashDataIsChanged = true;
             }
@@ -76,8 +74,8 @@ public class DbUserPasswordRehasher {
         PasswordHash hashData = new PasswordHash();
         hashData.setHash(hashString);
 
-        Map<String, Object> algorithm = new HashMap<>();
-        algorithm.put("id", crypt.getId());
+        PasswordHashAlgorithm algorithm = new PasswordHashAlgorithm();
+        algorithm.setId(crypt.getId());
         hashData.addAlgorithm(algorithm);
 
         return hashData;

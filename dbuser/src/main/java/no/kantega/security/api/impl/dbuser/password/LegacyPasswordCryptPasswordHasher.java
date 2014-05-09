@@ -1,12 +1,10 @@
 package no.kantega.security.api.impl.dbuser.password;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Wrapper over legacy PasswordCrypt implementations
- *
+ * <p/>
  * User: Sigurd Stendal
  * Date: 07.05.14
  */
@@ -22,19 +20,19 @@ public class LegacyPasswordCryptPasswordHasher implements PasswordHasher {
 
     @Override
     public PasswordHash hashPassword(String password) {
-        Map<String, Object> algorithm = new HashMap<>();
-        algorithm.put("id", algorithmName);
+        PasswordHashAlgorithm algorithm = new PasswordHashAlgorithm();
+        algorithm.setId(algorithmName);
         return hashPassword(password, algorithm);
     }
 
     @Override
-    public PasswordHash hashPassword(String password, Map<String, Object> algorithm) {
+    public PasswordHash hashPassword(String password, PasswordHashAlgorithm algorithm) {
 
         try {
             byte[] salt = (byte[]) algorithm.get("salt");
 
             String hash;
-            if(salt != null) {
+            if (salt != null) {
                 hash = passwordCrypt.crypt(password, new String(salt));
             } else {
                 hash = passwordCrypt.crypt(password);

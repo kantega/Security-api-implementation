@@ -2,11 +2,10 @@ package no.kantega.security.api.impl.dbuser.password;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A password hash with all metadata neccesary to recreate the hash form a plain text password
- *
+ * <p/>
  * User: Sigurd Stendal
  * Date: 07.05.14
  */
@@ -14,16 +13,16 @@ public class PasswordHash {
 
     private String hash;
 
-    private List<Map<String, Object>> algorithms = new LinkedList<>();
+    private List<PasswordHashAlgorithm> algorithms = new LinkedList<>();
 
     public PasswordHash() {
     }
 
-    public void addAlgorithm(Map<String, Object> algorithm) {
+    public void addAlgorithm(PasswordHashAlgorithm algorithm) {
         this.algorithms.add(algorithm);
     }
 
-    public List<Map<String, Object>> getAlgorithms() {
+    public List<PasswordHashAlgorithm> getAlgorithms() {
         return algorithms;
     }
 

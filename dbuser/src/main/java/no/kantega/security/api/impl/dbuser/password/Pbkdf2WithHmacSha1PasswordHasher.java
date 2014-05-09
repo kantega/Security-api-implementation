@@ -5,12 +5,9 @@ import org.apache.commons.codec.binary.Hex;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * User: Sigurd Stendal
@@ -27,8 +24,8 @@ public class Pbkdf2WithHmacSha1PasswordHasher implements PasswordHasher {
         int iterations = 1000;
         byte[] salt = createSalt();
 
-        Map<String, Object> algorithm = new HashMap<>();
-        algorithm.put("id", ALGORITHM);
+        PasswordHashAlgorithm algorithm = new PasswordHashAlgorithm();
+        algorithm.setId(ALGORITHM);
         algorithm.put("iterations", iterations);
         algorithm.put("salt", Hex.encodeHexString(salt));
 
@@ -36,10 +33,10 @@ public class Pbkdf2WithHmacSha1PasswordHasher implements PasswordHasher {
     }
 
     @Override
-    public PasswordHash hashPassword(String password, Map<String, Object> algorithm) {
+    public PasswordHash hashPassword(String password, PasswordHashAlgorithm algorithm) {
 
-        if(!ALGORITHM.equals(algorithm.get("id"))) {
-            throw new IllegalArgumentException("This password hasher is unable to hash password using algorithm " + algorithm.get("id"));
+        if (!ALGORITHM.equals(algorithm.getId())) {
+            throw new IllegalArgumentException("This password hasher is unable to hash password using algorithm " + algorithm.getId());
         }
 
         int iterations = (int) algorithm.get("iterations");
@@ -70,14 +67,6 @@ public class Pbkdf2WithHmacSha1PasswordHasher implements PasswordHasher {
         byte[] salt = new byte[SALT_LENGTH];
         sr.nextBytes(salt);
         return salt;
-    }
-
-    private static SecureRandom getSecureRandom() {
-        try {
-            return SecureRandom.getInstance("SHA1PRNG");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Unable to create SecureRandom", e);
-        }
     }
 
     private static SecretKeyFactory getSecretKeyFactory() {

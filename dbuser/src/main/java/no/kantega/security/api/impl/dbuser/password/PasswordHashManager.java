@@ -12,7 +12,6 @@ import java.util.Map;
 public class PasswordHashManager implements ApplicationContextAware {
 
     private static final String DEFAULT_PASSWORDHASHER_BEAN_NAME = "defaultPasswordHasher";
-    private static final String DEFAULT_PASSWORDCRYPT_BEAN_NAME = "defaultPasswordCrypt";
 
     private ApplicationContext applicationContext;
     private PasswordCryptManager passwordCryptManager;
