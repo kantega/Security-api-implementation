@@ -85,6 +85,11 @@ public class DbUserPasswordRehasher {
 
         PasswordHashAlgorithm algorithm = new PasswordHashAlgorithm();
         algorithm.setId(crypt.getId());
+
+        // Why we store the hash as salt: If the password was salted, the salt was appended to the hash string before it was saved.
+        // Only the PasswordCrypt implementation knows if there was a salt and how to extract the salt from the hash. So we store the hash
+        // as "salt" and provides this value to the PasswordCrypt implementation. The implementation will either ignore it or use it.
+        algorithm.put("salt", hashString);
         hashData.addAlgorithm(algorithm);
 
         return hashData;
