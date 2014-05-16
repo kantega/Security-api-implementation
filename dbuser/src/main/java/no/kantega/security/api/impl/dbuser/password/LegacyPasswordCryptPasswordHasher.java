@@ -29,11 +29,11 @@ public class LegacyPasswordCryptPasswordHasher implements PasswordHasher {
     public PasswordHash hashPassword(String password, PasswordHashAlgorithm algorithm) {
 
         try {
-            byte[] salt = (byte[]) algorithm.get("salt");
+            String salt = (String) algorithm.get("salt");
 
             String hash;
             if (salt != null) {
-                hash = passwordCrypt.crypt(password, new String(salt));
+                hash = passwordCrypt.crypt(password, salt);
             } else {
                 hash = passwordCrypt.crypt(password);
             }
@@ -45,7 +45,7 @@ public class LegacyPasswordCryptPasswordHasher implements PasswordHasher {
 
 
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Failed ti hash password. Algorithm not supported.", e);
+            throw new IllegalStateException("Failed to hash password. Algorithm not supported.", e);
         }
 
     }

@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  * Date: 07.05.14
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:/passwordRehashTestContext.xml", "classpath:/no/kantega/security/provider/dbuser.xml"})
+@ContextConfiguration({"classpath:/passwordRehashWithSaltTestContext.xml", "classpath:/no/kantega/security/provider/dbuser.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class PasswordRehashTest {
+public class PasswordRehashWithSaltTest {
 
     @Autowired
     DbUserPasswordRehasher rehasher;
@@ -53,7 +53,6 @@ public class PasswordRehashTest {
         assertFalse(pwdmgr.verifyPassword(createIdentity("my domain", "jason"), "faulty password"));
 
     }
-
 
     private Identity createIdentity(final String domain, final String userId) {
         return new Identity() {
