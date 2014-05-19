@@ -73,6 +73,9 @@ public class FeideSAML2LoginController extends AbstractFeideConfigurable impleme
     }
 
     private UserSession initiateUserSession(HttpSession session, String samlResponseArg) throws SAML2Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("SAMLResponse:" + samlResponseArg);
+        }
         SAMLResponse samlResponse = SAML2Util.parseSAMLResponse(samlResponseArg);
 
         ServletContext servletContext = session.getServletContext();
