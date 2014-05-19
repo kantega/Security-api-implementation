@@ -55,7 +55,7 @@ public class FeideSAML2IdentityResolver extends AbstractFeideConfigurable implem
 
         if (authenticatedIdentity != null) {
             if (!sessionManager.userHasValidSession(authenticatedIdentity)) {
-                log.debug("Session has expired for:" + authenticatedIdentity.getUserId());
+                log.debug("Session has expired for:{}", authenticatedIdentity.getUserId());
                 sessionManager.removeUserSession(authenticatedIdentity);
                 return null;
             }

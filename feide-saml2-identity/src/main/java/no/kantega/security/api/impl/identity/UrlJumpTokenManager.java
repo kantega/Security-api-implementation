@@ -17,8 +17,6 @@ public class UrlJumpTokenManager {
     }
 
     public Identity resolveJumpToken(String token) {
-        Identity identity = tokens.get(token);
-        tokens.remove(token);
-        return identity;
+        return tokens.remove(token);
     }
 }
