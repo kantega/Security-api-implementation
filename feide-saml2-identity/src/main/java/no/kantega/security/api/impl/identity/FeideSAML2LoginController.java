@@ -66,7 +66,7 @@ public class FeideSAML2LoginController extends AbstractFeideConfigurable impleme
         try {
             return initiateUserSession(session, samlResponseArg);
         } catch (SAML2Exception e) {
-            log.error("Could not create EduPerson");
+            log.error("Could not create EduPerson", e);
         }
 
         return null;
@@ -93,7 +93,9 @@ public class FeideSAML2LoginController extends AbstractFeideConfigurable impleme
 
         EduPerson eduPerson = SAML2Util.createEduPerson(samlAssertion, idpConfig.isAttribValuesBase64Encoded(), idpConfig.getFeideSplitChar());
 
-        log.debug(eduPerson.dump());
+        if (log.isDebugEnabled()) {
+            log.debug(eduPerson.dump());
+        }
 
         log.info("Authenticated as username:" + eduPerson.getUsername() + ", orgDN:" + eduPerson.getOrgDN());
 
