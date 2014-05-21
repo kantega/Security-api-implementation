@@ -12,13 +12,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.kantega.openaksess</groupId>
-            <artifactId>openaksess-commons</artifactId>
-            <version>${aksess.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>com.signicat.services.client</groupId>
             <artifactId>signicat-client-lib</artifactId>
             <version>2.4.2-repofix</version>

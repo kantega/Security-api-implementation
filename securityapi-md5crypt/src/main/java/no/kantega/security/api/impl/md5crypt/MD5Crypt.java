@@ -2,11 +2,8 @@ package no.kantega.security.api.impl.md5crypt;
 
 import no.kantega.security.api.impl.dbuser.password.PasswordCrypt;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
-
 import java.security.NoSuchAlgorithmException;
-import java.security.MessageDigest;
 
 
 /**
