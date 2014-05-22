@@ -1,22 +1,17 @@
 package no.kantega.security.api.impl.kerberos;
 
 import no.kantega.security.api.identity.*;
+import org.simplericity.serberuhs.filter.KerberosFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Properties;
 
-import org.simplericity.serberuhs.filter.KerberosFilter;
-
-/**
- * Created by IntelliJ IDEA.
- * User: bjorsnos
- * Date: May 12, 2009
- * Time: 12:58:23 PM
- * To change this template use File | Settings | File Templates.
- */
 public class KerberosIdentityResolver implements IdentityResolver {
+    private static Logger log = LoggerFactory.getLogger(KerberosIdentityResolver.class);
 
     private static final String DEFAULT_TARGET_URI_PARAM = "targetUri";
 
@@ -28,6 +23,7 @@ public class KerberosIdentityResolver implements IdentityResolver {
     public AuthenticatedIdentity getIdentity(HttpServletRequest request) throws IdentificationFailedException {
 
         final String authorizedPrincipal = (String) request.getSession().getAttribute(KerberosFilter.AUTORIZED_PRINCIPAL_SESSION_ATTRIBUTE);
+        log.debug("authorizedPrincipal: {}", authorizedPrincipal);
         return authorizedPrincipal == null ? null : new KerberosIdentity(this, authorizedPrincipal);
     }
 
