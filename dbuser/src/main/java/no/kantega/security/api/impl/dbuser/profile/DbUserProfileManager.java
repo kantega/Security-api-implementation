@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.commons.lang.StringUtils.defaultString;
+
 /**
  * User: Anders Skar, Kantega AS
  * Date: Jan 15, 2007
@@ -179,8 +181,7 @@ public class
 
         public void processRow(ResultSet rs) throws SQLException {
             String name = rs.getString("Name");
-            String value = rs.getString("Value");
-            if (value == null) value = "";
+            String value = defaultString(rs.getString("Value"));
 
             p.setProperty(name, value);
         }
