@@ -36,21 +36,15 @@ import java.util.Properties;
 
 import static org.apache.commons.lang.StringUtils.defaultString;
 
-/**
- * User: Anders Skar, Kantega AS
- * Date: Jan 15, 2007
- * Time: 6:48:38 PM
- */
-public class
-        DbUserProfileManager extends JdbcDaoSupport implements ProfileManager {
+public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManager {
     private String domain;
 
     private AbstractDbNameQuerier querier;
 
     /**
-     * S�ker etter en profil.  S�kes i b�de fornavn og etternavn.
-     * @param name - Navn som skal s�kes etter
-     * @return
+     * Search profiles by the given string in both name and surname
+     * @param name - String to search by
+     * @return SearchResult with all Profiles matching the given string.
      * @throws SystemException
      */
     public SearchResult<Profile> searchProfiles(String name) throws SystemException {
@@ -73,9 +67,8 @@ public class
     }
 
     /**
-     * Hent brukerprofil for angitt identitet
-     * @param identity
-     * @return
+     * @param identity to get user by.
+     * @return Profile for user with given identity.
      * @throws SystemException
      */
     public Profile getProfileForUser(Identity identity) throws SystemException {

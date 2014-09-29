@@ -6,10 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sjukva
- */
 public abstract class AbstractDbNameQuerier {
 
     private List<String> param;
@@ -19,7 +15,7 @@ public abstract class AbstractDbNameQuerier {
         if (name == null) {
             return WhereClause.EMPTY;
         }
-        param = new ArrayList<String>();
+        param = new ArrayList<>();
         query = new StringBuffer();
         addEntireNameMatchingQuery(name);
         addCombinatoryNameMatchingQuery(name);
