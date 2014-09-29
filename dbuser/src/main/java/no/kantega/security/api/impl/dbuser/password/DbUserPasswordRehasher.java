@@ -21,7 +21,10 @@ public class DbUserPasswordRehasher {
     private PasswordCryptManager passwordCryptManager;
 
     public void rehashAll() {
-
+        if(Boolean.parseBoolean(System.getProperty("DbUserPasswordRehasher.skipRehashAll", "false"))){
+            log.info("Skipping rehashAll");
+            return;
+        }
         log.info("Looking for passwords that needs re-hashing");
 
         String defaultAlgorithm = passwordHashManager.getDefaultAlgorithm();

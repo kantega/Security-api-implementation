@@ -23,9 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jan 15, 2007
- * Time: 6:33:38 PM
+ * Manager responsible for verifying and setting passwords in DB.
  */
 public class DbUserPasswordManager implements PasswordManager {
 
