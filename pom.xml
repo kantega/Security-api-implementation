@@ -32,7 +32,7 @@
     <url>http://kantega.no</url>
 
     <scm>
-        <connection>scm:svn:https://opensource.kantega.no/svn/security-api-impl/trunk</connection>
+        <connection>scm:git:git@gitlab.kantega.no:flyt-cms/security-api-open-implementation.git</connection>
     </scm>
 
     <dependencies>
