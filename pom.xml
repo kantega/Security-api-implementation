@@ -9,7 +9,7 @@
     <url>http://kantega.no</url>
 
     <scm>
-        <connection>scm:svn:https://subversion.kantega.no/svn/aksess/projects/security-api-impl/trunk/</connection>
+        <connection>scm:git:git@gitlab.kantega.no:flyt-cms/security-api-implementation.git/</connection>
     </scm>
 
     <dependencies>
