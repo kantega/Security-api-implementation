@@ -32,9 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:54:58 AM
+ * Provides support for configuring several <code>RoleManager</code>s for a single domain.
  */
 public class CompoundRoleManager extends CompoundManagerConfigurable<RoleManager> implements RoleManager {
 

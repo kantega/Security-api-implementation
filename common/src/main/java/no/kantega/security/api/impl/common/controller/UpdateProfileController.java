@@ -35,9 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Feb 8, 2007
- * Time: 5:05:43 PM
+ * Controller for updating <code>Profile</code>
  */
 public class UpdateProfileController implements Controller {
     private ProfileManager profileManager = null;

@@ -19,9 +19,7 @@ package no.kantega.security.api.impl.common;
 import java.util.List;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:32:40 AM
+ * Provides support for configuring several managers for a single domain.
  */
 public abstract class CompoundManagerConfigurable<T> {
     protected String domain;

@@ -12,9 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jan 12, 2007
- * Time: 1:16:33 PM
+ * Password manager that verifies password by binding to ldap server
+ * using <code>usernameAttribute</code>, and optionally <code>objectClassUsers</code>.
  */
 public class LdapPasswordManager extends LdapConfigurable implements PasswordManager {
     private String domain;

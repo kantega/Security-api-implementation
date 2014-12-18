@@ -22,9 +22,7 @@ import no.kantega.security.api.impl.common.CompoundManagerConfigurable;
 import no.kantega.security.api.password.PasswordManager;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:25:57 AM
+ * Provides support for configuring several <code>PasswordManager</code>s for a single domain.
  */
 public class CompoundPasswordManager extends CompoundManagerConfigurable<PasswordManager> implements PasswordManager {
     public boolean verifyPassword(Identity identity, String password) throws SystemException {

@@ -31,9 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:34:39 AM
+ * Provides support for configuring several <code>ProfileManager</code>s for a single domain.
  */
 public class CompoundUserProfileManager extends CompoundManagerConfigurable<ProfileManager> implements ProfileManager {
 
