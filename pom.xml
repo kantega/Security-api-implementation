@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.kantega.opensource-parent</groupId>
         <artifactId>opensource-parent</artifactId>
-        <version>1.4</version>
+        <version>1.6</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -67,11 +67,13 @@
         <module>common</module>
         <module>dbuser</module>
         <module>ldap</module>
+        <module>twofactorauth-email</module>
+        <module>twofactorauth-dbbackend</module>
     </modules>
 
     <properties>
         <springframework.version>3.2.4.RELEASE</springframework.version>
-        <securityapi.version>2.8</securityapi.version>
+        <securityapi.version>2.9-SNAPSHOT</securityapi.version>
     </properties>
 
 </project>

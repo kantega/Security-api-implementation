@@ -29,10 +29,9 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 /**
  * Controller for updating <code>Profile</code>
@@ -53,6 +52,9 @@ public class UpdateProfileController implements Controller {
     private final static String DEPARTMENT_ATTR = "department";
     private final static String PASSWORD_ATTR = "password";
     private final static String PASSWORD2_ATTR = "password2";
+    private final static List<String> knownAttributes =
+            asList(SURNAME_ATTR, GIVEN_NAME_ATTR, EMAIL_ATTR, PASSWORD_ATTR, PASSWORD2_ATTR, DEPARTMENT_ATTR);
+
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -108,16 +110,10 @@ public class UpdateProfileController implements Controller {
             profile.setEmail(request.getParameter(EMAIL_ATTR));
             profile.setDepartment(request.getParameter(DEPARTMENT_ATTR));
 
-            // Andre variabler lagres som identitet ...
             Properties props = new Properties();
             while (paramNames.hasMoreElements()) {
                 String paramName = (String)paramNames.nextElement();
-                if (!paramName.equals(SURNAME_ATTR) &&
-                        !paramName.equals(GIVEN_NAME_ATTR) &&
-                        !paramName.equals(EMAIL_ATTR) &&
-                        !paramName.equals(PASSWORD_ATTR) &&
-                        !paramName.equals(PASSWORD2_ATTR) &&
-                        !paramName.equals(DEPARTMENT_ATTR)) {
+                if (!knownAttributes.contains(paramName)) {
 
                     String value = request.getParameter(paramName);
                     props.setProperty(paramName, value);

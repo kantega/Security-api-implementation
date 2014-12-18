@@ -23,9 +23,12 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>securityapi-common</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>Security API Implementation : Common</name>
+    <modules>
+        <module>../twofactorauth-dbbackend</module>
+    </modules>
 
     <dependencies>
         <dependency>
