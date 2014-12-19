@@ -26,9 +26,6 @@
     <packaging>pom</packaging>
 
     <name>Security API Implementation : Common</name>
-    <modules>
-        <module>../twofactorauth-dbbackend</module>
-    </modules>
 
     <dependencies>
         <dependency>
