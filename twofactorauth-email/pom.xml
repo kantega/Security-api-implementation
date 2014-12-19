@@ -12,4 +12,11 @@
     <artifactId>twofactorauth-email</artifactId>
     <name>Security API Implementation : Two factor authentication email sender</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
+    </dependencies>
 </project>
