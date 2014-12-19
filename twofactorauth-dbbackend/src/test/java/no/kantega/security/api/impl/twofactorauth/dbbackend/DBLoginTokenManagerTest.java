@@ -1,9 +1,25 @@
+/*
+ * Copyright 2014 Kantega AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package no.kantega.security.api.impl.twofactorauth.dbbackend;
 
 import no.kantega.security.api.identity.DefaultIdentity;
 import no.kantega.security.api.identity.Identity;
 import no.kantega.security.api.twofactorauth.DefaultLoginToken;
 import no.kantega.security.api.twofactorauth.LoginToken;
+import no.kantega.security.api.twofactorauth.LoginTokenVerification;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.PlatformFactory;
@@ -63,15 +79,15 @@ public class DBLoginTokenManagerTest {
         Identity identity = DefaultIdentity.withDomainAndUserId("domain", "userid");
         LoginToken loginToken = dbLoginTokenManager.generateLoginToken(identity);
 
-        boolean isValidToken = dbLoginTokenManager.verifyLoginToken(identity, loginToken);
-        assertThat("Token should be valid", isValidToken, is(true));
+        LoginTokenVerification isValidToken = dbLoginTokenManager.verifyLoginToken(identity, loginToken);
+        assertThat("Token should be valid", isValidToken, is(LoginTokenVerification.VALID));
     }
 
     @Test
     public void nonExistingLoginToken(){
         Identity identity = DefaultIdentity.withDomainAndUserId("domain", "userid");
-        boolean isValidToken = dbLoginTokenManager.verifyLoginToken(identity, new DefaultLoginToken("12345"));
-        assertThat("Token should be invalid", isValidToken, is(false));
+        LoginTokenVerification isValidToken = dbLoginTokenManager.verifyLoginToken(identity, new DefaultLoginToken("12345"));
+        assertThat("Token should be invalid", isValidToken, is(LoginTokenVerification.INVALID));
     }
 
     @Test
@@ -80,9 +96,9 @@ public class DBLoginTokenManagerTest {
         LoginToken loginToken = dbLoginTokenManager.generateLoginToken(identity);
 
         dbLoginTokenManager.getJdbcTemplate().update("update twofactorauthtoken set expiredate = ?", new Date());
-        boolean isValidToken = dbLoginTokenManager.verifyLoginToken(identity, loginToken);
+        LoginTokenVerification isValidToken = dbLoginTokenManager.verifyLoginToken(identity, loginToken);
 
-        assertThat("Token should be expired", isValidToken, is(false));
+        assertThat("Token should be expired", isValidToken, is(LoginTokenVerification.EXPIRED));
     }
 
     @After
