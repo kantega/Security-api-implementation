@@ -39,7 +39,7 @@ public class EmailLoginTokenSender implements LoginTokenSender {
         message.setTo(profile.getEmail());
         message.setSubject(loginTokenEmailSubject);
         message.setFrom(loginTokenEmailFrom);
-        message.setText(bodyText.replace("${logintoken}", loginToken.getToken()));
+        message.setText(bodyText.replace("{logintoken}", loginToken.getToken()));
         mailSender.send(message);
     }
 
