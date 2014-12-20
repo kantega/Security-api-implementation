@@ -19,11 +19,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Created by IntelliJ IDEA.
- * User: andersskar
- * Date: Jan 10, 2007
- * Time: 12:37:29 PM
- * To change this template use File | Settings | File Templates.
+ * Implementation of <code>ProfileManager</code> that get user properties from LDAP.
  */
 public class LdapProfileManager extends LdapConfigurable implements ProfileManager {
     private String domain = "";

@@ -22,10 +22,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>securityapi-common</artifactId>
+    <artifactId>securityapi-compound</artifactId>
     <packaging>jar</packaging>
 
-    <name>Security API Implementation : Common</name>
+    <name>Security API Implementation : Compound</name>
 
     <dependencies>
         <dependency>

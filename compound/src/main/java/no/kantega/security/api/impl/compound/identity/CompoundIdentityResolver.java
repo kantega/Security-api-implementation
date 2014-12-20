@@ -1,4 +1,4 @@
-package no.kantega.security.api.impl.common.identity;
+package no.kantega.security.api.impl.compound.identity;
 
 import no.kantega.security.api.identity.*;
 

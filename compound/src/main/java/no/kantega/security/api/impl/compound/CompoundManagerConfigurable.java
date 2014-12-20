@@ -1,4 +1,4 @@
-package no.kantega.security.api.impl.common;
+package no.kantega.security.api.impl.compound;
 
 /*
  * Copyright 2009 Kantega AS
@@ -19,9 +19,7 @@ package no.kantega.security.api.impl.common;
 import java.util.List;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:32:40 AM
+ * Base for most Compound classes. Specifies the domain name and the list of managers to use.
  */
 public abstract class CompoundManagerConfigurable<T> {
     protected String domain;
