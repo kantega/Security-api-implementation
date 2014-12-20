@@ -21,7 +21,7 @@
     <bean id="ldapOuRoleManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.role.LdapOrganizationUnitRoleManager">
     </bean>
 
-    <bean id="ldapCompoundManager" class="no.kantega.security.api.impl.common.role.CompoundRoleManager">
+    <bean id="ldapCompoundManager" class="no.kantega.security.api.impl.compound.role.CompoundRoleManager">
         <property name="domain" value="${security.ldap.domain}"/>
         <property name="managers">
             <list>
@@ -35,31 +35,17 @@
     </bean>
 
     <bean id="ldapIdentityResolver" class="no.kantega.security.api.identity.DefaultIdentityResolver">
-        <property name="authenticationContext">
-            <value>${security.ldap.domain}</value>
-        </property>
-        <property name="loginPageUrl">
-            <value>${security.login.url}</value>
-        </property>
-        <property name="useTransportSecurity">
-            <value>${security.login.usessl}</value>
-        </property>
+        <property name="authenticationContext" value="${security.ldap.domain}"/>
+        <property name="loginPageUrl" value="${security.login.url}"/>
+        <property name="useTransportSecurity" value="${security.login.usessl}"/>
     </bean>
 
     <!-- Sikkerhetsrealm for Aksess -->
     <bean id="ldapRealm" class="no.kantega.publishing.security.realm.SecurityRealm">
-        <property name="profileManager">
-            <ref bean="ldapProfileManager"/>
-        </property>
-        <property name="roleManager">
-            <ref bean="ldapCompoundManager"/>
-        </property>
-        <property name="passwordManager">
-            <ref bean="ldapPasswordManager"/>
-        </property>
-        <property name="identityResolver">
-            <ref bean="ldapIdentityResolver"/>
-        </property>
+        <property name="profileManager" ref="ldapProfileManager"/>
+        <property name="roleManager" ref="ldapCompoundManager"/>
+        <property name="passwordManager" ref="ldapPasswordManager"/>
+        <property name="identityResolver" ref="ldapIdentityResolver"/>
     </bean>
 
     <!-- Konfigurasjon for brukeradministrasjon -->

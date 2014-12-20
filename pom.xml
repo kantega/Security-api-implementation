@@ -64,7 +64,7 @@
     </dependencies>
 
     <modules>
-        <module>common</module>
+        <module>compound</module>
         <module>dbuser</module>
         <module>ldap</module>
     </modules>

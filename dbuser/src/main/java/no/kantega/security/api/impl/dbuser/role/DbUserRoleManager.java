@@ -35,9 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jan 15, 2007
- * Time: 6:49:35 PM
+ * JDBC implementation of <code>RoleManager</code>
  */
 public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
     private String domain;
@@ -48,7 +46,7 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
     }
 
     public SearchResult<Role> searchRoles(String name) throws SystemException {
-        List<String> params = new ArrayList<>();
+        List<String> params = new ArrayList<>(2);
 
         String query = "RoleName LIKE ? AND Domain = ?";
         params.add(name + "%");
@@ -68,10 +66,10 @@ public class DbUserRoleManager extends JdbcDaoSupport implements RoleManager  {
             return null;
         }
 
-        List roles = getJdbcTemplate().query("SELECT * FROM dbuserrole WHERE Domain = ? AND RoleId  = ?", new RoleRowMapper(),
+        List<Role> roles = getJdbcTemplate().query("SELECT * FROM dbuserrole WHERE Domain = ? AND RoleId  = ?", new RoleRowMapper(),
                 roleId.getDomain(), roleId.getId());
         if (roles != null && roles.size() == 1) {
-            return (Role)roles.get(0);
+            return roles.get(0);
         } else {
             return null;
         }

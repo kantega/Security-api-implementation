@@ -1,4 +1,4 @@
-package no.kantega.security.api.impl.common.password;
+package no.kantega.security.api.impl.compound.password;
 
 /*
  * Copyright 2009 Kantega AS
@@ -18,13 +18,11 @@ package no.kantega.security.api.impl.common.password;
 
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.impl.common.CompoundManagerConfigurable;
+import no.kantega.security.api.impl.compound.CompoundManagerConfigurable;
 import no.kantega.security.api.password.PasswordManager;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:25:57 AM
+ * Allows checking password with a list of <code>PasswordManager</code>s.
  */
 public class CompoundPasswordManager extends CompoundManagerConfigurable<PasswordManager> implements PasswordManager {
     public boolean verifyPassword(Identity identity, String password) throws SystemException {

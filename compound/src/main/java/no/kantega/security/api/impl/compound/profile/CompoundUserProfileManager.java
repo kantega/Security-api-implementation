@@ -1,4 +1,4 @@
-package no.kantega.security.api.impl.common.profile;
+package no.kantega.security.api.impl.compound.profile;
 
 /*
  * Copyright 2009 Kantega AS
@@ -18,7 +18,7 @@ package no.kantega.security.api.impl.common.profile;
 
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.impl.common.CompoundManagerConfigurable;
+import no.kantega.security.api.impl.compound.CompoundManagerConfigurable;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.profile.ProfileComparator;
 import no.kantega.security.api.profile.ProfileManager;
@@ -31,9 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:34:39 AM
+ * Supports searching a list of <code>ProfileManager</code>s to find <code>Profile</code>s
  */
 public class CompoundUserProfileManager extends CompoundManagerConfigurable<ProfileManager> implements ProfileManager {
 

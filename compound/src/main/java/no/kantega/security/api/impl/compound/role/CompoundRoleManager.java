@@ -1,4 +1,4 @@
-package no.kantega.security.api.impl.common.role;
+package no.kantega.security.api.impl.compound.role;
 
 /*
  * Copyright 2009 Kantega AS
@@ -18,7 +18,7 @@ package no.kantega.security.api.impl.common.role;
 
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.Identity;
-import no.kantega.security.api.impl.common.CompoundManagerConfigurable;
+import no.kantega.security.api.impl.compound.CompoundManagerConfigurable;
 import no.kantega.security.api.role.Role;
 import no.kantega.security.api.role.RoleComparator;
 import no.kantega.security.api.role.RoleId;
@@ -32,9 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * User: Anders Skar, Kantega AS
- * Date: Jun 7, 2007
- * Time: 10:54:58 AM
+ * Supports getting <code>Role</code>s from a list of <code>RoleManager</code>s.
  */
 public class CompoundRoleManager extends CompoundManagerConfigurable<RoleManager> implements RoleManager {
 
