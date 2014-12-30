@@ -15,12 +15,14 @@
  */
 package no.kantega.security.api.impl.twofactorauth.email;
 
+import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.profile.Profile;
 import no.kantega.security.api.twofactorauth.LoginToken;
 import no.kantega.security.api.twofactorauth.LoginTokenSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
@@ -33,14 +35,29 @@ public class EmailLoginTokenSender implements LoginTokenSender {
     private String bodyText;
 
     @Override
-    public void sendTokenToUser(Profile profile, LoginToken loginToken) {
-        log.info("Sending LoginToken for user " + profile.getIdentity().getDomain() + ":" + profile.getIdentity().getUserId());
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(profile.getEmail());
-        message.setSubject(loginTokenEmailSubject);
-        message.setFrom(loginTokenEmailFrom);
-        message.setText(bodyText.replace("{logintoken}", loginToken.getToken()));
-        mailSender.send(message);
+    public void sendTokenToUser(Profile profile, LoginToken loginToken) throws java.lang.IllegalArgumentException, no.kantega.security.api.common.SystemException{
+        throwIfEmailIsBlank(profile);
+        try {
+            log.info("Sending LoginToken for user " + profile.getIdentity().getDomain() + ":" + profile.getIdentity().getUserId());
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(profile.getEmail());
+            message.setSubject(loginTokenEmailSubject);
+            message.setFrom(loginTokenEmailFrom);
+            message.setText(bodyText.replace("{logintoken}", loginToken.getToken()));
+            mailSender.send(message);
+        } catch (MailException e) {
+            throw new SystemException("Error sending logintoken by mail", e);
+        }
+    }
+
+    private void throwIfEmailIsBlank(Profile profile) {
+        if(isBlank(profile.getEmail())){
+            throw new IllegalArgumentException("profile.email is blank");
+        }
+    }
+
+    private boolean isBlank(String email) {
+        return email == null || email.trim().length() == 0;
     }
 
     @Required
