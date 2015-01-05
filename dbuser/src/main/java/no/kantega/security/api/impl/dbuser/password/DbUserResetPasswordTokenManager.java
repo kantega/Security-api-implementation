@@ -13,6 +13,7 @@ import java.util.UUID;
 
 
 public class DbUserResetPasswordTokenManager extends JdbcDaoSupport implements ResetPasswordTokenManager {
+    @Override
     public ResetPasswordToken generateResetPasswordToken(Identity identity, Date tokenExpireDate) throws SystemException {
         // Delete old tokens for identity
         deleteTokensForIdentity(identity);
@@ -24,6 +25,7 @@ public class DbUserResetPasswordTokenManager extends JdbcDaoSupport implements R
         return token;
     }
 
+    @Override
     public void deleteTokensForIdentity(Identity identity) {
         // Delete old requests for user if any
         getJdbcTemplate().update("delete from dbuserpasswordresettoken where domain = ? and userid = ?",
@@ -36,6 +38,7 @@ public class DbUserResetPasswordTokenManager extends JdbcDaoSupport implements R
         return token;
     }
 
+    @Override
     public boolean verifyPasswordToken(Identity identity, ResetPasswordToken token) throws SystemException {
         try {
             Date expireDate = getJdbcTemplate().queryForObject("select expiredate from dbuserpasswordresettoken where domain=? and userid=? and token=?", Date.class,

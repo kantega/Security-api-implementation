@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Supports searching a list of <code>ProfileManager</code>s to find <code>Profile</code>s
+ * Provides support for configuring several <code>ProfileManager</code>s for a single domain.
  */
 public class CompoundUserProfileManager extends CompoundManagerConfigurable<ProfileManager> implements ProfileManager {
 

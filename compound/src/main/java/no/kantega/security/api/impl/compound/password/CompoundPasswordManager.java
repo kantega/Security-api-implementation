@@ -22,7 +22,7 @@ import no.kantega.security.api.impl.compound.CompoundManagerConfigurable;
 import no.kantega.security.api.password.PasswordManager;
 
 /**
- * Allows checking password with a list of <code>PasswordManager</code>s.
+ * Provides support for configuring several <code>PasswordManager</code>s for a single domain.
  */
 public class CompoundPasswordManager extends CompoundManagerConfigurable<PasswordManager> implements PasswordManager {
     public boolean verifyPassword(Identity identity, String password) throws SystemException {

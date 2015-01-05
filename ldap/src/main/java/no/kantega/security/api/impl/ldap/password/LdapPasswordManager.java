@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of <code>PasswordManager</code> that authenticates user by binding
- * to LDAP.
+ * Password manager that verifies password by binding to ldap server
+ * using <code>usernameAttribute</code>, and optionally <code>objectClassUsers</code>.
  */
 public class LdapPasswordManager extends LdapConfigurable implements PasswordManager {
     private String domain;

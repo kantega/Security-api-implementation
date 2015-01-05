@@ -19,7 +19,7 @@ package no.kantega.security.api.impl.compound;
 import java.util.List;
 
 /**
- * Base for most Compound classes. Specifies the domain name and the list of managers to use.
+ * Provides support for configuring several managers for a single domain.
  */
 public abstract class CompoundManagerConfigurable<T> {
     protected String domain;

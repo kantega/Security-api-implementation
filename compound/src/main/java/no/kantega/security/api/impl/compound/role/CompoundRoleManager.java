@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Supports getting <code>Role</code>s from a list of <code>RoleManager</code>s.
+ * Provides support for configuring several <code>RoleManager</code>s for a single domain.
  */
 public class CompoundRoleManager extends CompoundManagerConfigurable<RoleManager> implements RoleManager {
 
