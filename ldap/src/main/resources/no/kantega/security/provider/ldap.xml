@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- LDAP configuration -->
+    <bean id="ldapConfigurable" abstract="true">
+        <property name="adminUser" value="${security.ldap.adminuser}"/>
+        <property name="adminPassword" value="${security.ldap.adminpassword}"/>
+        <property name="host" value="${security.ldap.host}"/>
+        <property name="searchBaseUsers" value="${security.ldap.users.searchbase}"/>
+        <property name="searchBaseRoles" value="${security.ldap.roles.searchbase}"/>
+        <property name="domain" value="${security.ldap.domain}"/>
+    </bean>
+
+    <bean id="ldapProfileManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.profile.LdapProfileManager">
+    </bean>
+
+    <bean id="ldapRoleManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.role.LdapRoleManager">
+    </bean>
+
+    <bean id="ldapPasswordManager" parent="ldapConfigurable" class="no.kantega.security.api.impl.ldap.password.LdapPasswordManager">
+    </bean>
+
+    <bean id="ldapIdentityResolver" class="no.kantega.security.api.identity.DefaultIdentityResolver">
+        <property name="authenticationContext" value="${security.ldap.domain}"/>
+        <property name="loginPageUrl" value="${security.login.url}"/>
+        <property name="useTransportSecurity" value="${security.login.usessl}"/>
+    </bean>
+
+    <!-- Sikkerhetsrealm for Aksess -->
+    <bean id="ldapRealm" class="no.kantega.publishing.security.realm.SecurityRealm">
+        <property name="profileManager" ref="ldapProfileManager"/>
+        <property name="roleManager" ref="ldapRoleManager"/>
+        <property name="passwordManager" ref="ldapPasswordManager"/>
+        <property name="identityResolver" ref="ldapIdentityResolver"/>
+    </bean>
+
+    <!-- Konfigurasjon for brukeradministrasjon -->
+    <bean id="ldapProfileConfiguration" class="no.kantega.useradmin.model.ProfileManagementConfiguration">
+        <property name="description" value="LDAP/AD - interne brukere"/>
+        <property name="domain" value="${security.ldap.domain}"/>
+        <property name="profileManager" ref="ldapProfileManager"/>
+    </bean>
+
+    <bean id="ldapRoleConfiguration" class="no.kantega.useradmin.model.RoleManagementConfiguration">
+        <property name="description" value="LDAP/AD - interne roller"/>
+        <property name="domain" value="${security.ldap.domain}"/>
+        <property name="roleManager" ref="ldapRoleManager"/>
+    </bean>
+
+</beans>
