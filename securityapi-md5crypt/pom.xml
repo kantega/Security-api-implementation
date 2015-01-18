@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>securityapi-impl</artifactId>
-    <groupId>no.kantega.security.api.impl</groupId>
-    <version>3.13-SNAPSHOT</version>
+        <groupId>org.kantega.security-api</groupId>
+        <artifactId>security-api-impl</artifactId>
+        <version>2.18-SNAPSHOT</version>
   </parent>
   <artifactId>securityapi-md5crypt</artifactId>
   <name>securityapi-md5crypt</name>
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.kantega.security-api</groupId>
             <artifactId>securityapi-dbuser</artifactId>
-            <version>${securityapi.openimpl.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
