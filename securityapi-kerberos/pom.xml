@@ -7,7 +7,7 @@
         <version>2.18-SNAPSHOT</version>
   </parent>
     <artifactId>securityapi-kerberos</artifactId>
-    <name>securityapi-kerberos</name>
+    <name>Security API Implementation : Kerberos</name>
     <dependencies>
 
         <dependency>

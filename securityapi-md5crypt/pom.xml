@@ -7,7 +7,7 @@
         <version>2.18-SNAPSHOT</version>
   </parent>
   <artifactId>securityapi-md5crypt</artifactId>
-  <name>securityapi-md5crypt</name>
+  <name>Security API Implementation : MD5crypt</name>
 
     <dependencies>
         <dependency>

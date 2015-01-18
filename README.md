@@ -16,3 +16,18 @@ Generates a login token for the user and store it in the database for later veri
 
 ## Twofactor authentication token sender
 Handles sending login tokens to user by email. 
+
+## FEIDE authentication
+Authenticate and handle identites through integration with FEIDE.
+ 
+## NTLM authentication
+Authenticate users using the NTLM protocol.
+
+## MD5crypt
+Legacy password hash implemetation using MD5.
+
+## Signicat authentication
+Autenticate users by integrating with Signicat
+
+## Kerberos authentication
+Autenticate users by integrating with Kerberos

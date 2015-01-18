@@ -8,7 +8,7 @@
   </parent>
 
     <artifactId>feide-saml2-identity</artifactId>
-    <name>Feide saml2 identity</name>
+    <name>Security API Implementation : Feide saml2 identity</name>
 
     <dependencies>
         <dependency>

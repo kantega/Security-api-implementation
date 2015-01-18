@@ -7,7 +7,7 @@
         <version>2.18-SNAPSHOT</version>
   </parent>
     <artifactId>securityapi-signicat</artifactId>
-    <name>securityapi-signicat</name>
+    <name>Security API Implementation : Signicat</name>
 
     <dependencies>
 
