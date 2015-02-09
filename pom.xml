@@ -33,7 +33,7 @@
     <url>http://kantega.no</url>
 
     <scm>
-        <connection>scm:git:git@gitlab.kantega.no:flyt-cms/security-api-implementation.git/</connection>
+        <connection>scm:git:git@gitlab.kantega.no:flyt-cms/security-api-implementation.git</connection>
   </scm>
 
     <dependencies>
