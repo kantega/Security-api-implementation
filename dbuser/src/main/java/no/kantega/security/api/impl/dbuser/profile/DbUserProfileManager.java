@@ -25,7 +25,7 @@ import no.kantega.security.api.profile.ProfileManager;
 import no.kantega.security.api.search.DefaultProfileSearchResult;
 import no.kantega.security.api.search.SearchResult;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
@@ -146,14 +146,12 @@ public class DbUserProfileManager extends JdbcDaoSupport implements ProfileManag
         this.querier = querier;
     }
 
-    private class UserProfileRowMapper implements ParameterizedRowMapper<Profile> {
+    private static class UserProfileRowMapper implements RowMapper<Profile> {
 
         public Profile mapRow(ResultSet rs, int i) throws SQLException {
             DefaultProfile profile = new DefaultProfile();
 
-            DefaultIdentity identity = new DefaultIdentity();
-            identity.setUserId(rs.getString("UserId"));
-            identity.setDomain(rs.getString("Domain"));
+            Identity identity = DefaultIdentity.withDomainAndUserId(rs.getString("Domain"), rs.getString("UserId"));
             profile.setIdentity(identity);
 
             profile.setGivenName(rs.getString("GivenName"));

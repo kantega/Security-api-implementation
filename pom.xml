@@ -76,9 +76,9 @@
     </modules>
 
     <properties>
-        <springframework.version>3.2.4.RELEASE</springframework.version>
+        <springframework.version>4.1.7.RELEASE</springframework.version>
         <securityapi.version>2.9</securityapi.version>
-        <aksess.version>7.8.2</aksess.version>
+        <aksess.version>7.8.23</aksess.version>
     </properties>
 
 </project>
