@@ -4,7 +4,7 @@
   <parent>
         <groupId>org.kantega.security-api</groupId>
         <artifactId>security-api-impl</artifactId>
-        <version>2.19-SNAPSHOT</version>
+        <version>2.19</version>
   </parent>
     <artifactId>securityapi-kerberos</artifactId>
     <name>Security API Implementation : Kerberos</name>
