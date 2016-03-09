@@ -7,9 +7,6 @@ import java.util.List;
 
 /**
  * Will rehash all passwords in the database with the current default PasswordHasher
- * <p/>
- * User: Sigurd Stendal
- * Date: 07.05.14
  */
 public class DbUserPasswordRehasher {
 

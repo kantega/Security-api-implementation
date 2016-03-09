@@ -6,10 +6,6 @@ import no.kantega.security.api.impl.dbuser.password.PasswordHash;
 
 import java.io.IOException;
 
-/**
- * User: Sigurd Stendal
- * Date: 07.05.14
- */
 public class PasswordHashJsonEncoder {
 
     private static ObjectMapper objectMapper = new ObjectMapper();

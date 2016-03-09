@@ -5,10 +5,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * User: Sigurd Stendal
- * Date: 07.05.14
- */
 public class PasswordHashTest {
 
     @Test

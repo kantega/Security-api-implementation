@@ -5,9 +5,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Copy of the MD5Crypt in https://subversion.kantega.no/svn/aksess/projects/security-api-impl
- *
- * User: Sigurd Stendal
- * Date: 16.05.14
+
  */
 public class CopyOfMD5Crypt implements PasswordCrypt {
     // Character set allowed for the salt string

@@ -5,10 +5,6 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.Map;
 
-/**
- * User: Sigurd Stendal
- * Date: 07.05.14
- */
 public class PasswordHashManager implements ApplicationContextAware {
 
     private static final String DEFAULT_PASSWORDHASHER_BEAN_NAME = "defaultPasswordHasher";

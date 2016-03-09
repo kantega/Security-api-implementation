@@ -9,10 +9,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
-/**
- * User: Sigurd Stendal
- * Date: 06.05.14
- */
 public class Pbkdf2WithHmacSha1PasswordHasher implements PasswordHasher {
 
     private static final int SALT_LENGTH = 16;

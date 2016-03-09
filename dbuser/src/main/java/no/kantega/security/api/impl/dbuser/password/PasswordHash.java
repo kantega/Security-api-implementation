@@ -5,9 +5,6 @@ import java.util.List;
 
 /**
  * A password hash with all metadata neccesary to recreate the hash form a plain text password
- * <p/>
- * User: Sigurd Stendal
- * Date: 07.05.14
  */
 public class PasswordHash {
 

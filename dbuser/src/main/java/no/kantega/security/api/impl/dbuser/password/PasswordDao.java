@@ -10,10 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * User: Sigurd Stendal
- * Date: 07.05.14
- */
 public class PasswordDao extends JdbcDaoSupport {
 
 

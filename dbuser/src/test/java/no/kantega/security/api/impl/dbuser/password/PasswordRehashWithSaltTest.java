@@ -11,10 +11,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 
-/**
- * User: Sigurd Stendal
- * Date: 07.05.14
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:/passwordRehashWithSaltTestContext.xml", "classpath:/no/kantega/security/provider/dbuser.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)

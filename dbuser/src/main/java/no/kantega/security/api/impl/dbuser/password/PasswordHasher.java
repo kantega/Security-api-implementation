@@ -2,9 +2,6 @@ package no.kantega.security.api.impl.dbuser.password;
 
 /**
  * A PasswordHasher can create a password hash form a plain text password and neccesary metadata
- * <p/>
- * User: Sigurd Stendal
- * Date: 06.05.14
  */
 public interface PasswordHasher {
 

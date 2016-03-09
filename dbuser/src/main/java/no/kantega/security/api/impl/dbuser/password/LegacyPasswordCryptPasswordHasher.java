@@ -4,9 +4,6 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Wrapper over legacy PasswordCrypt implementations
- * <p/>
- * User: Sigurd Stendal
- * Date: 07.05.14
  */
 public class LegacyPasswordCryptPasswordHasher implements PasswordHasher {
 
