@@ -12,6 +12,8 @@ import no.kantega.security.api.profile.ProfileComparator;
 import no.kantega.security.api.profile.ProfileManager;
 import no.kantega.security.api.search.DefaultProfileSearchResult;
 import no.kantega.security.api.search.SearchResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,7 @@ import java.util.Properties;
  * Implementation of <code>ProfileManager</code> that get user properties from LDAP.
  */
 public class LdapProfileManager extends LdapConfigurable implements ProfileManager {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private String domain = "";
 
     public SearchResult<Profile> searchProfiles(String name) throws SystemException {
@@ -77,12 +80,15 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             LDAPSearchConstraints ldapConstraints = new LDAPSearchConstraints();
             ldapConstraints.setMaxResults(maxSearchResults);
             c.setConstraints(ldapConstraints);
+
+            log.debug("c.search({}, LDAPConnection.SCOPE_SUB, {}, {}, false)", searchBaseUsers, filter, searchAttributes);
             LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, searchAttributes, false);
-            List<Profile> profiles = new ArrayList<Profile>();
+            List<Profile> profiles = new ArrayList<>();
 
             while (results.hasMore()) {
                 try {
                     LDAPEntry entry = results.next();
+                    log.debug("Got entry {}", entry);
                     Profile profile = getProfileFromLDAPEntry(entry, false);
                     if (profile != null) {
                         profiles.add(profile);
@@ -129,11 +135,13 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             }
 
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
+
+            log.debug("c.search({}, LDAPConnection.SCOPE_SUB, {}, new String[0], false)", searchBaseUsers, filter);
             LDAPSearchResults results = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, filter, new String[0], false);
             if (results.hasMore()) {
                 try {
                     LDAPEntry entry = results.next();
-
+                    log.debug("Got entry {}", entry);
                     // Hent alle attributtene
                     entry = c.read(entry.getDN());
 
