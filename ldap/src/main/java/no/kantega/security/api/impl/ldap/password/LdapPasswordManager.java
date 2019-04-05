@@ -1,15 +1,15 @@
 package no.kantega.security.api.impl.ldap.password;
 
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPReferralException;
-import com.novell.ldap.LDAPSearchResults;
+import com.novell.ldap.*;
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.impl.ldap.CloseableLdapConnection;
 import no.kantega.security.api.impl.ldap.LdapConfigurable;
 import no.kantega.security.api.password.PasswordManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Password manager that verifies password by binding to ldap server
@@ -24,14 +24,11 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
             return false;
         }
 
-        LDAPConnection c = new LDAPConnection();
 
         final String userId = escapeChars( identity.getUserId() );
 
-        try {
+        try (CloseableLdapConnection c = getLdapConnection()){
 
-            // Kople opp som admin bruker for � finne DN for bruker
-            c.connect(host, port);
             String filter = "";
             if (objectClassUsers.length() > 0) {
                 filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + userId + "))";
@@ -67,19 +64,11 @@ public class LdapPasswordManager extends LdapConfigurable implements PasswordMan
                     throw new SystemException("Feil ved verifisering av passord", e);
                 }
             }
-        } catch (LDAPException e) {
+        } catch (IOException | LDAPException e) {
             throw new SystemException("Feil ved lesing fra LDAP", e);
-        } finally {
-            try {
-                c.disconnect();
-            } catch (LDAPException e) {
-                //
-            }
         }
-
         return false;
     }
-
 
     public void setPassword(Identity identity, String string, String string1) throws SystemException {
 

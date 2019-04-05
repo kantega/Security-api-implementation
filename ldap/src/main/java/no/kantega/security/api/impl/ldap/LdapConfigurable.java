@@ -1,7 +1,6 @@
 package no.kantega.security.api.impl.ldap;
 
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.*;
 
 /**
  * Base class for LDAP searches
@@ -12,6 +11,7 @@ public class LdapConfigurable {
 
     protected String host = "";
     protected int port = 389;
+    protected boolean tls = false;
     protected int maxSearchResults = 1000;
     protected String adminUser = "";
     protected String adminPassword = "";
@@ -45,6 +45,14 @@ public class LdapConfigurable {
         return attribute.getStringValue();
     }
 
+    protected CloseableLdapConnection getLdapConnection() throws LDAPException {
+        CloseableLdapConnection c = tls ?
+                new CloseableLdapConnection(new LDAPJSSESecureSocketFactory()) :
+                new CloseableLdapConnection();
+
+        c.connect(host, port);
+        return c;
+    }
 
     /**
      * Replace and escape strings that will give problem in search
@@ -65,6 +73,10 @@ public class LdapConfigurable {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public void setTls(boolean tls) {
+        this.tls = tls;
     }
 
     public void setMaxSearchResults(int maxSearchResults) {

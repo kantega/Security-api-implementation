@@ -4,6 +4,7 @@ import com.novell.ldap.*;
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.DefaultIdentity;
 import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.impl.ldap.CloseableLdapConnection;
 import no.kantega.security.api.impl.ldap.LdapConfigurable;
 import no.kantega.security.api.role.*;
 import no.kantega.security.api.search.DefaultRoleSearchResult;
@@ -11,6 +12,7 @@ import no.kantega.security.api.search.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,7 +31,6 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
 
     public SearchResult<Role> searchRoles(String rolename) throws SystemException {
         DefaultRoleSearchResult searchResult = new DefaultRoleSearchResult();
-        LDAPConnection c = new LDAPConnection();
 
         String filter = "";
         if (objectClassRoles.length() > 0 && rolename != null && rolename.length() > 0) {
@@ -51,8 +52,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             filter += ")";
         }
 
-        try {
-            c.connect(host, port);
+        try (CloseableLdapConnection c = getLdapConnection()){
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
 
             LDAPSearchConstraints ldapConstraints = new LDAPSearchConstraints();
@@ -75,12 +75,6 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
 
         } catch (Exception e) {
              throw new SystemException("Feil ved lesing av LDAP directory", e);
-        } finally {
-            try {
-                c.disconnect();
-            } catch (LDAPException e) {
-                //
-            }
         }
         return searchResult;
     }
@@ -93,10 +87,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             return null;
         }
 
-        LDAPConnection c = new LDAPConnection();
-
-        try {
-            c.connect(host, port);
+        try (CloseableLdapConnection c = getLdapConnection()){
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
             LDAPSearchConstraints constraints = new LDAPSearchConstraints();
             constraints.setDereference(LDAPSearchConstraints.DEREF_ALWAYS);
@@ -129,14 +120,8 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
                 }
             }
 
-        } catch (LDAPException e) {
+        } catch (LDAPException | IOException e) {
              throw new SystemException("Feil ved lesing av LDAP directory", e);
-        } finally {
-            try {
-                c.disconnect();
-            } catch (LDAPException e) {
-                //
-            }
         }
         return role;
 
@@ -150,8 +135,6 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             return roles.iterator();
         }
 
-        LDAPConnection c = new LDAPConnection();
-
         String userFilter;
         if (objectClassUsers.length() > 0) {
             userFilter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + identity.getUserId() + "))";
@@ -160,8 +143,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
         }
 
 
-        try {
-            c.connect(host, port);
+        try (CloseableLdapConnection c = getLdapConnection()){
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
             log.debug("c.search({}, LDAPConnection.SCOPE_SUB, {}, new String[0], false)", searchBaseUsers, userFilter);
             LDAPSearchResults user = c.search(searchBaseUsers, LDAPConnection.SCOPE_SUB, userFilter, new String[0], false);
@@ -258,15 +240,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             }
         } catch (Exception e) {
              throw new SystemException("Feil ved lesing av LDAP directory", e);
-        } finally {
-            try {
-                c.disconnect();
-            } catch (LDAPException e) {
-                //
-            }
         }
-
-
         return roles.iterator();
     }
 
@@ -277,10 +251,7 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
             return users.iterator();
         }
 
-        LDAPConnection c = new LDAPConnection();
-
-        try {
-            c.connect(host, port);
+        try (CloseableLdapConnection c = getLdapConnection()){
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
             LDAPSearchConstraints constraints = new LDAPSearchConstraints();
             constraints.setDereference(LDAPSearchConstraints.DEREF_ALWAYS);
@@ -338,14 +309,8 @@ public class LdapRoleManager extends LdapConfigurable implements RoleManager {
                 }
             }
 
-        } catch (LDAPException e) {
+        } catch (LDAPException | IOException e) {
              throw new SystemException("Feil ved lesing av LDAP directory", e);
-        } finally {
-            try {
-                c.disconnect();
-            } catch (LDAPException e) {
-                //
-            }
         }
         return users.iterator();
     }

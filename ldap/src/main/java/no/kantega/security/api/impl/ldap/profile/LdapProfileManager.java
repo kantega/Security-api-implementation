@@ -5,6 +5,7 @@ import com.novell.ldap.util.Base64;
 import no.kantega.security.api.common.SystemException;
 import no.kantega.security.api.identity.DefaultIdentity;
 import no.kantega.security.api.identity.Identity;
+import no.kantega.security.api.impl.ldap.CloseableLdapConnection;
 import no.kantega.security.api.impl.ldap.LdapConfigurable;
 import no.kantega.security.api.profile.DefaultProfile;
 import no.kantega.security.api.profile.Profile;
@@ -15,6 +16,7 @@ import no.kantega.security.api.search.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,10 +40,7 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
             return searchResult;
         }
 
-        LDAPConnection c = new LDAPConnection();
-
-        try {
-            c.connect(host, port);
+        try (CloseableLdapConnection c = getLdapConnection()){
             c.bind(LDAPConnection.LDAP_V3, adminUser, adminPassword.getBytes());
 
             String filter = "(&";
@@ -103,12 +102,6 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
 
         } catch (Exception e) {
             throw new SystemException("Feil ved lesing av LDAP directory", e);
-        } finally {
-            try {
-                c.disconnect();
-            } catch (LDAPException e) {
-                // Ingenting
-            }
         }
         return searchResult;
     }
@@ -121,12 +114,9 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
 
         Profile profile = null;
 
-        LDAPConnection c = new LDAPConnection();
-
         final String userId = escapeChars( identity.getUserId() );
 
-        try {
-            c.connect(host, port);
+        try (CloseableLdapConnection c = getLdapConnection()){
             String filter;
             if (objectClassUsers.length() > 0) {
                 filter = "(&(objectclass=" + objectClassUsers + ")(" + usernameAttribute + "=" + userId + "))";
@@ -154,14 +144,8 @@ public class LdapProfileManager extends LdapConfigurable implements ProfileManag
 
             }
 
-        } catch (LDAPException e) {
+        } catch (LDAPException | IOException e) {
              throw new SystemException("Feil ved lesing av LDAP directory for:" + identity.getUserId(), e);
-        } finally {
-            try {
-                c.disconnect();
-            } catch (LDAPException e) {
-                //
-            }
         }
         return profile;
     }
