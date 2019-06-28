@@ -68,8 +68,8 @@
         <module>ldap</module>
         <module>twofactorauth-email</module>
         <module>twofactorauth-dbbackend</module>
-        <module>feide-saml2-identity</module>
-        <module>ntlm-identity</module>
+        <!--<module>feide-saml2-identity</module>
+        <module>ntlm-identity</module>-->
         <module>securityapi-kerberos</module>
         <module>securityapi-md5crypt</module>
         <module>saml-identity</module>
