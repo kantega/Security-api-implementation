@@ -1,4 +1,4 @@
-package no.kantega.security.api.saml;
+package no.kantega.security.api.impl.saml;
 
 import com.onelogin.saml2.Auth;
 import com.onelogin.saml2.exception.Error;
@@ -6,37 +6,51 @@ import com.onelogin.saml2.exception.SettingsException;
 import com.onelogin.saml2.exception.XMLEntityException;
 import com.onelogin.saml2.servlet.ServletUtils;
 import com.onelogin.saml2.settings.Saml2Settings;
+import com.onelogin.saml2.settings.SettingsBuilder;
+import no.kantega.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public class SamlServlet extends HttpServlet {
     private static Logger log = LoggerFactory.getLogger(SamlServlet.class);
 
     static final String AUTORIZED_PRINCIPAL_SESSION_ATTRIBUTE = "SAML_AUTORIZED_PRINCIPAL_SESSION_ATTRIBUTE";
 
+    private Saml2Settings samlConfig;
+
+    private static final String DEFAULT_TARGET_URI_PARAM = "targetUri";
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        this.samlConfig = config(getInitParameter("saml.config.file"));
+    }
+
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String path = "";
+            String path = request.getPathInfo();
             log.debug("service {}", path);
-            if ("login".equals(path)) {
+            if ("/login".equals(path)) {
                 handleLogin(request, response);
-            } else if ("metadata".equals(path)) {
+            } else if ("/metadata".equals(path)) {
                 handleMetadata(request, response);
-            } else if ("logout".equals(path)) {
+            } else if ("/logout".equals(path)) {
                 handleLogout(request, response);
-            } else if("sls".equals("path")) {
+            } else if("/sls".equals(path)) {
                 handleLogout(request, response);
-            } else if("acs".equals(path)) {
+            } else if("/acs".equals(path)) {
                 handleACS(request, response);
             }
 
@@ -47,7 +61,7 @@ public class SamlServlet extends HttpServlet {
     }
 
     private void handleACS(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Auth auth = new Auth(config(), request, response);
+        Auth auth = new Auth(samlConfig, request, response);
         auth.processResponse();
 
         if (!auth.isAuthenticated()) {
@@ -80,7 +94,7 @@ public class SamlServlet extends HttpServlet {
     }
 
     private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws SettingsException, Error, IOException, XMLEntityException {
-        Auth auth = new Auth(config(), request, response);
+        Auth auth = new Auth(samlConfig, request, response);
         HttpSession session = request.getSession();
         String nameId = null;
         if (session.getAttribute("nameId") != null) {
@@ -124,16 +138,27 @@ public class SamlServlet extends HttpServlet {
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws SettingsException, Error, IOException {
-        Auth auth = new Auth(config(), request, response);
+        Auth auth = new Auth(samlConfig, request, response);
         if (request.getParameter("attrs") == null) {
-            auth.login();
+            auth.login("/");
         } else {
             auth.login(request.getContextPath() + "/attrs.jsp");
         }
     }
 
-    private String config() {
-        return getInitParameter("saml.config.file");
+    static Saml2Settings config(String filename) {
+        String configFile = configFile(filename);
+        try (InputStream inputStream = new FileInputStream(configFile)){
+            Properties prop = new Properties();
+            prop.load(inputStream);
+            return new SettingsBuilder().fromProperties(prop).build();
+        } catch (IOException error) {
+            throw new RuntimeException(error);
+        }
+    }
+
+    private static String configFile(String filename) {
+        return new File(new File(Configuration.getApplicationDirectory()), "security/" + filename).getAbsolutePath();
     }
 
 }

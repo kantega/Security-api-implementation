@@ -13,6 +13,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.kantega.openaksess</groupId>
+            <artifactId>openaksess-commons</artifactId>
+            <version>${aksess.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.onelogin</groupId>
             <artifactId>java-saml</artifactId>
             <version>2.4.0</version>
