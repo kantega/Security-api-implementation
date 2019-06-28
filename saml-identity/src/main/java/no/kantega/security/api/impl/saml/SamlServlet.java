@@ -29,8 +29,6 @@ public class SamlServlet extends HttpServlet {
 
     private Saml2Settings samlConfig;
 
-    private static final String DEFAULT_TARGET_URI_PARAM = "targetUri";
-
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -65,15 +63,17 @@ public class SamlServlet extends HttpServlet {
         auth.processResponse();
 
         if (!auth.isAuthenticated()) {
+            log.debug("handleACS: Not authenticated");
             response.sendError(403, "Not authenticated");
         } else {
             Map<String, List<String>> attributes = auth.getAttributes();
 
             List<String> ident = attributes.get("Ident");
+            log.debug("handleACS: Ident: {}", ident);
             // TODO assert size
             request.getSession().setAttribute(AUTORIZED_PRINCIPAL_SESSION_ATTRIBUTE, ident.get(0));
             String relayState = request.getParameter("RelayState");
-
+            log.debug("handleACS: RelayState: {}", relayState);
             if (relayState != null && !relayState.isEmpty() && !relayState.equals(ServletUtils.getSelfRoutedURLNoQuery(request)) &&
                     !relayState.contains("/login")) { // We don't want to be redirected to login.jsp neither
                 response.sendRedirect(request.getParameter("RelayState"));
@@ -106,7 +106,7 @@ public class SamlServlet extends HttpServlet {
         }
         String nameidNameQualifier = null;
         if (session.getAttribute("nameidNameQualifier") != null) {
-            nameIdFormat = session.getAttribute("nameidNameQualifier").toString();
+            nameidNameQualifier = session.getAttribute("nameidNameQualifier").toString();
         }
         String nameidSPNameQualifier = null;
         if (session.getAttribute("nameidSPNameQualifier") != null) {
@@ -116,6 +116,8 @@ public class SamlServlet extends HttpServlet {
         if (session.getAttribute("sessionIndex") != null) {
             sessionIndex = session.getAttribute("sessionIndex").toString();
         }
+        log.debug("handleLogout: nameId: {}, nameIdFormat: {}, nameidNameQualifier: {}, nameidSPNameQualifier: {}, sessionIndex: {}",
+                nameId, sessionIndex, nameIdFormat, nameidNameQualifier, nameidSPNameQualifier);
         auth.logout(null, nameId, sessionIndex, nameIdFormat, nameidNameQualifier, nameidSPNameQualifier);
     }
 
