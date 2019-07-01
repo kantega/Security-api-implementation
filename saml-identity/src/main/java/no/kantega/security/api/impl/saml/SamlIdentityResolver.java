@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Properties;
 
 import static no.kantega.security.api.impl.saml.SamlServlet.config;
 
@@ -78,33 +77,4 @@ public class SamlIdentityResolver implements IdentityResolver {
         this.samlConfig = config(configFile);
     }
 
-    private static class SamlIdentity implements AuthenticatedIdentity {
-        private final IdentityResolver identityResolver;
-        private final String authorizedPrincipal;
-
-        private SamlIdentity(IdentityResolver identityResolver, String authorizedPrincipal) {
-            this.identityResolver = identityResolver;
-            this.authorizedPrincipal = authorizedPrincipal;
-        }
-
-        public String getLanguage() {
-            throw new IllegalStateException("Language not implemented");
-        }
-
-        public Properties getRawAttributes() {
-            throw new IllegalStateException("Raw properties not implemented");
-        }
-
-        public IdentityResolver getResolver() {
-            return identityResolver;
-        }
-
-        public String getUserId() {
-            return authorizedPrincipal;
-        }
-
-        public String getDomain() {
-            return identityResolver.getAuthenticationContext();
-        }
-    }
 }
