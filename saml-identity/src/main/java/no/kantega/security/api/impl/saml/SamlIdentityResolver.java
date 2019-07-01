@@ -77,4 +77,8 @@ public class SamlIdentityResolver implements IdentityResolver {
         this.samlConfig = config(configFile);
     }
 
+    @Override
+    public String toString() {
+        return "SamlIdentityResolver for " + samlConfig.getSpEntityId() + ", " + samlConfig.getIdpEntityId();
+    }
 }
