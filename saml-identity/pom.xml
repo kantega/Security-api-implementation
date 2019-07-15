@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>saml-identity</artifactId>
+    <name>Security API Implementation : SAML2 identity</name>
 
     <dependencies>
         <dependency>
