@@ -70,7 +70,11 @@ public class SamlServlet extends HttpServlet {
 
             List<String> ident = attributes.get("Ident");
             log.debug("handleACS: Ident: {}", ident);
-            // TODO assert size
+            if(ident == null || ident.isEmpty()) {
+                log.error("handleACS ident missing!");
+                response.sendError(403, "SAML Response missing field «Ident»");
+                return;
+            }
             request.getSession().setAttribute(AUTORIZED_PRINCIPAL_SESSION_ATTRIBUTE, ident.get(0));
             String relayState = request.getParameter("RelayState");
             log.debug("handleACS: RelayState: {}", relayState);
