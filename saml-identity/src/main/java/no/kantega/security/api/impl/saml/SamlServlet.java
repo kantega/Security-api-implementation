@@ -146,7 +146,11 @@ public class SamlServlet extends HttpServlet {
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws SettingsException, Error, IOException {
         Auth auth = new Auth(samlConfig, request, response);
         if (request.getParameter("attrs") == null) {
-            auth.login("/");
+            String redirect = request.getParameter("redirect");
+            if(redirect == null) {
+                redirect = "/";
+            }
+            auth.login(redirect);
         } else {
             auth.login(request.getContextPath() + "/attrs.jsp");
         }
