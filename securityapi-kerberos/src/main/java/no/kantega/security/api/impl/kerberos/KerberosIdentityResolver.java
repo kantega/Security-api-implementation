@@ -28,7 +28,7 @@ public class KerberosIdentityResolver implements IdentityResolver {
     }
 
     public void initateLogin(LoginContext loginContext) {
-        String targetUri = loginContext.getTargetUri().toString();
+        String targetUri = loginContext.getTargetUri() == null ? null : loginContext.getTargetUri().toString();
         if(targetUri == null) {
             HttpServletRequest request = loginContext.getRequest();
             targetUri = request.getRequestURL().toString();
